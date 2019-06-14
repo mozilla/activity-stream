@@ -1,18 +1,22 @@
-import {actionCreators as ac} from "common/Actions.jsm";
-import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
-import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
-import {connect} from "react-redux";
-import {DSMessage} from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
-import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
-import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
-import {List} from "content-src/components/DiscoveryStreamComponents/List/List";
-import {Navigation} from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
+import { actionCreators as ac } from "common/Actions.jsm";
+import { CardGrid } from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
+import { CollapsibleSection } from "content-src/components/CollapsibleSection/CollapsibleSection";
+import { connect } from "react-redux";
+import { DSMessage } from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
+import { Hero } from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
+import { HorizontalRule } from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
+import { List } from "content-src/components/DiscoveryStreamComponents/List/List";
+import { Navigation } from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
 import React from "react";
-import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
-import {selectLayoutRender} from "content-src/lib/selectLayoutRender";
-import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
+import { SectionTitle } from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
+import { selectLayoutRender } from "content-src/lib/selectLayoutRender";
+import { TopSites } from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
 
-const ALLOWED_CSS_URL_PREFIXES = ["chrome://", "resource://", "https://img-getpocket.cdn.mozilla.net/"];
+const ALLOWED_CSS_URL_PREFIXES = [
+  "chrome://",
+  "resource://",
+  "https://img-getpocket.cdn.mozilla.net/",
+];
 const DUMMY_CSS_SELECTOR = "DUMMY#CSS.SELECTOR";
 let rickRollCache = []; // Cache of random probability values for a spoc position
 
@@ -29,8 +33,12 @@ export function isAllowedCSS(property, value) {
 
   // Make sure all urls are of the allowed protocols/prefixes
   const urls = value.match(/url\("[^"]+"\)/g);
-  return !urls || urls.every(url => ALLOWED_CSS_URL_PREFIXES.some(prefix =>
-    url.slice(5).startsWith(prefix)));
+  return (
+    !urls ||
+    urls.every(url =>
+      ALLOWED_CSS_URL_PREFIXES.some(prefix => url.slice(5).startsWith(prefix))
+    )
+  );
 }
 
 export class _DiscoveryStreamBase extends React.PureComponent {
@@ -45,7 +53,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       return;
     }
 
-    const {sheet} = style;
+    const { sheet } = style;
     const styles = JSON.parse(style.dataset.styles);
     styles.forEach((row, rowIndex) => {
       row.forEach((component, componentIndex) => {
@@ -71,12 +79,20 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           });
 
           // Set the actual desired selectors scoped to the component
-          const prefix = `.ds-layout > .ds-column:nth-child(${rowIndex + 1}) .ds-column-grid > :nth-child(${componentIndex + 1})`;
+          const prefix = `.ds-layout > .ds-column:nth-child(${rowIndex +
+            1}) .ds-column-grid > :nth-child(${componentIndex + 1})`;
           // NB: Splitting on "," doesn't work with strings with commas, but
           // we're okay with not supporting those selectors
-          rule.selectorText = selectors.split(",").map(selector => prefix +
-            // Assume :pseudo-classes are for component instead of descendant
-            (selector[0] === ":" ? "" : " ") + selector).join(",");
+          rule.selectorText = selectors
+            .split(",")
+            .map(
+              selector =>
+                prefix +
+                // Assume :pseudo-classes are for component instead of descendant
+                (selector[0] === ":" ? "" : " ") +
+                selector
+            )
+            .join(",");
 
           // CSSOM silently ignores bad selectors, so we'll be noisy instead
           if (rule.selectorText === DUMMY_CSS_SELECTOR) {
@@ -90,7 +106,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   renderComponent(component, embedWidth) {
     switch (component.type) {
       case "TopSites":
-        return (<TopSites header={component.header} />);
+        return <TopSites header={component.header} />;
       case "Message":
         return (
           <DSMessage
@@ -98,19 +114,18 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             subtitle={component.header && component.header.subtitle}
             link_text={component.header && component.header.link_text}
             link_url={component.header && component.header.link_url}
-            icon={component.header && component.header.icon} />
+            icon={component.header && component.header.icon}
+          />
         );
       case "SectionTitle":
-        return (
-          <SectionTitle
-            header={component.header} />
-        );
+        return <SectionTitle header={component.header} />;
       case "Navigation":
         return (
           <Navigation
             links={component.properties.links}
             alignment={component.properties.alignment}
-            header={component.header} />
+            header={component.header}
+          />
         );
       case "CardGrid":
         return (
@@ -121,7 +136,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             border={component.properties.border}
             type={component.type}
             dispatch={this.props.dispatch}
-            items={component.properties.items} />
+            items={component.properties.items}
+          />
         );
       case "Hero":
         return (
@@ -133,10 +149,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             border={component.properties.border}
             type={component.type}
             dispatch={this.props.dispatch}
-            items={component.properties.items} />
+            items={component.properties.items}
+          />
         );
       case "HorizontalRule":
-        return (<HorizontalRule />);
+        return <HorizontalRule />;
       case "List":
         return (
           <List
@@ -148,10 +165,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             hasNumbers={component.properties.has_numbers}
             items={component.properties.items}
             type={component.type}
-            header={component.header} />
+            header={component.header}
+          />
         );
       default:
-        return (<div>{component.type}</div>);
+        return <div>{component.type}</div>;
     }
   }
 
@@ -159,7 +177,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Use json string as both the key and styles to render so React knows when
     // to unmount and mount a new instance for new styles.
     const json = JSON.stringify(styles);
-    return (<style key={json} data-styles={json} ref={this.onStyleMount} />);
+    return <style key={json} data-styles={json} ref={this.onStyleMount} />;
   }
 
   componentWillReceiveProps(oldProps) {
@@ -170,13 +188,24 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
   render() {
     // Select layout render data by adding spocs and position to recommendations
-    const {layoutRender, spocsFill} = selectLayoutRender(this.props.DiscoveryStream, this.props.Prefs.values, rickRollCache);
-    const {config, spocs, feeds} = this.props.DiscoveryStream;
+    const { layoutRender, spocsFill } = selectLayoutRender(
+      this.props.DiscoveryStream,
+      this.props.Prefs.values,
+      rickRollCache
+    );
+    const { config, spocs, feeds } = this.props.DiscoveryStream;
 
     // Send SPOCS Fill if any. Note that it should not send it again if the same
     // page gets re-rendered by state changes.
-    if (spocs.loaded && feeds.loaded && spocsFill.length && !this._spocsFillSent) {
-      this.props.dispatch(ac.DiscoveryStreamSpocsFill({spoc_fills: spocsFill}));
+    if (
+      spocs.loaded &&
+      feeds.loaded &&
+      spocsFill.length &&
+      !this._spocsFillSent
+    ) {
+      this.props.dispatch(
+        ac.DiscoveryStreamSpocsFill({ spoc_fills: spocsFill })
+      );
       this._spocsFillSent = true;
     }
 
@@ -223,28 +252,34 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Render a DS-style TopSites then the rest if any in a collapsible section
     return (
       <React.Fragment>
-        {topSites && this.renderLayout([{
-          width: 12,
-          components: [topSites],
-        }])}
-        {layoutRender.length > 0 && <CollapsibleSection
-          className="ds-layout"
-          collapsed={topStories.pref.collapsed}
-          dispatch={this.props.dispatch}
-          icon={topStories.icon}
-          id={topStories.id}
-          isFixed={true}
-          learnMore={{
-            link: {
-              href: message.header.link_url,
-              id: message.header.link_text,
+        {topSites &&
+          this.renderLayout([
+            {
+              width: 12,
+              components: [topSites],
             },
-          }}
-          privacyNoticeURL={topStories.privacyNoticeURL}
-          showPrefName={topStories.pref.feed}
-          title={message.header.title}>
-          {this.renderLayout(layoutRender)}
-        </CollapsibleSection>}
+          ])}
+        {layoutRender.length > 0 && (
+          <CollapsibleSection
+            className="ds-layout"
+            collapsed={topStories.pref.collapsed}
+            dispatch={this.props.dispatch}
+            icon={topStories.icon}
+            id={topStories.id}
+            isFixed={true}
+            learnMore={{
+              link: {
+                href: message.header.link_url,
+                id: message.header.link_text,
+              },
+            }}
+            privacyNoticeURL={topStories.privacyNoticeURL}
+            showPrefName={topStories.pref.feed}
+            title={message.header.title}
+          >
+            {this.renderLayout(layoutRender)}
+          </CollapsibleSection>
+        )}
       </React.Fragment>
     );
   }
@@ -254,16 +289,24 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     return (
       <div className="discovery-stream ds-layout">
         {layoutRender.map((row, rowIndex) => (
-          <div key={`row-${rowIndex}`} className={`ds-column ds-column-${row.width}`}>
+          <div
+            key={`row-${rowIndex}`}
+            className={`ds-column ds-column-${row.width}`}
+          >
             <div className="ds-column-grid">
               {row.components.map((component, componentIndex) => {
                 if (!component) {
                   return null;
                 }
-                styles[rowIndex] = [...styles[rowIndex] || [], component.styles];
-                return (<div key={`component-${componentIndex}`}>
-                  {this.renderComponent(component, row.width)}
-                </div>);
+                styles[rowIndex] = [
+                  ...(styles[rowIndex] || []),
+                  component.styles,
+                ];
+                return (
+                  <div key={`component-${componentIndex}`}>
+                    {this.renderComponent(component, row.width)}
+                  </div>
+                );
               })}
             </div>
           </div>

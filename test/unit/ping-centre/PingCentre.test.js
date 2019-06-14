@@ -1,10 +1,12 @@
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/publicdomain/zero/1.0/
 
-import {FakePrefs, GlobalOverrider} from "test/unit/utils";
-import {PingCentre, PingCentreConstants} from "ping-centre/PingCentre.jsm";
+import { FakePrefs, GlobalOverrider } from "test/unit/utils";
+import { PingCentre, PingCentreConstants } from "ping-centre/PingCentre.jsm";
 const {
-  PRODUCTION_ENDPOINT_PREF, FHR_UPLOAD_ENABLED_PREF, TELEMETRY_PREF,
+  PRODUCTION_ENDPOINT_PREF,
+  FHR_UPLOAD_ENABLED_PREF,
+  TELEMETRY_PREF,
   LOGGING_PREF,
 } = PingCentreConstants;
 
@@ -22,8 +24,8 @@ const FAKE_UPDATE_CHANNEL = "beta";
 const FAKE_LOCALE = "en-US";
 const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 const FAKE_ACTIVE_EXPERIMENTS = {
-  "pref-flip-quantum-css-style-r1-1381147": {"branch": "stylo"},
-  "nightly-nothing-burger-1-pref": {"branch": "Control"},
+  "pref-flip-quantum-css-style-r1-1381147": { branch: "stylo" },
+  "nightly-nothing-burger-1-pref": { branch: "Control" },
 };
 const FAKE_PROFILE_CREATION_DATE = 16587;
 const FAKE_BROWSER_SEARCH_REGION = "US";
@@ -34,26 +36,36 @@ describe("PingCentre", () => {
   let sandbox;
   let fetchStub;
   const fakeEndpointUrl = "http://127.0.0.1/stuff";
-  const fakePingJSON = {action: "fake_action", monkey: 1};
-  const fakeFetchHttpErrorResponse = {ok: false, status: 400};
-  const fakeFetchSuccessResponse = {ok: true, status: 200};
+  const fakePingJSON = { action: "fake_action", monkey: 1 };
+  const fakeFetchHttpErrorResponse = { ok: false, status: 400 };
+  const fakeFetchSuccessResponse = { ok: true, status: 200 };
 
   beforeEach(() => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     fetchStub = sandbox.stub();
 
-    sandbox.stub(global.Services.prefs, "getBranch")
-        .returns(new FakePrefs({initHook: prefInitHook}));
-    sandbox.stub(global.Services.locale, "appLocaleAsLangTag")
-        .get(() => FAKE_LOCALE);
+    sandbox
+      .stub(global.Services.prefs, "getBranch")
+      .returns(new FakePrefs({ initHook: prefInitHook }));
+    sandbox
+      .stub(global.Services.locale, "appLocaleAsLangTag")
+      .get(() => FAKE_LOCALE);
     globals.set("fetch", fetchStub);
-    globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
+    globals.set("ClientID", {
+      getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID),
+    });
     globals.set("TelemetryEnvironment", {
       getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS),
-      currentEnvironment: {profile: {creationDate: FAKE_PROFILE_CREATION_DATE}},
+      currentEnvironment: {
+        profile: { creationDate: FAKE_PROFILE_CREATION_DATE },
+      },
     });
-    globals.set("UpdateUtils", {getUpdateChannel() { return FAKE_UPDATE_CHANNEL; }});
+    globals.set("UpdateUtils", {
+      getUpdateChannel() {
+        return FAKE_UPDATE_CHANNEL;
+      },
+    });
     sandbox.spy(global.Cu, "reportError");
   });
 
@@ -63,7 +75,7 @@ describe("PingCentre", () => {
   });
 
   it("should add .telemetryClientId from the ClientID module", async () => {
-    tSender = new PingCentre({topic: "activity-stream"});
+    tSender = new PingCentre({ topic: "activity-stream" });
     assert.equal(await tSender.telemetryClientId, FAKE_TELEMETRY_ID);
   });
 
@@ -78,28 +90,28 @@ describe("PingCentre", () => {
 
   it("should throw when topic is not specified", () => {
     assert.throws(() => {
-      tSender = new PingCentre({overrideEndpointPref: fakeEndpointUrl});
+      tSender = new PingCentre({ overrideEndpointPref: fakeEndpointUrl });
     });
   });
 
   describe("setting the telemetry endpoint", () => {
     beforeEach(() => {
-      globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "release"});
+      globals.set("AppConstants", { MOZ_UPDATE_CHANNEL: "release" });
       FakePrefs.prototype.prefs[PRODUCTION_ENDPOINT_PREF] = fakeEndpointUrl;
     });
 
     it("should correctly set endpoint based on topic", () => {
-      tSender = new PingCentre({topic: "onboarding"});
+      tSender = new PingCentre({ topic: "onboarding" });
       assert.equal(tSender._pingEndpoint, fakeEndpointUrl);
     });
   });
 
   describe("#enabled", () => {
     let testParams = [
-      {enabledPref: true, fhrPref: true, result: true},
-      {enabledPref: false, fhrPref: true, result: false},
-      {enabledPref: true, fhrPref: false, result: false},
-      {enabledPref: false, fhrPref: false, result: false},
+      { enabledPref: true, fhrPref: true, result: true },
+      { enabledPref: false, fhrPref: true, result: false },
+      { enabledPref: true, fhrPref: false, result: false },
+      { enabledPref: false, fhrPref: false, result: false },
     ];
 
     function testEnabled(p) {
@@ -115,7 +127,9 @@ describe("PingCentre", () => {
     }
 
     for (let p of testParams) {
-      it(`should return ${p.result} if the fhrPref is ${p.fhrPref} and telemetry.enabled is ${p.enabledPref}`, () => {
+      it(`should return ${p.result} if the fhrPref is ${
+        p.fhrPref
+      } and telemetry.enabled is ${p.enabledPref}`, () => {
         testEnabled(p);
       });
     }
@@ -210,10 +224,13 @@ describe("PingCentre", () => {
 
     function testExperimentString(experimentString, activeExperiments, filter) {
       for (let experimentID in activeExperiments) {
-        if (activeExperiments[experimentID] &&
-            activeExperiments[experimentID].branch) {
-          const EXPECTED_SUBSTRING =
-            `${experimentID}:${activeExperiments[experimentID].branch}`;
+        if (
+          activeExperiments[experimentID] &&
+          activeExperiments[experimentID].branch
+        ) {
+          const EXPECTED_SUBSTRING = `${experimentID}:${
+            activeExperiments[experimentID].branch
+          }`;
 
           if (filter && !experimentID.includes(filter)) {
             assert.isFalse(experimentString.includes(EXPECTED_SUBSTRING));
@@ -233,7 +250,10 @@ describe("PingCentre", () => {
         overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
       });
 
-      let expString = tSender._createExperimentsString(FAKE_ACTIVE_EXPERIMENTS, FILTER);
+      let expString = tSender._createExperimentsString(
+        FAKE_ACTIVE_EXPERIMENTS,
+        FILTER
+      );
       testExperimentString(expString, FAKE_ACTIVE_EXPERIMENTS, FILTER);
     });
 
@@ -268,29 +288,41 @@ describe("PingCentre", () => {
     });
 
     it("should return UNSET if the region pref is missing", () => {
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(false);
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(false);
       getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("");
       let region = tSender._getRegion();
       assert.equal(region, "UNSET");
     });
 
     it("should return EMPTY if the region pref is empty", () => {
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
       getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("");
       let region = tSender._getRegion();
       assert.equal(region, "EMPTY");
     });
 
     it("should return OTHER if the region is not in the region whitelist", () => {
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
-      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("SOME_REGION");
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
+      getStub = sinon
+        .stub(global.Services.prefs, "getStringPref")
+        .returns("SOME_REGION");
       let region = tSender._getRegion();
       assert.equal(region, "OTHER");
     });
 
     it("should return REGION if the region is in the region whitelist", () => {
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
-      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns(FAKE_BROWSER_SEARCH_REGION);
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
+      getStub = sinon
+        .stub(global.Services.prefs, "getStringPref")
+        .returns(FAKE_BROWSER_SEARCH_REGION);
       let region = tSender._getRegion();
       assert.equal(region, FAKE_BROWSER_SEARCH_REGION);
     });
@@ -298,17 +330,20 @@ describe("PingCentre", () => {
 
   describe("#_createPing", () => {
     it("should create a ping with expected properties", async () => {
-      tSender = new PingCentre({topic: "activity-stream"});
+      tSender = new PingCentre({ topic: "activity-stream" });
       const ping = await tSender._createPing(fakePingJSON);
 
       const EXPECTED_SHIELD_STRING =
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign({
-        locale: FAKE_LOCALE,
-        topic: "activity-stream",
-        client_id: FAKE_TELEMETRY_ID,
-        release_channel: FAKE_UPDATE_CHANNEL,
-      }, fakePingJSON);
+      let EXPECTED_RESULT = Object.assign(
+        {
+          locale: FAKE_LOCALE,
+          topic: "activity-stream",
+          client_id: FAKE_TELEMETRY_ID,
+          release_channel: FAKE_UPDATE_CHANNEL,
+        },
+        fakePingJSON
+      );
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
       EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
       EXPECTED_RESULT.region = "UNSET";
@@ -319,16 +354,19 @@ describe("PingCentre", () => {
 
   describe("#_createStructuredIngestionPing", () => {
     it("should create a ping for structured ingestion with expected properties", async () => {
-      tSender = new PingCentre({topic: "activity-stream"});
+      tSender = new PingCentre({ topic: "activity-stream" });
       const ping = await tSender._createStructuredIngestionPing(fakePingJSON);
 
       const EXPECTED_SHIELD_STRING =
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign({
-        locale: FAKE_LOCALE,
-        client_id: FAKE_TELEMETRY_ID,
-        release_channel: FAKE_UPDATE_CHANNEL,
-      }, fakePingJSON);
+      let EXPECTED_RESULT = Object.assign(
+        {
+          locale: FAKE_LOCALE,
+          client_id: FAKE_TELEMETRY_ID,
+          release_channel: FAKE_UPDATE_CHANNEL,
+        },
+        fakePingJSON
+      );
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
 
       assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
@@ -345,10 +383,12 @@ describe("PingCentre", () => {
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
       FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
 
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue")
-          .returns(true);
-      getStub = sinon.stub(global.Services.prefs, "getStringPref")
-          .returns(FAKE_BROWSER_SEARCH_REGION);
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
+      getStub = sinon
+        .stub(global.Services.prefs, "getStringPref")
+        .returns(FAKE_BROWSER_SEARCH_REGION);
 
       tSender = new PingCentre({
         topic: "activity-stream",
@@ -373,26 +413,31 @@ describe("PingCentre", () => {
       assert.notCalled(fetchStub);
     });
 
-    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch",
-    async () => {
+    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch", async () => {
       fetchStub.resolves(fakeFetchSuccessResponse);
       await tSender.sendPing(fakePingJSON);
 
       const EXPECTED_SHIELD_STRING =
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign({
-        locale: FAKE_LOCALE,
-        topic: "activity-stream",
-        client_id: FAKE_TELEMETRY_ID,
-        release_channel: FAKE_UPDATE_CHANNEL,
-      }, fakePingJSON);
+      let EXPECTED_RESULT = Object.assign(
+        {
+          locale: FAKE_LOCALE,
+          topic: "activity-stream",
+          client_id: FAKE_TELEMETRY_ID,
+          release_channel: FAKE_UPDATE_CHANNEL,
+        },
+        fakePingJSON
+      );
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
       EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
       EXPECTED_RESULT.region = FAKE_BROWSER_SEARCH_REGION;
 
       assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, fakeEndpointUrl,
-        {method: "POST", body: JSON.stringify(EXPECTED_RESULT), credentials: "omit"});
+      assert.calledWithExactly(fetchStub, fakeEndpointUrl, {
+        method: "POST",
+        body: JSON.stringify(EXPECTED_RESULT),
+        credentials: "omit",
+      });
     });
 
     it("should log HTTP failures using Cu.reportError", async () => {
@@ -416,7 +461,7 @@ describe("PingCentre", () => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      FakePrefs.prototype.prefs[LOGGING_PREF] =  true;
+      FakePrefs.prototype.prefs[LOGGING_PREF] = true;
       fetchStub.resolves(fakeFetchSuccessResponse);
       tSender = new PingCentre({
         topic: "activity-stream",
@@ -439,10 +484,12 @@ describe("PingCentre", () => {
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
       FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
 
-      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue")
-          .returns(true);
-      getStub = sinon.stub(global.Services.prefs, "getStringPref")
-          .returns(FAKE_BROWSER_SEARCH_REGION);
+      prefStub = sinon
+        .stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
+      getStub = sinon
+        .stub(global.Services.prefs, "getStringPref")
+        .returns(FAKE_BROWSER_SEARCH_REGION);
 
       tSender = new PingCentre({
         topic: "activity-stream",
@@ -467,23 +514,28 @@ describe("PingCentre", () => {
       assert.notCalled(fetchStub);
     });
 
-    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch",
-    async () => {
+    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch", async () => {
       fetchStub.resolves(fakeFetchSuccessResponse);
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 
       const EXPECTED_SHIELD_STRING =
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign({
-        locale: FAKE_LOCALE,
-        client_id: FAKE_TELEMETRY_ID,
-        release_channel: FAKE_UPDATE_CHANNEL,
-      }, fakePingJSON);
+      let EXPECTED_RESULT = Object.assign(
+        {
+          locale: FAKE_LOCALE,
+          client_id: FAKE_TELEMETRY_ID,
+          release_channel: FAKE_UPDATE_CHANNEL,
+        },
+        fakePingJSON
+      );
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
 
       assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, fakeEndpointUrl,
-        {method: "POST", body: JSON.stringify(EXPECTED_RESULT), credentials: "omit"});
+      assert.calledWithExactly(fetchStub, fakeEndpointUrl, {
+        method: "POST",
+        body: JSON.stringify(EXPECTED_RESULT),
+        credentials: "omit",
+      });
     });
 
     it("should log HTTP failures using Cu.reportError", async () => {
@@ -529,7 +581,7 @@ describe("PingCentre", () => {
     });
 
     it("should remove the telemetry log listener", () => {
-      tSender = new PingCentre({topic: "activity-stream"});
+      tSender = new PingCentre({ topic: "activity-stream" });
       assert.property(fakePrefs.observers, LOGGING_PREF);
 
       tSender.uninit();
@@ -538,7 +590,9 @@ describe("PingCentre", () => {
     });
 
     it("should call Cu.reportError if this._prefs.removeObserver throws", () => {
-      globals.sandbox.stub(FakePrefs.prototype, "removeObserver").throws("Some Error");
+      globals.sandbox
+        .stub(FakePrefs.prototype, "removeObserver")
+        .throws("Some Error");
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl,

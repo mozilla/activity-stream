@@ -1,5 +1,5 @@
-import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
-import {FormattedMessage} from "react-intl";
+import { A11yLinkButton } from "content-src/components/A11yLinkButton/A11yLinkButton";
+import { FormattedMessage } from "react-intl";
 import React from "react";
 
 export class ErrorBoundaryFallback extends React.PureComponent {
@@ -32,38 +32,40 @@ export class ErrorBoundaryFallback extends React.PureComponent {
         <div>
           <FormattedMessage
             defaultMessage="Oops, something went wrong loading this content."
-            id="error_fallback_default_info" />
+            id="error_fallback_default_info"
+          />
         </div>
         <span>
           <A11yLinkButton className="reload-button" onClick={this.onClick}>
             <FormattedMessage
               defaultMessage="Refresh page to try again."
-              id="error_fallback_default_refresh_suggestion" />
+              id="error_fallback_default_refresh_suggestion"
+            />
           </A11yLinkButton>
         </span>
       </div>
     );
   }
 }
-ErrorBoundaryFallback.defaultProps = {className: "as-error-fallback"};
+ErrorBoundaryFallback.defaultProps = { className: "as-error-fallback" };
 
 export class ErrorBoundary extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {hasError: false};
+    this.state = { hasError: false };
   }
 
   componentDidCatch(error, info) {
-    this.setState({hasError: true});
+    this.setState({ hasError: true });
   }
 
   render() {
     if (!this.state.hasError) {
-      return (this.props.children);
+      return this.props.children;
     }
 
     return <this.props.FallbackComponent className={this.props.className} />;
   }
 }
 
-ErrorBoundary.defaultProps = {FallbackComponent: ErrorBoundaryFallback};
+ErrorBoundary.defaultProps = { FallbackComponent: ErrorBoundaryFallback };

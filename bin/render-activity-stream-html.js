@@ -1,9 +1,9 @@
- /* eslint-disable no-console */
+/* eslint-disable no-console */
 const fs = require("fs");
-const {mkdir} = require("shelljs");
+const { mkdir } = require("shelljs");
 const path = require("path");
 
-const {CENTRAL_LOCALES, DEFAULT_LOCALE} = require("./locales");
+const { CENTRAL_LOCALES, DEFAULT_LOCALE } = require("./locales");
 
 // Note: DEFAULT_OPTIONS.baseUrl should match BASE_URL in aboutNewTabService.js
 //       in mozilla-central.
@@ -30,8 +30,9 @@ function getStrings(locale, allStrings) {
   const availableLocales = Object.keys(allStrings);
 
   const language = getLanguage(locale);
-  const similarLocales = availableLocales.filter(other =>
-    other !== locale && getLanguage(other) === language);
+  const similarLocales = availableLocales.filter(
+    other => other !== locale && getLanguage(other) === language
+  );
 
   // Rank locales from least desired to most desired
   const localeFallbacks = [DEFAULT_LOCALE, ...similarLocales, locale];
@@ -40,8 +41,12 @@ function getStrings(locale, allStrings) {
   const desired = Object.assign({}, ...localeFallbacks.map(l => allStrings[l]));
 
   // Only include strings that are currently used (defined by default locale)
-  return Object.assign({}, ...Object.keys(allStrings[DEFAULT_LOCALE]).map(
-    key => ({[key]: desired[key]})));
+  return Object.assign(
+    {},
+    ...Object.keys(allStrings[DEFAULT_LOCALE]).map(key => ({
+      [key]: desired[key],
+    }))
+  );
 }
 
 /**
@@ -74,12 +79,16 @@ function templateHTML(options) {
     `${options.baseUrl}vendor/react-intl.js`,
     `${options.baseUrl}vendor/redux.js`,
     `${options.baseUrl}vendor/react-redux.js`,
-    `${options.baseUrl}prerendered/${options.locale}/activity-stream-strings.js`,
+    `${options.baseUrl}prerendered/${
+      options.locale
+    }/activity-stream-strings.js`,
     `${options.baseUrl}data/content/activity-stream.bundle.js`,
   ];
 
   // Add spacing and script tags
-  const scriptRender = `\n${scripts.map(script => `    <script src="${script}"></script>`).join("\n")}`;
+  const scriptRender = `\n${scripts
+    .map(script => `    <script src="${script}"></script>`)
+    .join("\n")}`;
 
   return `<!doctype html>
 <html lang="${options.locale}" dir="${options.direction}">
@@ -94,7 +103,9 @@ function templateHTML(options) {
   <body class="activity-stream">
     <div id="header-asrouter-container" role="presentation"></div>
     <div id="root"></div>
-    <div id="footer-asrouter-container" role="presentation"></div>${options.noscripts ? "" : scriptRender}
+    <div id="footer-asrouter-container" role="presentation"></div>${
+      options.noscripts ? "" : scriptRender
+    }
   </body>
 </html>
 `;
@@ -131,26 +142,35 @@ window.${name} = ${JSON.stringify(state, null, 2)};
  */
 function writeFiles(name, destPath, filesMap, options) {
   for (const [file, templater] of filesMap) {
-    fs.writeFileSync(path.join(destPath, file), templater({options}));
+    fs.writeFileSync(path.join(destPath, file), templater({ options }));
   }
   console.log("\x1b[32m", `✓ ${name}`, "\x1b[0m");
 }
 
 const STATIC_FILES = new Map([
-  ["activity-stream-debug.html", ({options}) => templateHTML(options)],
+  ["activity-stream-debug.html", ({ options }) => templateHTML(options)],
 ]);
 
 const LOCALIZED_FILES = new Map([
-  ["activity-stream-strings.js", ({options: {locale, strings}}) => templateJs("gActivityStreamStrings", locale, strings)],
-  ["activity-stream.html", ({options}) => templateHTML(options)],
-  ["activity-stream-noscripts.html", ({options}) => templateHTML(Object.assign({}, options, {noscripts: true}))],
+  [
+    "activity-stream-strings.js",
+    ({ options: { locale, strings } }) =>
+      templateJs("gActivityStreamStrings", locale, strings),
+  ],
+  ["activity-stream.html", ({ options }) => templateHTML(options)],
+  [
+    "activity-stream-noscripts.html",
+    ({ options }) =>
+      templateHTML(Object.assign({}, options, { noscripts: true })),
+  ],
 ]);
 
 /**
  * main - Parses command line arguments, generates html and js with templates,
  *        and writes files to their specified locations.
  */
-function main() { // eslint-disable-line max-statements
+function main() {
+  // eslint-disable-line max-statements
   // This code parses command line arguments passed to this script.
   // Note: process.argv.slice(2) is necessary because the first two items in
   // process.argv are paths
@@ -161,19 +181,27 @@ function main() { // eslint-disable-line max-statements
     },
   });
 
-  const baseOptions = Object.assign({debug: false}, DEFAULT_OPTIONS, args || {});
+  const baseOptions = Object.assign(
+    { debug: false },
+    DEFAULT_OPTIONS,
+    args || {}
+  );
   const addonPath = path.resolve(__dirname, baseOptions.addonPath);
   const allStrings = require(`${baseOptions.addonPath}/data/locales.json`);
-  const extraLocales = Object.keys(allStrings).filter(locale =>
-    locale !== DEFAULT_LOCALE && !CENTRAL_LOCALES.includes(locale));
+  const extraLocales = Object.keys(allStrings).filter(
+    locale => locale !== DEFAULT_LOCALE && !CENTRAL_LOCALES.includes(locale)
+  );
 
   const prerenderedPath = path.join(addonPath, "prerendered");
-  console.log(`Writing prerendered files to individual directories under ${prerenderedPath}:`);
+  console.log(
+    `Writing prerendered files to individual directories under ${prerenderedPath}:`
+  );
 
   // Save default locale's strings to compare against other locales' strings
   let defaultStrings;
   let langStrings;
-  const isSubset = (strings, existing) => existing &&
+  const isSubset = (strings, existing) =>
+    existing &&
     Object.keys(strings).every(key => strings[key] === existing[key]);
 
   // Process the default locale first then all the ones from mozilla-central
@@ -202,8 +230,12 @@ function main() { // eslint-disable-line max-statements
     if (locale === DEFAULT_LOCALE) {
       const staticPath = path.join(prerenderedPath, "static");
       mkdir("-p", staticPath);
-      writeFiles(`${locale} (static)`, staticPath, STATIC_FILES,
-        Object.assign({}, options, {debug: true}));
+      writeFiles(
+        `${locale} (static)`,
+        staticPath,
+        STATIC_FILES,
+        Object.assign({}, options, { debug: true })
+      );
 
       // Save the default strings to compare against other locales' strings
       defaultStrings = strings;
@@ -218,17 +250,31 @@ function main() { // eslint-disable-line max-statements
   }
 
   if (skippedLocales.length) {
-    console.log("\x1b[33m", `Skipped the following locales because they use the same strings as ${DEFAULT_LOCALE} or its language locale: ${skippedLocales.join(", ")}`, "\x1b[0m");
+    console.log(
+      "\x1b[33m",
+      `Skipped the following locales because they use the same strings as ${DEFAULT_LOCALE} or its language locale: ${skippedLocales.join(
+        ", "
+      )}`,
+      "\x1b[0m"
+    );
   }
   if (extraLocales.length) {
-    console.log("\x1b[33m", `Skipped the following locales because they are not in CENTRAL_LOCALES: ${extraLocales.join(", ")}`, "\x1b[0m");
+    console.log(
+      "\x1b[33m",
+      `Skipped the following locales because they are not in CENTRAL_LOCALES: ${extraLocales.join(
+        ", "
+      )}`,
+      "\x1b[0m"
+    );
   }
 
   // Convert ja-JP-mac lang tag to ja-JP-macos bcp47 to work around bug 1478930
   const bcp47String = localizedLocales.join(" ").replace(/(ja-JP-mac)/, "$1os");
 
   // Provide some help to copy/paste locales if tests are failing
-  console.log(`\nIf aboutNewTabService tests are failing for unexpected locales, make sure its list is updated:\nconst ACTIVITY_STREAM_BCP47 = "${bcp47String}".split(" ");`);
+  console.log(
+    `\nIf aboutNewTabService tests are failing for unexpected locales, make sure its list is updated:\nconst ACTIVITY_STREAM_BCP47 = "${bcp47String}".split(" ");`
+  );
 }
 
 main();

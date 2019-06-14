@@ -1,14 +1,21 @@
-import {combineReducers, createStore} from "redux";
-import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
-import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
-import {PocketLoggedInCta, _PocketLoggedInCta as PocketLoggedInCtaRaw} from "content-src/components/PocketLoggedInCta/PocketLoggedInCta";
-import {FormattedMessage} from "react-intl";
-import {Provider} from "react-redux";
+import { combineReducers, createStore } from "redux";
+import { INITIAL_STATE, reducers } from "common/Reducers.jsm";
+import { mountWithIntl, shallowWithIntl } from "test/unit/utils";
+import {
+  PocketLoggedInCta,
+  _PocketLoggedInCta as PocketLoggedInCtaRaw,
+} from "content-src/components/PocketLoggedInCta/PocketLoggedInCta";
+import { FormattedMessage } from "react-intl";
+import { Provider } from "react-redux";
 import React from "react";
 
 function mountSectionWithProps(props) {
   const store = createStore(combineReducers(reducers), INITIAL_STATE);
-  return mountWithIntl(<Provider store={store}><PocketLoggedInCta {...props} /></Provider>);
+  return mountWithIntl(
+    <Provider store={store}>
+      <PocketLoggedInCta {...props} />
+    </Provider>
+  );
 }
 
 describe("<PocketLoggedInCta>", () => {
@@ -23,12 +30,16 @@ describe("<PocketLoggedInCta>", () => {
     assert.lengthOf(message, 2);
   });
   it("should not render FormattedMessages when rendered with props", () => {
-    const wrapper = shallowWithIntl(<PocketLoggedInCtaRaw Pocket={{
-      pocketCta: {
-        ctaButton: "button",
-        ctaText: "text",
-      },
-    }} />);
+    const wrapper = shallowWithIntl(
+      <PocketLoggedInCtaRaw
+        Pocket={{
+          pocketCta: {
+            ctaButton: "button",
+            ctaText: "text",
+          },
+        }}
+      />
+    );
 
     const message = wrapper.find(FormattedMessage);
     assert.lengthOf(message, 0);

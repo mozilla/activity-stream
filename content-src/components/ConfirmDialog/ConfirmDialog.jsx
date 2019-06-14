@@ -1,6 +1,6 @@
-import {actionCreators as ac, actionTypes} from "common/Actions.jsm";
-import {connect} from "react-redux";
-import {FormattedMessage} from "react-intl";
+import { actionCreators as ac, actionTypes } from "common/Actions.jsm";
+import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import React from "react";
 
 /**
@@ -30,8 +30,13 @@ export class _ConfirmDialog extends React.PureComponent {
   }
 
   _handleCancelBtn() {
-    this.props.dispatch({type: actionTypes.DIALOG_CANCEL});
-    this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL, source: this.props.data.eventSource}));
+    this.props.dispatch({ type: actionTypes.DIALOG_CANCEL });
+    this.props.dispatch(
+      ac.UserEvent({
+        event: actionTypes.DIALOG_CANCEL,
+        source: this.props.data.eventSource,
+      })
+    );
   }
 
   _handleConfirmBtn() {
@@ -45,9 +50,15 @@ export class _ConfirmDialog extends React.PureComponent {
       return null;
     }
 
-    return (<span>
-      {message_body.map(msg => <p key={msg}><FormattedMessage id={msg} /></p>)}
-    </span>);
+    return (
+      <span>
+        {message_body.map(msg => (
+          <p key={msg}>
+            <FormattedMessage id={msg} />
+          </p>
+        ))}
+      </span>
+    );
   }
 
   render() {
@@ -55,23 +66,33 @@ export class _ConfirmDialog extends React.PureComponent {
       return null;
     }
 
-    return (<div className="confirmation-dialog">
-      <div className="modal-overlay" onClick={this._handleCancelBtn} role="presentation" />
-      <div className="modal">
-        <section className="modal-message">
-          {this.props.data.icon && <span className={`icon icon-spacer icon-${this.props.data.icon}`} />}
-          {this._renderModalMessage()}
-        </section>
-        <section className="actions">
-          <button onClick={this._handleCancelBtn}>
-            <FormattedMessage id={this.props.data.cancel_button_string_id} />
-          </button>
-          <button className="done" onClick={this._handleConfirmBtn}>
-            <FormattedMessage id={this.props.data.confirm_button_string_id} />
-          </button>
-        </section>
+    return (
+      <div className="confirmation-dialog">
+        <div
+          className="modal-overlay"
+          onClick={this._handleCancelBtn}
+          role="presentation"
+        />
+        <div className="modal">
+          <section className="modal-message">
+            {this.props.data.icon && (
+              <span
+                className={`icon icon-spacer icon-${this.props.data.icon}`}
+              />
+            )}
+            {this._renderModalMessage()}
+          </section>
+          <section className="actions">
+            <button onClick={this._handleCancelBtn}>
+              <FormattedMessage id={this.props.data.cancel_button_string_id} />
+            </button>
+            <button className="done" onClick={this._handleConfirmBtn}>
+              <FormattedMessage id={this.props.data.confirm_button_string_id} />
+            </button>
+          </section>
+        </div>
       </div>
-    </div>);
+    );
   }
 }
 

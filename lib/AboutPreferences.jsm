@@ -3,10 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "PluralForm", "resource://gre/modules/PluralForm.jsm");
-const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PluralForm",
+  "resource://gre/modules/PluralForm.jsm"
+);
+const { actionTypes: at } = ChromeUtils.import(
+  "resource://activity-stream/common/Actions.jsm"
+);
 
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 const HTML_NS = "http://www.w3.org/1999/xhtml";
@@ -91,7 +99,9 @@ this.AboutPreferences = class AboutPreferences {
         break;
       // This is used to open the web extension settings page for an extension
       case at.OPEN_WEBEXT_SETTINGS:
-        action._target.browser.ownerGlobal.BrowserOpenAddonsMgr(`addons://detail/${encodeURIComponent(action.data)}`);
+        action._target.browser.ownerGlobal.BrowserOpenAddonsMgr(
+          `addons://detail/${encodeURIComponent(action.data)}`
+        );
         break;
     }
   }
@@ -119,8 +129,11 @@ this.AboutPreferences = class AboutPreferences {
       sections = this.handleDiscoverySettings(sections);
     }
 
-    this.renderPreferences(window, await this.strings, [...PREFS_BEFORE_SECTIONS,
-      ...sections, ...PREFS_AFTER_SECTIONS]);
+    this.renderPreferences(window, await this.strings, [
+      ...PREFS_BEFORE_SECTIONS,
+      ...sections,
+      ...PREFS_AFTER_SECTIONS,
+    ]);
   }
 
   /**
@@ -128,30 +141,42 @@ this.AboutPreferences = class AboutPreferences {
    * file should be a single variable assignment of a JSON/JS object of strings.
    */
   get strings() {
-    return this._strings || (this._strings = new Promise(async resolve => {
-      let data = {};
-      try {
-        const locale = Cc["@mozilla.org/browser/aboutnewtab-service;1"]
-          .getService(Ci.nsIAboutNewTabService).activityStreamLocale;
-        const request = await fetch(`resource://activity-stream/prerendered/${locale}/activity-stream-strings.js`);
-        const text = await request.text();
-        const [json] = text.match(/{[^]*}/);
-        data = JSON.parse(json);
-      } catch (ex) {
-        Cu.reportError("Failed to load strings for Activity Stream about:preferences");
-      }
-      resolve(data);
-    }));
+    return (
+      this._strings ||
+      (this._strings = new Promise(async resolve => {
+        let data = {};
+        try {
+          const locale = Cc[
+            "@mozilla.org/browser/aboutnewtab-service;1"
+          ].getService(Ci.nsIAboutNewTabService).activityStreamLocale;
+          const request = await fetch(
+            `resource://activity-stream/prerendered/${locale}/activity-stream-strings.js`
+          );
+          const text = await request.text();
+          const [json] = text.match(/{[^]*}/);
+          data = JSON.parse(json);
+        } catch (ex) {
+          Cu.reportError(
+            "Failed to load strings for Activity Stream about:preferences"
+          );
+        }
+        resolve(data);
+      }))
+    );
   }
 
   /**
    * Render preferences to an about:preferences content window with the provided
    * strings and preferences structure.
    */
-  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure) {
+  renderPreferences(
+    { document, Preferences, gHomePane },
+    strings,
+    prefStructure
+  ) {
     // Helper to create a new element and append it
-    const createAppend = (tag, parent, options) => parent.appendChild(
-      document.createXULElement(tag, options));
+    const createAppend = (tag, parent, options) =>
+      parent.appendChild(document.createXULElement(tag, options));
 
     // Helper to get strings and format with values if necessary
     const formatString = id => {
@@ -171,27 +196,35 @@ this.AboutPreferences = class AboutPreferences {
     const linkPref = (element, name, type) => {
       const fullPref = `browser.newtabpage.activity-stream.${name}`;
       element.setAttribute("preference", fullPref);
-      Preferences.add({id: fullPref, type});
+      Preferences.add({ id: fullPref, type });
 
       // Prevent changing the UI if the preference can't be changed
       element.disabled = Preferences.get(fullPref).locked;
     };
 
     // Add in custom styling
-    document.insertBefore(document.createProcessingInstruction("xml-stylesheet",
-      `href="data:text/css,${encodeURIComponent(CUSTOM_CSS)}" type="text/css"`),
-      document.documentElement);
+    document.insertBefore(
+      document.createProcessingInstruction(
+        "xml-stylesheet",
+        `href="data:text/css,${encodeURIComponent(CUSTOM_CSS)}" type="text/css"`
+      ),
+      document.documentElement
+    );
 
     // Insert a new group immediately after the homepage one
     const homeGroup = document.getElementById("homepageGroup");
-    const contentsGroup = homeGroup.insertAdjacentElement("afterend", homeGroup.cloneNode());
+    const contentsGroup = homeGroup.insertAdjacentElement(
+      "afterend",
+      homeGroup.cloneNode()
+    );
     contentsGroup.id = "homeContentsGroup";
     contentsGroup.setAttribute("data-subcategory", "contents");
-    createAppend("label", contentsGroup)
-      .appendChild(document.createElementNS(HTML_NS, "h2"))
-      .textContent = formatString("prefs_home_header");
-    createAppend("description", contentsGroup)
-      .textContent = formatString("prefs_home_description");
+    createAppend("label", contentsGroup).appendChild(
+      document.createElementNS(HTML_NS, "h2")
+    ).textContent = formatString("prefs_home_header");
+    createAppend("description", contentsGroup).textContent = formatString(
+      "prefs_home_description"
+    );
 
     // Add preferences for each section
     prefStructure.forEach(sectionData => {
@@ -203,12 +236,8 @@ this.AboutPreferences = class AboutPreferences {
         rowsPref,
         shouldHidePref,
       } = sectionData;
-      const {
-        feed: name,
-        titleString,
-        descString,
-        nestedPrefs = [],
-      } = prefData || {};
+      const { feed: name, titleString, descString, nestedPrefs = [] } =
+        prefData || {};
 
       // Don't show any sections that we don't want to expose in preferences UI
       if (shouldHidePref) {
@@ -216,8 +245,9 @@ this.AboutPreferences = class AboutPreferences {
       }
 
       // Use full icon spec for certain protocols or fall back to packaged icon
-      const iconUrl = !icon.search(/^(chrome|moz-extension|resource):/) ? icon :
-        `resource://activity-stream/data/content/assets/glyph-${icon}-16.svg`;
+      const iconUrl = !icon.search(/^(chrome|moz-extension|resource):/)
+        ? icon
+        : `resource://activity-stream/data/content/assets/glyph-${icon}-16.svg`;
 
       // Add the main preference for turning on/off a section
       const sectionVbox = createAppend("vbox", contentsGroup);
@@ -235,7 +265,7 @@ this.AboutPreferences = class AboutPreferences {
         sponsoredHbox.appendChild(checkbox);
         checkbox.classList.add("tail-with-learn-more");
 
-        const link = createAppend("label", sponsoredHbox, {is: "text-link"});
+        const link = createAppend("label", sponsoredHbox, { is: "text-link" });
         link.classList.add("learn-sponsored");
         link.setAttribute("href", sectionData.learnMore.link.href);
         link.textContent = formatString(sectionData.learnMore.link.id);
@@ -264,7 +294,10 @@ this.AboutPreferences = class AboutPreferences {
           menulist.setAttribute("crop", "none");
           const menupopup = createAppend("menupopup", menulist);
           for (let num = 1; num <= maxRows; num++) {
-            const plurals = formatString({id: "prefs_section_rows_option", values: {num}});
+            const plurals = formatString({
+              id: "prefs_section_rows_option",
+              values: { num },
+            });
             const item = createAppend("menuitem", menupopup);
             item.setAttribute("label", PluralForm.get(num, plurals));
             item.setAttribute("value", num);

@@ -2,16 +2,23 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-*/
+ */
 
 "use strict";
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const {AppConstants} = ChromeUtils.import("resource://gre/modules/AppConstants.jsm");
-const {E10SUtils} = ChromeUtils.import("resource://gre/modules/E10SUtils.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { AppConstants } = ChromeUtils.import(
+  "resource://gre/modules/AppConstants.jsm"
+);
+const { E10SUtils } = ChromeUtils.import(
+  "resource://gre/modules/E10SUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "AboutNewTab",
-                               "resource:///modules/AboutNewTab.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "AboutNewTab",
+  "resource:///modules/AboutNewTab.jsm"
+);
 
 const TOPIC_APP_QUIT = "quit-application-granted";
 const TOPIC_LOCALES_CHANGE = "intl:app-locales-changed";
@@ -19,24 +26,32 @@ const TOPIC_CONTENT_DOCUMENT_INTERACTIVE = "content-document-interactive";
 
 // Automated tests ensure packaged locales are in this list. Copied output of:
 // https://github.com/mozilla/activity-stream/blob/master/bin/render-activity-stream-html.js
-const ACTIVITY_STREAM_BCP47 = "en-US ach an ar ast az be bg bn br bs ca cak crh cs cy da de dsb el en-CA en-GB eo es-AR es-CL es-ES es-MX et eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu hy-AM ia id is it ja ja-JP-macos ka kab kk km kn ko lij lo lt ltg lv mk mr ms my nb-NO ne-NP nl nn-NO oc pa-IN pl pt-BR pt-PT rm ro ru si sk sl sq sr sv-SE ta te th tl tr trs uk ur uz vi zh-CN zh-TW".split(" ");
+const ACTIVITY_STREAM_BCP47 = "en-US ach an ar ast az be bg bn br bs ca cak crh cs cy da de dsb el en-CA en-GB eo es-AR es-CL es-ES es-MX et eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu hy-AM ia id is it ja ja-JP-macos ka kab kk km kn ko lij lo lt ltg lv mk mr ms my nb-NO ne-NP nl nn-NO oc pa-IN pl pt-BR pt-PT rm ro ru si sk sl sq sr sv-SE ta te th tl tr trs uk ur uz vi zh-CN zh-TW".split(
+  " "
+);
 
 const ABOUT_URL = "about:newtab";
 const BASE_URL = "resource://activity-stream/";
 const ACTIVITY_STREAM_PAGES = new Set(["home", "newtab", "welcome"]);
 
-const IS_MAIN_PROCESS = Services.appinfo.processType === Services.appinfo.PROCESS_TYPE_DEFAULT;
-const IS_PRIVILEGED_PROCESS = Services.appinfo.remoteType === E10SUtils.PRIVILEGEDABOUT_REMOTE_TYPE;
+const IS_MAIN_PROCESS =
+  Services.appinfo.processType === Services.appinfo.PROCESS_TYPE_DEFAULT;
+const IS_PRIVILEGED_PROCESS =
+  Services.appinfo.remoteType === E10SUtils.PRIVILEGEDABOUT_REMOTE_TYPE;
 
 const IS_RELEASE_OR_BETA = AppConstants.RELEASE_OR_BETA;
 
-const PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS = "browser.tabs.remote.separatePrivilegedContentProcess";
+const PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS =
+  "browser.tabs.remote.separatePrivilegedContentProcess";
 const PREF_ACTIVITY_STREAM_DEBUG = "browser.newtabpage.activity-stream.debug";
 
 function AboutNewTabService() {
   Services.obs.addObserver(this, TOPIC_APP_QUIT);
   Services.obs.addObserver(this, TOPIC_LOCALES_CHANGE);
-  Services.prefs.addObserver(PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS, this);
+  Services.prefs.addObserver(
+    PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS,
+    this
+  );
   if (!IS_RELEASE_OR_BETA) {
     Services.prefs.addObserver(PREF_ACTIVITY_STREAM_DEBUG, this);
   }
@@ -85,7 +100,6 @@ function AboutNewTabService() {
  * to the redirector from browser chrome is avoided.
  */
 AboutNewTabService.prototype = {
-
   _newTabURL: ABOUT_URL,
   _activityStreamEnabled: false,
   _activityStreamPath: "",
@@ -104,11 +118,16 @@ AboutNewTabService.prototype = {
     switch (topic) {
       case "nsPref:changed":
         if (data === PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS) {
-          this._privilegedAboutContentProcess = Services.prefs.getBoolPref(PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS);
+          this._privilegedAboutContentProcess = Services.prefs.getBoolPref(
+            PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS
+          );
           this.updatePrerenderedPath();
           this.notifyChange();
         } else if (!IS_RELEASE_OR_BETA && data === PREF_ACTIVITY_STREAM_DEBUG) {
-          this._activityStreamDebug = Services.prefs.getBoolPref(PREF_ACTIVITY_STREAM_DEBUG, false);
+          this._activityStreamDebug = Services.prefs.getBoolPref(
+            PREF_ACTIVITY_STREAM_DEBUG,
+            false
+          );
           this.updatePrerenderedPath();
           this.notifyChange();
         }
@@ -148,7 +167,9 @@ AboutNewTabService.prototype = {
             `${BASE_URL}vendor/react-intl.js`,
             `${BASE_URL}vendor/redux.js`,
             `${BASE_URL}vendor/react-redux.js`,
-            `${BASE_URL}prerendered/${this.activityStreamLocale}/activity-stream-strings.js`,
+            `${BASE_URL}prerendered/${
+              this.activityStreamLocale
+            }/activity-stream-strings.js`,
             `${BASE_URL}data/content/activity-stream.bundle.js`,
           ];
 
@@ -156,7 +177,7 @@ AboutNewTabService.prototype = {
             Services.scriptloader.loadSubScript(script, win); // Synchronous call
           }
         };
-        subject.addEventListener("DOMContentLoaded", onLoaded, {once: true});
+        subject.addEventListener("DOMContentLoaded", onLoaded, { once: true });
 
         // There is a possibility that DOMContentLoaded won't be fired. This
         // unload event (which cannot be cancelled) will attempt to remove
@@ -164,7 +185,7 @@ AboutNewTabService.prototype = {
         const onUnloaded = () => {
           subject.removeEventListener("DOMContentLoaded", onLoaded);
         };
-        subject.addEventListener("unload", onUnloaded, {once: true});
+        subject.addEventListener("unload", onUnloaded, { once: true });
         break;
       }
       case TOPIC_APP_QUIT:
@@ -197,7 +218,10 @@ AboutNewTabService.prototype = {
    * @param {Boolean}   forceState      force state change
    */
   toggleActivityStream(stateEnabled, forceState = false) {
-    if (!forceState && (this.overridden || stateEnabled === this.activityStreamEnabled)) {
+    if (
+      !forceState &&
+      (this.overridden || stateEnabled === this.activityStreamEnabled)
+    ) {
       // exit there is no change of state
       return false;
     }
@@ -206,9 +230,14 @@ AboutNewTabService.prototype = {
     } else {
       this._activityStreamEnabled = false;
     }
-    this._privilegedAboutContentProcess = Services.prefs.getBoolPref(PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS);
+    this._privilegedAboutContentProcess = Services.prefs.getBoolPref(
+      PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS
+    );
     if (!IS_RELEASE_OR_BETA) {
-      this._activityStreamDebug = Services.prefs.getBoolPref(PREF_ACTIVITY_STREAM_DEBUG, false);
+      this._activityStreamDebug = Services.prefs.getBoolPref(
+        PREF_ACTIVITY_STREAM_DEBUG,
+        false
+      );
     }
     this.updatePrerenderedPath();
     this._newtabURL = ABOUT_URL;
@@ -221,8 +250,11 @@ AboutNewTabService.prototype = {
   updatePrerenderedPath() {
     // Debug files are specially packaged in a non-localized directory, but with
     // dynamic script loading, localized debug is supported.
-    this._activityStreamPath = `${this._activityStreamDebug &&
-      !this._privilegedAboutContentProcess ? "static" : this.activityStreamLocale}/`;
+    this._activityStreamPath = `${
+      this._activityStreamDebug && !this._privilegedAboutContentProcess
+        ? "static"
+        : this.activityStreamLocale
+    }/`;
   },
 
   /*
@@ -240,7 +272,9 @@ AboutNewTabService.prototype = {
       this._activityStreamPath,
       "activity-stream",
       // Debug version loads dev scripts but noscripts separately loads scripts
-      this._activityStreamDebug && !this._privilegedAboutContentProcess ? "-debug" : "",
+      this._activityStreamDebug && !this._privilegedAboutContentProcess
+        ? "-debug"
+        : "",
       this._privilegedAboutContentProcess ? "-noscripts" : "",
       ".html",
     ].join("");
@@ -289,17 +323,21 @@ AboutNewTabService.prototype = {
 
   get activityStreamLocale() {
     // Pick the best available locale to match the app locales
-    return Services.locale.negotiateLanguages(
-      // Fix up incorrect BCP47 that are actually lang tags as a workaround for
-      // bug 1479606 returning the wrong values in the content process
-      Services.locale.appLocalesAsBCP47.map(l => l.replace(/^(ja-JP-mac)$/, "$1os")),
-      ACTIVITY_STREAM_BCP47,
-      // defaultLocale's strings aren't necessarily packaged, but en-US' are
-      "en-US",
-      Services.locale.langNegStrategyLookup
-    // Convert the BCP47 to lang tag, which is what is used in our paths, as a
-    // workaround for bug 1478930 negotiating incorrectly with lang tags
-    )[0].replace(/^(ja-JP-mac)os$/, "$1");
+    return Services.locale
+      .negotiateLanguages(
+        // Fix up incorrect BCP47 that are actually lang tags as a workaround for
+        // bug 1479606 returning the wrong values in the content process
+        Services.locale.appLocalesAsBCP47.map(l =>
+          l.replace(/^(ja-JP-mac)$/, "$1os")
+        ),
+        ACTIVITY_STREAM_BCP47,
+        // defaultLocale's strings aren't necessarily packaged, but en-US' are
+        "en-US",
+        Services.locale.langNegStrategyLookup
+        // Convert the BCP47 to lang tag, which is what is used in our paths, as a
+        // workaround for bug 1478930 negotiating incorrectly with lang tags
+      )[0]
+      .replace(/^(ja-JP-mac)os$/, "$1");
   },
 
   resetNewTabURL() {
@@ -329,7 +367,10 @@ AboutNewTabService.prototype = {
     }
     Services.obs.removeObserver(this, TOPIC_APP_QUIT);
     Services.obs.removeObserver(this, TOPIC_LOCALES_CHANGE);
-    Services.prefs.removeObserver(PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS, this);
+    Services.prefs.removeObserver(
+      PREF_SEPARATE_PRIVILEGEDABOUT_CONTENT_PROCESS,
+      this
+    );
     if (!IS_RELEASE_OR_BETA) {
       Services.prefs.removeObserver(PREF_ACTIVITY_STREAM_DEBUG, this);
     }

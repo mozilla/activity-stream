@@ -1,7 +1,11 @@
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 XPCOMUtils.defineLazyGlobalGetters(this, ["URL"]);
 
-const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
+const { actionTypes: at } = ChromeUtils.import(
+  "resource://activity-stream/common/Actions.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.jsm",
@@ -32,8 +36,9 @@ this.DownloadsManager = class DownloadsManager {
       url: download.source.url,
       path: download.target.path,
       title: DownloadsViewUI.getDisplayName(download),
-      description: DownloadsViewUI.getSizeWithUnits(download) ||
-                   DownloadsCommon.strings.sizeUnknown,
+      description:
+        DownloadsViewUI.getSizeWithUnits(download) ||
+        DownloadsCommon.strings.sizeUnknown,
       referrer: download.source.referrer,
       date_added: download.endTime,
     };
@@ -41,8 +46,12 @@ this.DownloadsManager = class DownloadsManager {
 
   init(store) {
     this._store = store;
-    this._downloadData = DownloadsCommon.getData(null /* null for non-private downloads */,
-                                                 true, false, true);
+    this._downloadData = DownloadsCommon.getData(
+      null /* null for non-private downloads */,
+      true,
+      false,
+      true
+    );
     this._downloadData.addView(this);
   }
 
@@ -56,7 +65,7 @@ this.DownloadsManager = class DownloadsManager {
       } else {
         this._downloadTimer = this.setTimeout(() => {
           this._downloadTimer = null;
-          this._store.dispatch({type: at.DOWNLOAD_CHANGED});
+          this._store.dispatch({ type: at.DOWNLOAD_CHANGED });
         }, DOWNLOAD_CHANGED_DELAY_TIME);
       }
     }
@@ -65,11 +74,18 @@ this.DownloadsManager = class DownloadsManager {
   onDownloadRemoved(download) {
     if (this._downloadItems.has(download.source.url)) {
       this._downloadItems.delete(download.source.url);
-      this._store.dispatch({type: at.DOWNLOAD_CHANGED});
+      this._store.dispatch({ type: at.DOWNLOAD_CHANGED });
     }
   }
 
-  async getDownloads(threshold, {numItems = this._downloadItems.size, onlySucceeded = false, onlyExists = false}) {
+  async getDownloads(
+    threshold,
+    {
+      numItems = this._downloadItems.size,
+      onlySucceeded = false,
+      onlyExists = false,
+    }
+  ) {
     if (!threshold) {
       return [];
     }
@@ -78,19 +94,23 @@ this.DownloadsManager = class DownloadsManager {
     // Only get downloads within the time threshold specified and sort by recency
     const downloadThreshold = Date.now() - threshold;
     let downloads = [...this._downloadItems.values()]
-                      .filter(download => download.endTime > downloadThreshold)
-                      .sort((download1, download2) => download1.endTime < download2.endTime);
+      .filter(download => download.endTime > downloadThreshold)
+      .sort((download1, download2) => download1.endTime < download2.endTime);
 
     for (const download of downloads) {
       // Only include downloads where the file still exists
       if (onlyExists) {
         // Refresh download to ensure the 'exists' attribute is up to date
         await download.refresh();
-        if (!download.target.exists) { continue; }
+        if (!download.target.exists) {
+          continue;
+        }
       }
       // Only include downloads that were completed successfully
       if (onlySucceeded) {
-        if (!download.succeeded) { continue; }
+        if (!download.succeeded) {
+          continue;
+        }
       }
       const formattedDownloadForHighlights = this.formatDownload(download);
       results.push(formattedDownloadForHighlights);
@@ -134,14 +154,17 @@ this.DownloadsManager = class DownloadsManager {
       case at.SHOW_DOWNLOAD_FILE:
         doDownloadAction(download => {
           DownloadsCommon.showDownloadedFile(
-            new FileUtils.File(download.target.path));
+            new FileUtils.File(download.target.path)
+          );
         });
         break;
       case at.OPEN_DOWNLOAD_FILE:
         doDownloadAction(download => {
           DownloadsCommon.openDownloadedFile(
-            new FileUtils.File(download.target.path), null,
-            BrowserWindowTracker.getTopWindow());
+            new FileUtils.File(download.target.path),
+            null,
+            BrowserWindowTracker.getTopWindow()
+          );
         });
         break;
       case at.UNINIT:

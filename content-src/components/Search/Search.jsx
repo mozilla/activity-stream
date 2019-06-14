@@ -1,10 +1,10 @@
 /* globals ContentSearchUIController */
 "use strict";
 
-import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {FormattedMessage, injectIntl} from "react-intl";
-import {connect} from "react-redux";
-import {IS_NEWTAB} from "content-src/lib/constants";
+import { actionCreators as ac, actionTypes as at } from "common/Actions.jsm";
+import { FormattedMessage, injectIntl } from "react-intl";
+import { connect } from "react-redux";
+import { IS_NEWTAB } from "content-src/lib/constants";
 import React from "react";
 
 export class _Search extends React.PureComponent {
@@ -15,13 +15,15 @@ export class _Search extends React.PureComponent {
     this.onSearchHandoffPaste = this.onSearchHandoffPaste.bind(this);
     this.onSearchHandoffDrop = this.onSearchHandoffDrop.bind(this);
     this.onInputMount = this.onInputMount.bind(this);
-    this.onSearchHandoffButtonMount = this.onSearchHandoffButtonMount.bind(this);
+    this.onSearchHandoffButtonMount = this.onSearchHandoffButtonMount.bind(
+      this
+    );
   }
 
   handleEvent(event) {
     // Also track search events with our own telemetry
     if (event.detail.type === "Search") {
-      this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
+      this.props.dispatch(ac.UserEvent({ event: "SEARCH" }));
     }
   }
 
@@ -30,11 +32,13 @@ export class _Search extends React.PureComponent {
   }
 
   doSearchHandoff(text) {
-    this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
-    this.props.dispatch({type: at.FAKE_FOCUS_SEARCH});
-    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+    this.props.dispatch(
+      ac.OnlyToMain({ type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: { text } })
+    );
+    this.props.dispatch({ type: at.FAKE_FOCUS_SEARCH });
+    this.props.dispatch(ac.UserEvent({ event: "SEARCH_HANDOFF" }));
     if (text) {
-      this.props.dispatch({type: at.HIDE_SEARCH});
+      this.props.dispatch({ type: at.HIDE_SEARCH });
     }
   }
 
@@ -83,8 +87,12 @@ export class _Search extends React.PureComponent {
       // gContentSearchController needs to exist as a global so that tests for
       // the existing about:home can find it; and so it allows these tests to pass.
       // In the future, when activity stream is default about:home, this can be renamed
-      window.gContentSearchController = new ContentSearchUIController(input, input.parentNode,
-        healthReportKey, searchSource);
+      window.gContentSearchController = new ContentSearchUIController(
+        input,
+        input.parentNode,
+        healthReportKey,
+        searchSource
+      );
       addEventListener("ContentSearchClient", this);
     } else {
       window.gContentSearchController = null;
@@ -107,59 +115,88 @@ export class _Search extends React.PureComponent {
       "search-wrapper",
       this.props.hide && "search-hidden",
       this.props.fakeFocus && "fake-focus",
-    ].filter(v => v).join(" ");
+    ]
+      .filter(v => v)
+      .join(" ");
 
-    return (<div className={wrapperClassName}>
-      {this.props.showLogo &&
-        <div className="logo-and-wordmark">
-          <div className="logo" />
-          <div className="wordmark" />
-        </div>
-      }
-      {!this.props.handoffEnabled &&
-      <div className="search-inner-wrapper">
-        <label htmlFor="newtab-search-text" className="search-label">
-          <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
-        </label>
-        <input
-          id="newtab-search-text"
-          maxLength="256"
-          placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
-          ref={this.onInputMount}
-          title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
-          type="search" />
-        <button
-          id="searchSubmit"
-          className="search-button"
-          onClick={this.onSearchClick}
-          title={this.props.intl.formatMessage({id: "search_button"})}>
-          <span className="sr-only"><FormattedMessage id="search_button" /></span>
-        </button>
-      </div>
-      }
-      {this.props.handoffEnabled &&
-        <div className="search-inner-wrapper">
-          <button
-            className="search-handoff-button"
-            ref={this.onSearchHandoffButtonMount}
-            onClick={this.onSearchHandoffClick}
-            tabIndex="-1"
-            title={this.props.intl.formatMessage({id: "search_web_placeholder"})}>
-            <div className="fake-textbox">{this.props.intl.formatMessage({id: "search_web_placeholder"})}</div>
-            <input type="search" className="fake-editable" tabIndex="-1" aria-hidden="true" onDrop={this.onSearchHandoffDrop} onPaste={this.onSearchHandoffPaste} />
-            <div className="fake-caret" />
-          </button>
-          {/*
+    return (
+      <div className={wrapperClassName}>
+        {this.props.showLogo && (
+          <div className="logo-and-wordmark">
+            <div className="logo" />
+            <div className="wordmark" />
+          </div>
+        )}
+        {!this.props.handoffEnabled && (
+          <div className="search-inner-wrapper">
+            <label htmlFor="newtab-search-text" className="search-label">
+              <span className="sr-only">
+                <FormattedMessage id="search_web_placeholder" />
+              </span>
+            </label>
+            <input
+              id="newtab-search-text"
+              maxLength="256"
+              placeholder={this.props.intl.formatMessage({
+                id: "search_web_placeholder",
+              })}
+              ref={this.onInputMount}
+              title={this.props.intl.formatMessage({
+                id: "search_web_placeholder",
+              })}
+              type="search"
+            />
+            <button
+              id="searchSubmit"
+              className="search-button"
+              onClick={this.onSearchClick}
+              title={this.props.intl.formatMessage({ id: "search_button" })}
+            >
+              <span className="sr-only">
+                <FormattedMessage id="search_button" />
+              </span>
+            </button>
+          </div>
+        )}
+        {this.props.handoffEnabled && (
+          <div className="search-inner-wrapper">
+            <button
+              className="search-handoff-button"
+              ref={this.onSearchHandoffButtonMount}
+              onClick={this.onSearchHandoffClick}
+              tabIndex="-1"
+              title={this.props.intl.formatMessage({
+                id: "search_web_placeholder",
+              })}
+            >
+              <div className="fake-textbox">
+                {this.props.intl.formatMessage({
+                  id: "search_web_placeholder",
+                })}
+              </div>
+              <input
+                type="search"
+                className="fake-editable"
+                tabIndex="-1"
+                aria-hidden="true"
+                onDrop={this.onSearchHandoffDrop}
+                onPaste={this.onSearchHandoffPaste}
+              />
+              <div className="fake-caret" />
+            </button>
+            {/*
             This dummy and hidden input below is so we can load ContentSearchUIController.
             Why? It sets --newtab-search-icon for us and it isn't trivial to port over.
           */}
-          <input
-            type="search"
-            style={{display: "none"}}
-            ref={this.onInputMount} />
-        </div>
-      }
-    </div>);
+            <input
+              type="search"
+              style={{ display: "none" }}
+              ref={this.onInputMount}
+            />
+          </div>
+        )}
+      </div>
+    );
   }
 }
 

@@ -3,12 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {EventEmitter} = ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
-const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm");
+const { EventEmitter } = ChromeUtils.import(
+  "resource://gre/modules/EventEmitter.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { actionCreators: ac, actionTypes: at } = ChromeUtils.import(
+  "resource://activity-stream/common/Actions.jsm"
+);
+const { getDefaultOptions } = ChromeUtils.import(
+  "resource://activity-stream/lib/ActivityStreamStorage.jsm"
+);
 
-ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
+ChromeUtils.defineModuleGetter(
+  this,
+  "PlacesUtils",
+  "resource://gre/modules/PlacesUtils.jsm"
+);
 
 /*
  * Generators for built in sections, keyed by the pref name for their feed.
@@ -19,31 +29,53 @@ const BUILT_IN_SECTIONS = {
   "feeds.section.topstories": options => ({
     id: "topstories",
     pref: {
-      titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
-      descString: {id: "prefs_topstories_description2"},
-      nestedPrefs: options.show_spocs ? [{
-        name: "showSponsored",
-        titleString: "prefs_topstories_options_sponsored_label",
-        icon: "icon-info",
-      }] : [],
+      titleString: {
+        id: "header_recommended_by",
+        values: { provider: options.provider_name },
+      },
+      descString: { id: "prefs_topstories_description2" },
+      nestedPrefs: options.show_spocs
+        ? [
+            {
+              name: "showSponsored",
+              titleString: "prefs_topstories_options_sponsored_label",
+              icon: "icon-info",
+            },
+          ]
+        : [],
     },
     shouldHidePref: options.hidden,
     eventSource: "TOP_STORIES",
     icon: options.provider_icon,
-    title: {id: "header_recommended_by", values: {provider: options.provider_name}},
+    title: {
+      id: "header_recommended_by",
+      values: { provider: options.provider_name },
+    },
     learnMore: {
       link: {
         href: "https://getpocket.com/firefox/new_tab_learn_more",
         id: "pocket_how_it_works",
       },
     },
-    privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
+    privacyNoticeURL:
+      "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
     compactCards: false,
     rowsPref: "section.topstories.rows",
     maxRows: 4,
-    availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+    availableLinkMenuOptions: [
+      "CheckBookmarkOrArchive",
+      "CheckSavedToPocket",
+      "Separator",
+      "OpenInNewWindow",
+      "OpenInPrivateWindow",
+      "Separator",
+      "BlockUrl",
+    ],
     emptyState: {
-      message: {id: "topstories_empty_state", values: {provider: options.provider_name}},
+      message: {
+        id: "topstories_empty_state",
+        values: { provider: options.provider_name },
+      },
       icon: "check",
     },
     shouldSendImpressionStats: true,
@@ -52,31 +84,36 @@ const BUILT_IN_SECTIONS = {
   "feeds.section.highlights": options => ({
     id: "highlights",
     pref: {
-      titleString: {id: "settings_pane_highlights_header"},
-      descString: {id: "prefs_highlights_description"},
-      nestedPrefs: [{
-        name: "section.highlights.includeVisited",
-        titleString: "prefs_highlights_options_visited_label",
-      }, {
-        name: "section.highlights.includeBookmarks",
-        titleString: "settings_pane_highlights_options_bookmarks",
-      }, {
-        name: "section.highlights.includeDownloads",
-        titleString: "prefs_highlights_options_download_label",
-      }, {
-        name: "section.highlights.includePocket",
-        titleString: "prefs_highlights_options_pocket_label",
-      }],
+      titleString: { id: "settings_pane_highlights_header" },
+      descString: { id: "prefs_highlights_description" },
+      nestedPrefs: [
+        {
+          name: "section.highlights.includeVisited",
+          titleString: "prefs_highlights_options_visited_label",
+        },
+        {
+          name: "section.highlights.includeBookmarks",
+          titleString: "settings_pane_highlights_options_bookmarks",
+        },
+        {
+          name: "section.highlights.includeDownloads",
+          titleString: "prefs_highlights_options_download_label",
+        },
+        {
+          name: "section.highlights.includePocket",
+          titleString: "prefs_highlights_options_pocket_label",
+        },
+      ],
     },
-    shouldHidePref:  false,
+    shouldHidePref: false,
     eventSource: "HIGHLIGHTS",
     icon: "highlights",
-    title: {id: "header_highlights"},
+    title: { id: "header_highlights" },
     compactCards: true,
     rowsPref: "section.highlights.rows",
     maxRows: 4,
     emptyState: {
-      message: {id: "highlights_empty_state"},
+      message: { id: "highlights_empty_state" },
       icon: "highlights",
     },
     shouldSendImpressionStats: false,
@@ -85,12 +122,47 @@ const BUILT_IN_SECTIONS = {
 
 const SectionsManager = {
   ACTIONS_TO_PROXY: ["WEBEXT_CLICK", "WEBEXT_DISMISS"],
-  CONTEXT_MENU_PREFS: {"CheckSavedToPocket": "extensions.pocket.enabled"},
+  CONTEXT_MENU_PREFS: { CheckSavedToPocket: "extensions.pocket.enabled" },
   CONTEXT_MENU_OPTIONS_FOR_HIGHLIGHT_TYPES: {
-    history: ["CheckBookmark", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
-    bookmark: ["CheckBookmark", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
-    pocket: ["ArchiveFromPocket", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
-    download: ["OpenFile", "ShowFile", "Separator", "GoToDownloadPage", "CopyDownloadLink", "Separator", "RemoveDownload", "BlockUrl"],
+    history: [
+      "CheckBookmark",
+      "CheckSavedToPocket",
+      "Separator",
+      "OpenInNewWindow",
+      "OpenInPrivateWindow",
+      "Separator",
+      "BlockUrl",
+      "DeleteUrl",
+    ],
+    bookmark: [
+      "CheckBookmark",
+      "CheckSavedToPocket",
+      "Separator",
+      "OpenInNewWindow",
+      "OpenInPrivateWindow",
+      "Separator",
+      "BlockUrl",
+      "DeleteUrl",
+    ],
+    pocket: [
+      "ArchiveFromPocket",
+      "CheckSavedToPocket",
+      "Separator",
+      "OpenInNewWindow",
+      "OpenInPrivateWindow",
+      "Separator",
+      "BlockUrl",
+    ],
+    download: [
+      "OpenFile",
+      "ShowFile",
+      "Separator",
+      "GoToDownloadPage",
+      "CopyDownloadLink",
+      "Separator",
+      "RemoveDownload",
+      "BlockUrl",
+    ],
   },
   initialized: false,
   sections: new Map(),
@@ -113,7 +185,8 @@ const SectionsManager = {
     }
 
     Object.keys(this.CONTEXT_MENU_PREFS).forEach(k =>
-      Services.prefs.addObserver(this.CONTEXT_MENU_PREFS[k], this));
+      Services.prefs.addObserver(this.CONTEXT_MENU_PREFS[k], this)
+    );
 
     this.initialized = true;
     this.emit(this.INIT);
@@ -135,7 +208,9 @@ const SectionsManager = {
       return;
     }
 
-    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, collapsed)});
+    const updatedSection = Object.assign({}, section, {
+      pref: Object.assign({}, section.pref, collapsed),
+    });
     this.updateSection(id, updatedSection, true);
   },
   async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
@@ -148,15 +223,21 @@ const SectionsManager = {
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
     try {
-      storedPrefs = await this._storage.get(feedPrefName) || {};
+      storedPrefs = (await this._storage.get(feedPrefName)) || {};
     } catch (e) {
       storedPrefs = {};
       Cu.reportError(`Problem getting stored prefs for ${feedPrefName}`);
     }
     const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
-    const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
+    const section = Object.assign({}, defaultSection, {
+      pref: Object.assign(
+        {},
+        defaultSection.pref,
+        getDefaultOptions(storedPrefs)
+      ),
+    });
     section.pref.feed = feedPrefName;
-    this.addSection(section.id, Object.assign(section, {options}));
+    this.addSection(section.id, Object.assign(section, { options }));
   },
   addSection(id, options) {
     this.updateLinkMenuOptions(options, id);
@@ -168,20 +249,28 @@ const SectionsManager = {
     this.sections.delete(id);
   },
   enableSection(id) {
-    this.updateSection(id, {enabled: true}, true);
+    this.updateSection(id, { enabled: true }, true);
     this.emit(this.ENABLE_SECTION, id);
   },
   disableSection(id) {
-    this.updateSection(id, {enabled: false, rows: [], initialized: false}, true);
+    this.updateSection(
+      id,
+      { enabled: false, rows: [], initialized: false },
+      true
+    );
     this.emit(this.DISABLE_SECTION, id);
   },
   updateSections() {
-    this.sections.forEach((section, id) => this.updateSection(id, section, true));
+    this.sections.forEach((section, id) =>
+      this.updateSection(id, section, true)
+    );
   },
   updateSection(id, options, shouldBroadcast) {
     this.updateLinkMenuOptions(options, id);
     if (this.sections.has(id)) {
-      const optionsWithDedupe = Object.assign({}, options, {dedupeConfigurations: this._dedupeConfiguration});
+      const optionsWithDedupe = Object.assign({}, options, {
+        dedupeConfigurations: this._dedupeConfiguration,
+      });
       this.sections.set(id, Object.assign(this.sections.get(id), options));
       this.emit(this.UPDATE_SECTION, id, optionsWithDedupe, shouldBroadcast);
     }
@@ -190,7 +279,7 @@ const SectionsManager = {
   /**
    * Save metadata to places db and add a visit for that URL.
    */
-  updateBookmarkMetadata({url}) {
+  updateBookmarkMetadata({ url }) {
     this.sections.forEach((section, id) => {
       if (id === "highlights") {
         // Skip Highlights cards, we already have that metadata.
@@ -198,7 +287,12 @@ const SectionsManager = {
       }
       if (section.rows) {
         section.rows.forEach(card => {
-          if (card.url === url && card.description && card.title && card.image) {
+          if (
+            card.url === url &&
+            card.description &&
+            card.title &&
+            card.image
+          ) {
             PlacesUtils.history.update({
               url: card.url,
               title: card.title,
@@ -228,7 +322,10 @@ const SectionsManager = {
   updateLinkMenuOptions(options, id) {
     if (options.availableLinkMenuOptions) {
       options.contextMenuOptions = options.availableLinkMenuOptions.filter(
-        o => !this.CONTEXT_MENU_PREFS[o] || Services.prefs.getBoolPref(this.CONTEXT_MENU_PREFS[o]));
+        o =>
+          !this.CONTEXT_MENU_PREFS[o] ||
+          Services.prefs.getBoolPref(this.CONTEXT_MENU_PREFS[o])
+      );
     }
 
     // Once we have rows, we can give each card it's own context menu based on it's type.
@@ -248,15 +345,22 @@ const SectionsManager = {
   _addCardTypeLinkMenuOptions(rows) {
     for (let card of rows) {
       if (!this.CONTEXT_MENU_OPTIONS_FOR_HIGHLIGHT_TYPES[card.type]) {
-        Cu.reportError(`No context menu for highlight type ${card.type} is configured`);
+        Cu.reportError(
+          `No context menu for highlight type ${card.type} is configured`
+        );
       } else {
-        card.contextMenuOptions = this.CONTEXT_MENU_OPTIONS_FOR_HIGHLIGHT_TYPES[card.type];
+        card.contextMenuOptions = this.CONTEXT_MENU_OPTIONS_FOR_HIGHLIGHT_TYPES[
+          card.type
+        ];
 
         // Remove any options that shouldn't be there based on CONTEXT_MENU_PREFS.
         // For example: If the Pocket extension is disabled, we should remove the CheckSavedToPocket option
         // for each card that has it
         card.contextMenuOptions = card.contextMenuOptions.filter(
-          o => !this.CONTEXT_MENU_PREFS[o] || Services.prefs.getBoolPref(this.CONTEXT_MENU_PREFS[o]));
+          o =>
+            !this.CONTEXT_MENU_PREFS[o] ||
+            Services.prefs.getBoolPref(this.CONTEXT_MENU_PREFS[o])
+        );
       }
     }
   },
@@ -284,8 +388,10 @@ const SectionsManager = {
     if (!this.sections.has(sectionId)) {
       return;
     }
-    const rows = this.sections.get(sectionId).rows.filter(row => row.url !== url);
-    this.updateSection(sectionId, {rows}, true);
+    const rows = this.sections
+      .get(sectionId)
+      .rows.filter(row => row.url !== url);
+    this.updateSection(sectionId, { rows }, true);
   },
   onceInitialized(callback) {
     if (this.initialized) {
@@ -296,7 +402,8 @@ const SectionsManager = {
   },
   uninit() {
     Object.keys(this.CONTEXT_MENU_PREFS).forEach(k =>
-      Services.prefs.removeObserver(this.CONTEXT_MENU_PREFS[k], this));
+      Services.prefs.removeObserver(this.CONTEXT_MENU_PREFS[k], this)
+    );
     SectionsManager.initialized = false;
   },
 };
@@ -330,10 +437,14 @@ class SectionsFeed {
     SectionsManager.on(SectionsManager.ADD_SECTION, this.onAddSection);
     SectionsManager.on(SectionsManager.REMOVE_SECTION, this.onRemoveSection);
     SectionsManager.on(SectionsManager.UPDATE_SECTION, this.onUpdateSection);
-    SectionsManager.on(SectionsManager.UPDATE_SECTION_CARD, this.onUpdateSectionCard);
+    SectionsManager.on(
+      SectionsManager.UPDATE_SECTION_CARD,
+      this.onUpdateSectionCard
+    );
     // Catch any sections that have already been added
     SectionsManager.sections.forEach((section, id) =>
-      this.onAddSection(SectionsManager.ADD_SECTION, id, section));
+      this.onAddSection(SectionsManager.ADD_SECTION, id, section)
+    );
   }
 
   uninit() {
@@ -342,37 +453,63 @@ class SectionsFeed {
     SectionsManager.off(SectionsManager.ADD_SECTION, this.onAddSection);
     SectionsManager.off(SectionsManager.REMOVE_SECTION, this.onRemoveSection);
     SectionsManager.off(SectionsManager.UPDATE_SECTION, this.onUpdateSection);
-    SectionsManager.off(SectionsManager.UPDATE_SECTION_CARD, this.onUpdateSectionCard);
+    SectionsManager.off(
+      SectionsManager.UPDATE_SECTION_CARD,
+      this.onUpdateSectionCard
+    );
   }
 
   onAddSection(event, id, options) {
     if (options) {
-      this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_REGISTER, data: Object.assign({id}, options)}));
+      this.store.dispatch(
+        ac.BroadcastToContent({
+          type: at.SECTION_REGISTER,
+          data: Object.assign({ id }, options),
+        })
+      );
 
       // Make sure the section is in sectionOrder pref. Otherwise, prepend it.
       const orderedSections = this.orderedSectionIds;
       if (!orderedSections.includes(id)) {
         orderedSections.unshift(id);
-        this.store.dispatch(ac.SetPref("sectionOrder", orderedSections.join(",")));
+        this.store.dispatch(
+          ac.SetPref("sectionOrder", orderedSections.join(","))
+        );
       }
     }
   }
 
   onRemoveSection(event, id) {
-    this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_DEREGISTER, data: id}));
+    this.store.dispatch(
+      ac.BroadcastToContent({ type: at.SECTION_DEREGISTER, data: id })
+    );
   }
 
   onUpdateSection(event, id, options, shouldBroadcast = false) {
     if (options) {
-      const action = {type: at.SECTION_UPDATE, data: Object.assign(options, {id})};
-      this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
+      const action = {
+        type: at.SECTION_UPDATE,
+        data: Object.assign(options, { id }),
+      };
+      this.store.dispatch(
+        shouldBroadcast
+          ? ac.BroadcastToContent(action)
+          : ac.AlsoToPreloaded(action)
+      );
     }
   }
 
   onUpdateSectionCard(event, id, url, options, shouldBroadcast = false) {
     if (options) {
-      const action = {type: at.SECTION_UPDATE_CARD, data: {id, url, options}};
-      this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
+      const action = {
+        type: at.SECTION_UPDATE_CARD,
+        data: { id, url, options },
+      };
+      this.store.dispatch(
+        shouldBroadcast
+          ? ac.BroadcastToContent(action)
+          : ac.AlsoToPreloaded(action)
+      );
     }
   }
 
@@ -381,7 +518,10 @@ class SectionsFeed {
   }
 
   get enabledSectionIds() {
-    let sections = this.store.getState().Sections.filter(section => section.enabled).map(s => s.id);
+    let sections = this.store
+      .getState()
+      .Sections.filter(section => section.enabled)
+      .map(s => s.id);
     // Top Sites is a special case. Append if the feed is enabled.
     if (this.store.getState().Prefs.values["feeds.topsites"]) {
       sections.push("topsites");
@@ -426,14 +566,25 @@ class SectionsFeed {
         break;
       // Wait for pref values, as some sections have options stored in prefs
       case at.PREFS_INITIAL_VALUES:
-        SectionsManager.init(action.data, this.store.dbStorage.getDbTable("sectionPrefs"));
+        SectionsManager.init(
+          action.data,
+          this.store.dbStorage.getDbTable("sectionPrefs")
+        );
         break;
       case at.PREF_CHANGED: {
         if (action.data) {
-          const matched = action.data.name.match(/^(feeds.section.(\S+)).options$/i);
+          const matched = action.data.name.match(
+            /^(feeds.section.(\S+)).options$/i
+          );
           if (matched) {
-            await SectionsManager.addBuiltInSection(matched[1], action.data.value);
-            this.store.dispatch({type: at.SECTION_OPTIONS_CHANGED, data: matched[2]});
+            await SectionsManager.addBuiltInSection(
+              matched[1],
+              action.data.value
+            );
+            this.store.dispatch({
+              type: at.SECTION_OPTIONS_CHANGED,
+              data: matched[2],
+            });
           }
         }
         break;
@@ -446,7 +597,10 @@ class SectionsFeed {
         break;
       case at.WEBEXT_DISMISS:
         if (action.data) {
-          SectionsManager.removeSectionCard(action.data.source, action.data.url);
+          SectionsManager.removeSectionCard(
+            action.data.source,
+            action.data.url
+          );
         }
         break;
       case at.SECTION_DISABLE:
@@ -462,8 +616,15 @@ class SectionsFeed {
         this.uninit();
         break;
     }
-    if (SectionsManager.ACTIONS_TO_PROXY.includes(action.type) && SectionsManager.sections.size > 0) {
-      SectionsManager.emit(SectionsManager.ACTION_DISPATCHED, action.type, action.data);
+    if (
+      SectionsManager.ACTIONS_TO_PROXY.includes(action.type) &&
+      SectionsManager.sections.size > 0
+    ) {
+      SectionsManager.emit(
+        SectionsManager.ACTION_DISPATCHED,
+        action.type,
+        action.data
+      );
     }
   }
 }

@@ -1,7 +1,10 @@
 /* global Services */
-import {AboutPreferences, PREFERENCES_LOADED_EVENT} from "lib/AboutPreferences.jsm";
-import {actionTypes as at} from "common/Actions.jsm";
-import {GlobalOverrider} from "test/unit/utils";
+import {
+  AboutPreferences,
+  PREFERENCES_LOADED_EVENT,
+} from "lib/AboutPreferences.jsm";
+import { actionTypes as at } from "common/Actions.jsm";
+import { GlobalOverrider } from "test/unit/utils";
 
 describe("AboutPreferences Feed", () => {
   let globals;
@@ -14,11 +17,11 @@ describe("AboutPreferences Feed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     Sections = [];
-    DiscoveryStream = {config: {enabled: false}};
+    DiscoveryStream = { config: { enabled: false } };
     instance = new AboutPreferences();
     instance.store = {
       dispatch: sandbox.stub(),
-      getState: () => ({Sections, DiscoveryStream}),
+      getState: () => ({ Sections, DiscoveryStream }),
     };
   });
   afterEach(() => {
@@ -29,24 +32,33 @@ describe("AboutPreferences Feed", () => {
     it("should call .init() on an INIT action", () => {
       const stub = sandbox.stub(instance, "init");
 
-      instance.onAction({type: at.INIT});
+      instance.onAction({ type: at.INIT });
 
       assert.calledOnce(stub);
     });
     it("should call .uninit() on an UNINIT action", () => {
       const stub = sandbox.stub(instance, "uninit");
 
-      instance.onAction({type: at.UNINIT});
+      instance.onAction({ type: at.UNINIT });
 
       assert.calledOnce(stub);
     });
     it("should call .openPreferences on SETTINGS_OPEN", () => {
-      const action = {type: at.SETTINGS_OPEN, _target: {browser: {ownerGlobal: {openPreferences: sinon.spy()}}}};
+      const action = {
+        type: at.SETTINGS_OPEN,
+        _target: { browser: { ownerGlobal: { openPreferences: sinon.spy() } } },
+      };
       instance.onAction(action);
       assert.calledOnce(action._target.browser.ownerGlobal.openPreferences);
     });
     it("should call .BrowserOpenAddonsMgr with the extension id on OPEN_WEBEXT_SETTINGS", () => {
-      const action = {type: at.OPEN_WEBEXT_SETTINGS, data: "foo", _target: {browser: {ownerGlobal: {BrowserOpenAddonsMgr: sinon.spy()}}}};
+      const action = {
+        type: at.OPEN_WEBEXT_SETTINGS,
+        data: "foo",
+        _target: {
+          browser: { ownerGlobal: { BrowserOpenAddonsMgr: sinon.spy() } },
+        },
+      };
       instance.onAction(action);
       assert.calledWith(
         action._target.browser.ownerGlobal.BrowserOpenAddonsMgr,
@@ -61,7 +73,11 @@ describe("AboutPreferences Feed", () => {
       instance.init();
 
       assert.calledOnce(Services.obs.addObserver);
-      assert.calledWith(Services.obs.addObserver, instance, PREFERENCES_LOADED_EVENT);
+      assert.calledWith(
+        Services.obs.addObserver,
+        instance,
+        PREFERENCES_LOADED_EVENT
+      );
     });
     it("should stop watching on uninit", () => {
       sandbox.stub(Services.obs, "removeObserver");
@@ -69,7 +85,11 @@ describe("AboutPreferences Feed", () => {
       instance.uninit();
 
       assert.calledOnce(Services.obs.removeObserver);
-      assert.calledWith(Services.obs.removeObserver, instance, PREFERENCES_LOADED_EVENT);
+      assert.calledWith(
+        Services.obs.removeObserver,
+        instance,
+        PREFERENCES_LOADED_EVENT
+      );
     });
     it("should try to render on event", async () => {
       const stub = sandbox.stub(instance, "renderPreferences");
@@ -88,8 +108,8 @@ describe("AboutPreferences Feed", () => {
       instance._strings = {};
       const titleString = "title";
 
-      Sections.push({pref: {titleString}, id: "highlights"});
-      DiscoveryStream = {config: {enabled: true}};
+      Sections.push({ pref: { titleString }, id: "highlights" });
+      DiscoveryStream = { config: { enabled: true } };
 
       await instance.observe(window, PREFERENCES_LOADED_EVENT);
 
@@ -103,8 +123,14 @@ describe("AboutPreferences Feed", () => {
       const stub = sandbox.stub(instance, "renderPreferences");
       instance._strings = {};
 
-      Sections.push({rowsPref: "row_pref", maxRows: 3, pref: {descString: "foo"}, learnMore: {link: "https://foo.com"}, id: "topstories"});
-      DiscoveryStream = {config: {enabled: true}};
+      Sections.push({
+        rowsPref: "row_pref",
+        maxRows: 3,
+        pref: { descString: "foo" },
+        learnMore: { link: "https://foo.com" },
+        id: "topstories",
+      });
+      DiscoveryStream = { config: { enabled: true } };
 
       await instance.observe(window, PREFERENCES_LOADED_EVENT);
 
@@ -122,10 +148,12 @@ describe("AboutPreferences Feed", () => {
     beforeEach(() => {
       global.Cc["@mozilla.org/browser/aboutnewtab-service;1"] = {
         getService() {
-          return {activityStreamLocale};
+          return { activityStreamLocale };
         },
       };
-      fetchStub = sandbox.stub().resolves({text: () => Promise.resolve(fetchText)});
+      fetchStub = sandbox
+        .stub()
+        .resolves({ text: () => Promise.resolve(fetchText) });
       globals.set("fetch", fetchStub);
     });
     it("should use existing strings if they exist", async () => {
@@ -152,7 +180,7 @@ describe("AboutPreferences Feed", () => {
       assert.include(fetchStub.firstCall.args[0], activityStreamLocale);
     });
     it("should extract strings from js text", async () => {
-      const testStrings = {hello: "world"};
+      const testStrings = { hello: "world" };
       fetchText = `var strings = ${JSON.stringify(testStrings)};`;
 
       const strings = await instance.strings;
@@ -166,23 +194,31 @@ describe("AboutPreferences Feed", () => {
     let prefStructure;
     let Preferences;
     let gHomePane;
-    const testRender = () => instance.renderPreferences({
-      document: {
-        createXULElement: sandbox.stub().returns(node),
-        createProcessingInstruction: sandbox.stub(),
-        createElementNS: sandbox.stub().callsFake((NS, el) => node),
-        getElementById: sandbox.stub().returns(node),
-        insertBefore: sandbox.stub().returnsArg(0),
-        querySelector: sandbox.stub().returns({appendChild: sandbox.stub()}),
-      },
-      Preferences,
-      gHomePane,
-    }, strings, prefStructure, DiscoveryStream.config);
+    const testRender = () =>
+      instance.renderPreferences(
+        {
+          document: {
+            createXULElement: sandbox.stub().returns(node),
+            createProcessingInstruction: sandbox.stub(),
+            createElementNS: sandbox.stub().callsFake((NS, el) => node),
+            getElementById: sandbox.stub().returns(node),
+            insertBefore: sandbox.stub().returnsArg(0),
+            querySelector: sandbox
+              .stub()
+              .returns({ appendChild: sandbox.stub() }),
+          },
+          Preferences,
+          gHomePane,
+        },
+        strings,
+        prefStructure,
+        DiscoveryStream.config
+      );
     beforeEach(() => {
       node = {
         appendChild: sandbox.stub().returnsArg(0),
         addEventListener: sandbox.stub(),
-        classList: {add: sandbox.stub(), remove: sandbox.stub()},
+        classList: { add: sandbox.stub(), remove: sandbox.stub() },
         cloneNode: sandbox.stub().returnsThis(),
         insertAdjacentElement: sandbox.stub().returnsArg(1),
         setAttribute: sandbox.stub(),
@@ -195,7 +231,7 @@ describe("AboutPreferences Feed", () => {
         add: sandbox.stub(),
         get: sandbox.stub().returns({}),
       };
-      gHomePane = {toggleRestoreDefaultsBtn: sandbox.stub()};
+      gHomePane = { toggleRestoreDefaultsBtn: sandbox.stub() };
     });
     describe("#formatString", () => {
       it("should fall back to string id if missing", () => {
@@ -204,31 +240,37 @@ describe("AboutPreferences Feed", () => {
         assert.equal(node.textContent, "prefs_home_description");
       });
       it("should use provided plain string", () => {
-        strings = {prefs_home_description: "hello"};
+        strings = { prefs_home_description: "hello" };
 
         testRender();
 
         assert.equal(node.textContent, "hello");
       });
       it("should fall back to string object if missing", () => {
-        const titleString = {id: "foo"};
-        prefStructure = [{pref: {titleString}}];
+        const titleString = { id: "foo" };
+        prefStructure = [{ pref: { titleString } }];
 
         testRender();
 
-        assert.calledWith(node.setAttribute, "label", JSON.stringify(titleString));
+        assert.calledWith(
+          node.setAttribute,
+          "label",
+          JSON.stringify(titleString)
+        );
       });
       it("should use provided string object id", () => {
-        strings = {foo: "bar"};
-        prefStructure = [{pref: {titleString: {id: "foo"}}}];
+        strings = { foo: "bar" };
+        prefStructure = [{ pref: { titleString: { id: "foo" } } }];
 
         testRender();
 
         assert.calledWith(node.setAttribute, "label", "bar");
       });
       it("should use values in string object", () => {
-        strings = {foo: "l{n}{n}t"};
-        prefStructure = [{pref: {titleString: {id: "foo", values: {n: 3}}}}];
+        strings = { foo: "l{n}{n}t" };
+        prefStructure = [
+          { pref: { titleString: { id: "foo", values: { n: 3 } } } },
+        ];
 
         testRender();
 
@@ -244,7 +286,7 @@ describe("AboutPreferences Feed", () => {
         assert.calledOnce(Preferences.add);
       });
       it("should skip adding if not shown", () => {
-        prefStructure = [{shouldHidePref: true}];
+        prefStructure = [{ shouldHidePref: true }];
 
         testRender();
 
@@ -257,18 +299,26 @@ describe("AboutPreferences Feed", () => {
 
         testRender();
 
-        assert.calledWith(node.setAttribute, "src", "resource://activity-stream/data/content/assets/glyph-webextension-16.svg");
+        assert.calledWith(
+          node.setAttribute,
+          "src",
+          "resource://activity-stream/data/content/assets/glyph-webextension-16.svg"
+        );
       });
       it("should use desired glyph icon", () => {
-        prefStructure = [{icon: "highlights"}];
+        prefStructure = [{ icon: "highlights" }];
 
         testRender();
 
-        assert.calledWith(node.setAttribute, "src", "resource://activity-stream/data/content/assets/glyph-highlights-16.svg");
+        assert.calledWith(
+          node.setAttribute,
+          "src",
+          "resource://activity-stream/data/content/assets/glyph-highlights-16.svg"
+        );
       });
       it("should use specified chrome icon", () => {
         const icon = "chrome://the/icon.svg";
-        prefStructure = [{icon}];
+        prefStructure = [{ icon }];
 
         testRender();
 
@@ -278,7 +328,7 @@ describe("AboutPreferences Feed", () => {
     describe("title line", () => {
       it("should render a title", () => {
         const titleString = "the_title";
-        prefStructure = [{pref: {titleString}}];
+        prefStructure = [{ pref: { titleString } }];
 
         testRender();
 
@@ -286,7 +336,7 @@ describe("AboutPreferences Feed", () => {
       });
       it("should add a link for top stories", () => {
         const href = "https://disclaimer/";
-        prefStructure = [{learnMore: {link: {href}}, id: "topstories"}];
+        prefStructure = [{ learnMore: { link: { href } }, id: "topstories" }];
 
         testRender();
         assert.calledWith(node.setAttribute, "href", href);
@@ -295,14 +345,16 @@ describe("AboutPreferences Feed", () => {
     describe("description line", () => {
       it("should render a description", () => {
         const descString = "the_desc";
-        prefStructure = [{pref: {descString}}];
+        prefStructure = [{ pref: { descString } }];
 
         testRender();
 
         assert.equal(node.textContent, descString);
       });
       it("should render rows dropdown with appropriate number", () => {
-        prefStructure = [{rowsPref: "row_pref", maxRows: 3, pref: {descString: "foo"}}];
+        prefStructure = [
+          { rowsPref: "row_pref", maxRows: 3, pref: { descString: "foo" } },
+        ];
 
         testRender();
 
@@ -314,7 +366,7 @@ describe("AboutPreferences Feed", () => {
     describe("nested prefs", () => {
       it("should render a nested pref", () => {
         const titleString = "im_nested";
-        prefStructure = [{pref: {nestedPrefs: [{titleString}]}}];
+        prefStructure = [{ pref: { nestedPrefs: [{ titleString }] } }];
 
         testRender();
 

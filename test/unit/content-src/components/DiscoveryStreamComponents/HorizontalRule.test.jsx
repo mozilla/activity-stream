@@ -1,6 +1,6 @@
-import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
+import { HorizontalRule } from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
 import React from "react";
-import {shallowWithIntl} from "test/unit/utils";
+import { shallowWithIntl } from "test/unit/utils";
 
 describe("<HorizontalRule>", () => {
   let wrapper;
