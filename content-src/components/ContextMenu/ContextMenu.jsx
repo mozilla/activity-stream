@@ -96,6 +96,9 @@ export class ContextMenuItem extends React.PureComponent {
         this.props.hideContext();
         option.onClick();
         break;
+      case "Escape":
+        this.props.hideContext();
+        break;
     }
   }
 
