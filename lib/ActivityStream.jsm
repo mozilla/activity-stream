@@ -145,7 +145,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["section.highlights.rows", {
     title: "Number of rows of Highlights to display",
-    value: 2,
+    value: 1,
   }],
   ["section.topstories.rows", {
     title: "Number of rows of Top Stories to display",
