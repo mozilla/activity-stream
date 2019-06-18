@@ -76,7 +76,7 @@
     "firefox": ">=45.0 <=*",
     "//": "when changing node versions, also edit .travis.yml and .nvmrc",
     "node": "8.*",
-    "npm": "6.4.1"
+    "npm": "6.9"
   },
   "homepage": "https://github.com/mozilla/activity-stream",
   "keywords": [
