@@ -6,7 +6,6 @@ export class ContextMenu extends React.PureComponent {
     this.hideContext = this.hideContext.bind(this);
     this.onShow = this.onShow.bind(this);
     this.onClick = this.onClick.bind(this);
-    this.focusFirst = this.focusFirst.bind(this);
   }
 
   hideContext() {
@@ -19,18 +18,11 @@ export class ContextMenu extends React.PureComponent {
     }
   }
 
-  focusFirst() {
-    let contextMenu = document.getElementsByClassName("context-menu-list")[0];
-    let listItem = contextMenu.firstElementChild;
-    listItem.firstElementChild.focus();
-  }
-
   componentDidMount() {
     this.onShow();
     setTimeout(() => {
       global.addEventListener("click", this.hideContext);
     }, 0);
-    this.focusFirst();
   }
 
   componentWillUnmount() {
@@ -51,7 +43,7 @@ export class ContextMenu extends React.PureComponent {
       <ul className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :
-          (option.type !== "empty" && <ContextMenuItem key={i} id={i} option={option} hideContext={this.hideContext} tabIndex="0" />)
+          (option.type !== "empty" && <ContextMenuItem key={i} option={option} hideContext={this.hideContext} tabIndex="0" />)
         ))}
       </ul>
     </span>);
@@ -63,11 +55,18 @@ export class ContextMenuItem extends React.PureComponent {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.focusFirst = this.focusFirst.bind(this);
   }
 
   onClick() {
     this.props.hideContext();
     this.props.option.onClick();
+  }
+
+  focusFirst(button) {
+    if (button) {
+      button.focus();
+    }
   }
 
   // This selects the correct node based on the key pressed
@@ -111,7 +110,7 @@ export class ContextMenuItem extends React.PureComponent {
     const {option} = this.props;
     return (
       <li role="menuitem" className="context-menu-item" >
-        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown}>
+        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown} ref={option.first ? this.focusFirst : null}>
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
           {option.label}
         </button>
