@@ -221,7 +221,7 @@ export class _Card extends React.PureComponent {
             }
           </div>
           <div className="card-details">
-            {link.type === "download" && <div className="card-host-name alternate"><span data-l10n-id="newtab-menu-show-file" /></div>}
+          {link.type === "download" && <div className="card-host-name alternate" data-l10n-id="newtab-menu-show-file" />}
             {link.hostname &&
               <div className="card-host-name">
                 {link.hostname.slice(0, 100)}{link.type === "download" && `  \u2014 ${link.description}`}
@@ -239,7 +239,7 @@ export class _Card extends React.PureComponent {
             <div className="card-context">
               {icon && !link.context && <span aria-haspopup="true" className={`card-context-icon icon icon-${icon}`} />}
               {link.icon && link.context && <span aria-haspopup="true" className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
-              {fluentID && !link.context && <div className="card-context-label"><span data-l10n-id={fluentID} defaultMessage="Visited" /></div>}
+              {fluentID && !link.context && <div className="card-context-label" data-l10n-id={fluentID} />}
               {link.context && <div className="card-context-label">{link.context}</div>}
             </div>
           </div>

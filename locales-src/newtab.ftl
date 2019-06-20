@@ -122,8 +122,9 @@ newtab-section-menu-move-up = Move Up
 newtab-section-menu-move-down = Move Down
 newtab-section-menu-privacy-notice = Privacy Notice
 
-## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story reccomendations, in the space where there would have been stories, this is shown instead.
+## Empty Section States: These show when there are no more items in a section.
 newtab-empty-section-highlights = Start browsing, and we’ll show some of the great articles, videos, and other pages you’ve recently visited or bookmarked here.
+# Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #  $provider (String): Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = You’ve caught up. Check back later for more top stories from { $provider }. Can’t wait? Select a popular topic to find more great stories from around the web.
