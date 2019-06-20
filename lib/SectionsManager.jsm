@@ -43,7 +43,7 @@ const BUILT_IN_SECTIONS = {
     maxRows: 4,
     availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
     emptyState: {
-      message: {id: "topstories_empty_state", values: {provider: options.provider_name}},
+      message: {id: "newtab-empty-section-topstories", values: {provider: options.provider_name}},
       icon: "check",
     },
     shouldSendImpressionStats: true,
@@ -76,7 +76,7 @@ const BUILT_IN_SECTIONS = {
     rowsPref: "section.highlights.rows",
     maxRows: 4,
     emptyState: {
-      message: {id: "highlights_empty_state"},
+      message: {id: "newtab-empty-section-highlights"},
       icon: "highlights",
     },
     shouldSendImpressionStats: false,
