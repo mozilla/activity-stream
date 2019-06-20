@@ -1,6 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {Card, PlaceholderCard} from "content-src/components/Card/Card";
-import {FormattedMessage, injectIntl} from "react-intl";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
@@ -16,7 +15,15 @@ const CARDS_PER_ROW_DEFAULT = 3;
 const CARDS_PER_ROW_COMPACT_WIDE = 4;
 
 function getFormattedMessage(message) {
-  return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+  return typeof message === "string" ? (
+    <span>{message}</span>
+  ) : (
+    <span
+      data-l10n-id={message.id}
+      data-l10n-args={
+        !message.values ? "{}" : `{ "provider": "${message.values.provider}" }`
+      } />
+  );
 }
 
 export class Section extends React.PureComponent {
@@ -279,7 +286,7 @@ Section.defaultProps = {
   title: "",
 };
 
-export const SectionIntl = connect(state => ({Prefs: state.Prefs, Pocket: state.Pocket}))(injectIntl(Section));
+export const SectionIntl = connect(state => ({Prefs: state.Prefs, Pocket: state.Pocket}))(Section);
 
 export class _Sections extends React.PureComponent {
   renderSections() {
