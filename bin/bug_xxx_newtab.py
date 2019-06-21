@@ -98,11 +98,9 @@ newtab-menu-section-tooltip =
     .title = { COPY(from_path, "context_menu_title") }
     .aria-label = { COPY(from_path, "context_menu_title") }
 
-newtab-topsites-tooltip =
-    .title = { COPY(from_path, "context_menu_title") }
-newtab-topsites-placeholder-tooltip =
+newtab-menu-topsites-placeholder-tooltip =
     .title = { COPY(from_path, "edit_topsites_edit_button") }
-
+    .aria-label = { COPY(from_path, "edit_topsites_edit_button") }
 newtab-menu-edit-topsites = { COPY(from_path, "edit_topsites_button_text") }
 newtab-menu-open-new-window = { COPY(from_path, "menu_action_open_new_window") }
 newtab-menu-open-new-private-window = { COPY(from_path, "menu_action_open_private_window") }
@@ -183,25 +181,6 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
-            ),
-            FTL.Message(
-                id=FTL.Identifier("newtab-menu-topsites-placeholder-tooltip"),
-                attributes=[
-                    FTL.Attribute(
-                        id=FTL.Identifier("title"),
-                        value=COPY(
-                            "browser/chrome/browser/activity-stream/newtab.properties",
-                            "edit_topsites_edit_button"
-                        )
-                    ),
-                    FTL.Attribute(
-                        id=FTL.Identifier("aria-label"),
-                        value=COPY(
-                            "browser/chrome/browser/activity-stream/newtab.properties",
-                            "edit_topsites_edit_button"
-                        )
-                    ),
-                ]
             ),
             FTL.Message(
                 id=FTL.Identifier("newtab-menu-content-tooltip"),
