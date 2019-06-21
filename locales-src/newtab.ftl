@@ -53,13 +53,22 @@ newtab-confirm-delete-history-p2 = This action cannot be undone.
 
 newtab-topsites-add-search-engine = Add Search Engine
 
-## Top Site - Action Tooltips.
-# Tooltip to open the context menu for a given top site.
-newtab-topsites-tooltip =
+## Context Menu - Action Tooltips.
+# General tool tip for context menus.
+newtab-menu-section-tooltip =
     .title = Open menu
+    .aria-label = Open menu
+
+# This tooltip is for the context menu of Pocket cards or Topsites
+# Variables:
+#  $title (String): Title is the label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+newtab-menu-content-tooltip =
+    .title = Open menu
+    .aria-label = Open context menu for { $title }
 # Tooltip on an empty topsite box to open the New Top Site dialog.
-newtab-topsites-placeholder-tooltip =
+newtab-menu-topsites-placeholder-tooltip =
     .title = Edit this site
+    .aria-label = Edit this site
 
 ## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
 newtab-menu-edit-topsites = Edit
