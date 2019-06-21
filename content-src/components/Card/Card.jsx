@@ -246,9 +246,9 @@ export class _Card extends React.PureComponent {
         </div>
       </a>
       {!props.placeholder && <button aria-haspopup="true"
-        aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+        data-l10n-id="newtab-menu-content-tooltip"
+        data-l10n-args={`{ "title": "${title}" }`}
         className="context-menu-button icon"
-        title={this.props.intl.formatMessage({id: "context_menu_title"})}
         onClick={this.onMenuButtonClick} />}
       {isContextMenuOpen &&
         <LinkMenu
