@@ -149,6 +149,7 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
 
 newtab-pocket-read-more = { COPY(from_path, "pocket_read_more") }
 newtab-pocket-more-recommendations = { COPY(from_path, "pocket_more_reccommendations") }
+newtab-pocket-how-it-works = { COPY(from_path, "pocket_how_it_works") }
 
 newtab-error-fallback-info = { COPY(from_path, "error_fallback_default_info") }
 newtab-error-fallback-refresh-link =
@@ -240,16 +241,6 @@ newtab-error-fallback-refresh-link =
                     "topstories_empty_state",
                     {
                         "{provider}": VARIABLE_REFERENCE("provider")
-                    },
-                )
-            ),
-            FTL.Message(
-                id=FTL.Identifier("newtab-pocket-how-it-works"),
-                value=REPLACE(
-                    "browser/chrome/browser/activity-stream/newtab.properties",
-                    "pocket_how_it_works",
-                    {
-                        "How it works": FTL.TextElement('<a data-l10n-name="learn-more">How it works</a>')
                     },
                 )
             ),

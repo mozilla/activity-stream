@@ -178,8 +178,8 @@ export class CollapsibleSection extends React.PureComponent {
               </span>
               <span className="learn-more-link-wrapper">
                 {learnMore &&
-                  <span className="learn-more-link" data-l10n-id={learnMore.link.id}>
-                    <a data-l10n-name="learn-more" href={learnMore.link.href} />
+                  <span className="learn-more-link">
+                    <a href={learnMore.link.href} data-l10n-id={learnMore.link.id}>{learnMore.link.text}</a>
                   </span>
                 }
               </span>

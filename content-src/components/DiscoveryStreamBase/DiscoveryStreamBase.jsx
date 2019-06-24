@@ -189,8 +189,6 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     }
 
     // Find the first component of a type and remove it from layout
-    // Note: Do not use the return component for additional FluentDOM use. Otherwise,
-    // the fluent IDs will be stripped and replaced with copy/replace strings.
     const extractComponent = type => {
       for (const [rowIndex, row] of Object.entries(layoutRender)) {
         for (const [index, component] of Object.entries(row.components)) {
@@ -219,7 +217,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     const topSites = extractComponent("TopSites");
     const message = extractComponent("Message") || {
       header: {
-        link_text: topStories.learnMore.link.id,
+        link_id: topStories.learnMore.link.id,
         link_url: topStories.learnMore.link.href,
         title: topStories.title,
       },
@@ -241,8 +239,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           isFixed={true}
           learnMore={{
             link: {
-              href: topStories.learnMore.link.href,
-              id: topStories.learnMore.link.id,
+              href: message.header.link_url,
+              text: message.header.link_text,
+              id: message.header.link_id
             },
           }}
           privacyNoticeURL={topStories.privacyNoticeURL}
