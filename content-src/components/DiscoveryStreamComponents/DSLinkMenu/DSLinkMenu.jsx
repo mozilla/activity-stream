@@ -32,8 +32,14 @@ export class _DSLinkMenu extends React.PureComponent {
     this.setState({showContextMenu});
   }
 
-  onMenuShow() {
+  nextAnimationFrame() {
+   return new Promise(resolve => requestAnimationFrame(resolve));
+  }
+
+  async onMenuShow() {
     const dsLinkMenuHostDiv = this.contextMenuButtonRef.current.parentElement;
+    // Wait for next frame before computing scrollMaxX to allow fluent menu strings to be visible
+    await this.nextAnimationFrame();
     if (this.windowObj.scrollMaxX > 0) {
       dsLinkMenuHostDiv.parentElement.classList.add("last-item");
     }
