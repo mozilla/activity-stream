@@ -149,7 +149,7 @@ newtab-empty-section-topstories = You’ve caught up. Check back later for more 
 # Note: This is shown at the bottom of the trending stories section and precedes a list of links to popular topics.
 newtab-pocket-read-more = Popular Topics:
 newtab-pocket-more-recommendations = More Recommendations
-newtab-pocket-how-it-works = How it works
+newtab-pocket-how-it-works = <a data-l10n-name="learn-more">How it works</a>
 newtab-pocket-cta-button = Get { -pocket-brand-name }
 newtab-pocket-cta-text = Save the stories you love in { -pocket-brand-name }, and fuel your mind with fascinating reads.
 
