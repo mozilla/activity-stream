@@ -2,6 +2,7 @@ import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {Card, PlaceholderCard} from "content-src/components/Card/Card";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
+import {FluentOrText} from "content-src/components/FluentOrText/FluentOrText";
 import {connect} from "react-redux";
 import {MoreRecommendations} from "content-src/components/MoreRecommendations/MoreRecommendations";
 import {PocketLoggedInCta} from "content-src/components/PocketLoggedInCta/PocketLoggedInCta";
@@ -13,18 +14,6 @@ const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 const CARDS_PER_ROW_DEFAULT = 3;
 const CARDS_PER_ROW_COMPACT_WIDE = 4;
-
-function getFormattedMessage(message) {
-  return typeof message === "string" ? (
-    <span>{message}</span>
-  ) : (
-    <span
-      data-l10n-id={message.id}
-      data-l10n-args={
-        !message.values ? "{}" : `{ "provider": "${message.values.provider}" }`
-      } />
-  );
-}
 
 export class Section extends React.PureComponent {
   get numRows() {
@@ -249,9 +238,9 @@ export class Section extends React.PureComponent {
               {emptyState.icon && emptyState.icon.startsWith("moz-extension://") ?
                 <span className="empty-state-icon icon" style={{"background-image": `url('${emptyState.icon}')`}} /> :
                 <span className={`empty-state-icon icon icon-${emptyState.icon}`} />}
-              <p className="empty-state-message">
-                {getFormattedMessage(emptyState.message)}
-              </p>
+              <FluentOrText message={emptyState.message}>
+                <p className="empty-state-message" />
+              </FluentOrText>
             </div>
           </div>}
         {id === "topstories" &&
