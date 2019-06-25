@@ -147,7 +147,17 @@ newtab-section-menu-add-search-engine =
 newtab-section-menu-move-up = { COPY(from_path, "section_menu_action_move_up") }
 newtab-section-menu-move-down = { COPY(from_path, "section_menu_action_move_down") }
 newtab-section-menu-privacy-notice = { COPY(from_path, "section_menu_action_privacy_notice") }
+newtab-section-header-topsites = { COPY(from_path, "header_top_sites") }
+newtab-section-header-highlights = { COPY(from_path, "header_highlights") }
 newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
+
+newtab-pocket-read-more = { COPY(from_path, "pocket_read_more") }
+newtab-pocket-more-recommendations = { COPY(from_path, "pocket_more_reccommendations") }
+newtab-pocket-how-it-works = { COPY(from_path, "pocket_how_it_works") }
+
+newtab-error-fallback-info = { COPY(from_path, "error_fallback_default_info") }
+newtab-error-fallback-refresh-link =
+    { COPY(from_path, "error_fallback_default_refresh_suggestion") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
@@ -219,12 +229,42 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                 )
             ),
             FTL.Message(
+                id=FTL.Identifier("newtab-section-header-pocket"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "header_recommended_by",
+                    {
+                        "{provider}": VARIABLE_REFERENCE("provider")
+                    },
+                )
+            ),
+            FTL.Message(
                 id=FTL.Identifier("newtab-empty-section-topstories"),
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "topstories_empty_state",
                     {
                         "{provider}": VARIABLE_REFERENCE("provider")
+                    },
+                )
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-pocket-cta-button"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "pocket_cta_button",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-pocket-cta-text"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "pocket_cta_text",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
             ),
