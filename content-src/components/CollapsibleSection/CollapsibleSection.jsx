@@ -1,4 +1,3 @@
-import {FormattedMessage, injectIntl} from "react-intl";
 import {actionCreators as ac} from "common/Actions.jsm";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
@@ -9,10 +8,18 @@ const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 
 function getFormattedMessage(message) {
-  return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+  return typeof message === "string" ? (
+    <span>{message}</span>
+  ) : (
+    <span
+      data-l10n-id={message.id}
+      data-l10n-args={
+        !message.values ? "{}" : `{ "provider": "${message.values.provider}" }`
+      } />
+  );
 }
 
-export class _CollapsibleSection extends React.PureComponent {
+export class CollapsibleSection extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onBodyMount = this.onBodyMount.bind(this);
@@ -172,9 +179,7 @@ export class _CollapsibleSection extends React.PureComponent {
               <span className="learn-more-link-wrapper">
                 {learnMore &&
                   <span className="learn-more-link">
-                    <a href={learnMore.link.href}>
-                      <FormattedMessage id={learnMore.link.id} />
-                    </a>
+                    <a href={learnMore.link.href} data-l10n-id={learnMore.link.id}>{learnMore.link.text}</a>
                   </span>
                 }
               </span>
@@ -218,7 +223,7 @@ export class _CollapsibleSection extends React.PureComponent {
   }
 }
 
-_CollapsibleSection.defaultProps = {
+CollapsibleSection.defaultProps = {
   document: global.document || {
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -226,5 +231,3 @@ _CollapsibleSection.defaultProps = {
   },
   Prefs: {values: {}},
 };
-
-export const CollapsibleSection = injectIntl(_CollapsibleSection);

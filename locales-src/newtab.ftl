@@ -131,9 +131,29 @@ newtab-section-menu-move-up = Move Up
 newtab-section-menu-move-down = Move Down
 newtab-section-menu-privacy-notice = Privacy Notice
 
-## Empty Section States: These show when there are no more items in a section.
+## Section Headers
+newtab-section-header-topsites = Top Sites
+newtab-section-header-highlights = Highlights
+# Variables:
+#  $provider (String): This is followed by the name of the corresponding content provider.
+newtab-section-header-pocket = Recommended by { $provider }
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story reccomendations, in the space where there would have been stories, this is shown instead.
 newtab-empty-section-highlights = Start browsing, and we’ll show some of the great articles, videos, and other pages you’ve recently visited or bookmarked here.
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #  $provider (String): Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = You’ve caught up. Check back later for more top stories from { $provider }. Can’t wait? Select a popular topic to find more great stories from around the web.
+
+## Pocket Content Section
+# Note: This is shown at the bottom of the trending stories section and precedes a list of links to popular topics.
+newtab-pocket-read-more = Popular Topics:
+newtab-pocket-more-recommendations = More Recommendations
+newtab-pocket-how-it-works = How it works
+newtab-pocket-cta-button = Get { -pocket-brand-name }
+newtab-pocket-cta-text = Save the stories you love in { -pocket-brand-name }, and fuel your mind with fascinating reads.
+
+## Error Fallback Content.
+## This message and suggested action link are shown in each section of UI that fails to render
+newtab-error-fallback-info = Oops, something went wrong loading this content.
+newtab-error-fallback-refresh-link = Refresh page to try again.
