@@ -19,7 +19,7 @@ const BUILT_IN_SECTIONS = {
   "feeds.section.topstories": options => ({
     id: "topstories",
     pref: {
-      titleString: {id: "newtab-section-header-pocket", values: {provider: options.provider_name}},
+      titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
       descString: {id: "prefs_topstories_description2"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
@@ -35,6 +35,7 @@ const BUILT_IN_SECTIONS = {
       link: {
         href: "https://getpocket.com/firefox/new_tab_learn_more",
         message: {id: "newtab-pocket-how-it-works"},
+        id: "pocket_how_it_works",
       },
     },
     privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
