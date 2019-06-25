@@ -1,23 +1,12 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
+import {FluentOrText} from "content-src/components/FluentOrText/FluentOrText";
 import React from "react";
 import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {SectionMenuOptions} from "content-src/lib/section-menu-options";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
-
-function getFormattedMessage(message) {
-  return typeof message === "string" ? (
-    <span>{message}</span>
-  ) : (
-    <span
-      data-l10n-id={message.id}
-      data-l10n-args={
-        !message.values ? "{}" : `{ "provider": "${message.values.provider}" }`
-      } />
-  );
-}
 
 export class CollapsibleSection extends React.PureComponent {
   constructor(props) {
@@ -171,7 +160,7 @@ export class CollapsibleSection extends React.PureComponent {
             {/* Click-targets that toggle a collapsible section should have an aria-expanded attribute; see bug 1553234 */}
               <span className="click-target" role="button" tabIndex="0" onKeyPress={this.onKeyPress} onClick={this.onHeaderClick}>
                 {this.renderIcon()}
-                {getFormattedMessage(title)}
+                <FluentOrText message={title} />
               </span>
               <span className="click-target" role="button" tabIndex="0" onKeyPress={this.onKeyPress} onClick={this.onHeaderClick}>
                 {isCollapsible && <span className={`collapsible-arrow icon ${collapsed ? "icon-arrowhead-forward-small" : "icon-arrowhead-down-small"}`} />}
@@ -179,7 +168,9 @@ export class CollapsibleSection extends React.PureComponent {
               <span className="learn-more-link-wrapper">
                 {learnMore &&
                   <span className="learn-more-link">
-                    <a href={learnMore.link.href} data-l10n-id={learnMore.link.id}>{learnMore.link.text}</a>
+                    <FluentOrText message={learnMore.link.message}>
+                      <a href={learnMore.link.href} />
+                    </FluentOrText>
                   </span>
                 }
               </span>
