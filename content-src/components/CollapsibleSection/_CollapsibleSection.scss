@@ -65,7 +65,7 @@
       width: $context-menu-button-size;
 
       &:-moz-any(:active, :focus, :hover) {
-        fill: $grey-90;
+        fill: var(--newtab-section-header-text-color);
         opacity: 1;
       }
     }
