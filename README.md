@@ -1,4 +1,3 @@
-
 # Firefox Home (New Tab)
 
 [![Task Status](https://github.taskcluster.net/v1/repository/mozilla/activity-stream/master/badge.svg)](https://github.taskcluster.net/v1/repository/mozilla/activity-stream/master/latest)
