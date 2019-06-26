@@ -119,7 +119,7 @@ export class SearchShortcutsForm extends React.PureComponent {
     return (
       <form className="topsite-form">
         <div className="search-shortcuts-container">
-          <h3 className="section-title grey-title" data-l10n-id="newtab-topsites-add-search-engine" />
+          <h3 className="section-title grey-title" data-l10n-id="newtab-topsites-add-search-engine-header" />
           <div>
             {this.state.shortcuts.map(shortcut => <SelectableSearchShortcut key={shortcut.keyword} shortcut={shortcut} selected={shortcut.isSelected} onChange={this.handleChange} />)}
           </div>
