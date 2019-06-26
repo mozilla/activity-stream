@@ -67,8 +67,8 @@ scripts:
 
 # lint: Run eslint and sass-lint
   lint:
-    eslint-check: eslint --print-config . | eslint-config-prettier-check
-    eslint: eslint --ext=.js,.jsm,.jsx .
+    eslint-check: eslint --cache --print-config . | eslint-config-prettier-check
+    eslint: eslint --cache --ext=.js,.jsm,.jsx .
     sasslint: sass-lint -v -q
 
 # strings-import: Replace local strings with those from l10n-central
