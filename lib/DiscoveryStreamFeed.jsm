@@ -1183,10 +1183,7 @@ defaultLayoutResp = {
         }
       ]
     }
-  ],
-  "feeds": {},
-  "error": 0,
-  "status": 1
+  ]
 };
 
 const EXPORTED_SYMBOLS = ["DiscoveryStreamFeed"];
