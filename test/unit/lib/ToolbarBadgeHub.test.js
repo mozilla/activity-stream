@@ -1,12 +1,14 @@
 import { _ToolbarBadgeHub } from "lib/ToolbarBadgeHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
+import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 
 describe("BookmarkPanelHub", () => {
   let sandbox;
   let instance;
   let fakeAddImpression;
   let fxaMessage;
+  let whatsnewMessage;
   let fakeElement;
   let globals;
   let everyWindowStub;
@@ -15,15 +17,9 @@ describe("BookmarkPanelHub", () => {
     sandbox = sinon.createSandbox();
     instance = new _ToolbarBadgeHub();
     fakeAddImpression = sandbox.stub();
-    [
-      ,
-      ,
-      ,
-      ,
-      ,
-      ,
-      fxaMessage,
-    ] = await OnboardingMessageProvider.getUntranslatedMessages();
+    const msgs = await OnboardingMessageProvider.getUntranslatedMessages();
+    fxaMessage = msgs.find(({ id }) => id === "FXA_ACCOUNTS_BADGE");
+    whatsnewMessage = msgs.find(({ id }) => id.includes("WHATS_NEW_BADGE_"));
     fakeElement = {
       setAttribute: sandbox.stub(),
       removeAttribute: sandbox.stub(),
@@ -128,6 +124,16 @@ describe("BookmarkPanelHub", () => {
         { once: true }
       );
     });
+    it("should execute actions if they exist", () => {
+      sandbox.stub(instance, "executeAction");
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledOnce(instance.executeAction);
+      assert.calledWithExactly(
+        instance.executeAction,
+        whatsnewMessage.content.action
+      );
+    });
   });
   describe("registerBadgeNotificationListener", () => {
     beforeEach(() => {
@@ -173,6 +179,24 @@ describe("BookmarkPanelHub", () => {
 
       assert.calledOnce(instance.removeToolbarNotification);
       assert.calledWithExactly(instance.removeToolbarNotification, fakeElement);
+    });
+    it("should unregister notifications when forcing a badge via devtools", () => {
+      instance.registerBadgeNotificationListener(fxaMessage, { force: true });
+
+      assert.calledOnce(everyWindowStub.unregisterCallback);
+      assert.calledWithExactly(everyWindowStub.unregisterCallback, instance.id);
+    });
+  });
+  describe("executeAction", () => {
+    it("should call ToolbarPanelHub.enableToolbarButton", () => {
+      const stub = sandbox.stub(
+        _ToolbarPanelHub.prototype,
+        "enableToolbarButton"
+      );
+
+      instance.executeAction({ id: "show-whatsnew-button" });
+
+      assert.calledOnce(stub);
     });
   });
   describe("removeToolbarNotification", () => {

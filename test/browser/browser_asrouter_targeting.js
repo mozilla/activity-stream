@@ -823,6 +823,22 @@ add_task(async function check_hasAccessedFxAPanel() {
   );
 });
 
+add_task(async function check_hasWhatsNewPanelEnabled() {
+  is(
+    await ASRouterTargeting.Environment.hasWhatsNewPanelEnabled,
+    false,
+    "Not enabled yet"
+  );
+
+  await pushPrefs(["browser.messaging-system.whatsNewPanel.enabled", true]);
+
+  is(
+    await ASRouterTargeting.Environment.hasWhatsNewPanelEnabled,
+    true,
+    "Should update based on pref"
+  );
+});
+
 add_task(async function checkCFRPinnedTabsTargetting() {
   const now = Date.now();
   const timeMinutesAgo = numMinutes => now - numMinutes * 60 * 1000;

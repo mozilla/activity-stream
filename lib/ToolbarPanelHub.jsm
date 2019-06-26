@@ -33,9 +33,6 @@ class _ToolbarPanelHub {
   init() {
     if (this.whatsNewPanelEnabled) {
       this.enableAppmenuButton();
-      // TODO: this will eventually be called when the badge message gets triggered
-      // instead of here in init.
-      this.enableToolbarButton();
     }
   }
 

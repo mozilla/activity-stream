@@ -20,7 +20,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
   ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
   ToolbarPanelHub: "resource://activity-stream/lib/ToolbarPanelHub.jsm",
-  ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
 });
 const {
   ASRouterActions: ra,
@@ -752,12 +751,16 @@ class _ASRouter {
       (await this._storage.get("providerImpressions")) || {};
     const previousSessionEnd =
       (await this._storage.get("previousSessionEnd")) || 0;
+    // Infinity so that we default to false (firefoxVersion > previousSessionFirefoxVersion)
+    const previousSessionFirefoxVersion =
+      (await this._storage.get("previousSessionFirefoxVersion")) || Infinity;
     await this.setState({
       messageBlockList,
       providerBlockList,
       messageImpressions,
       providerImpressions,
       previousSessionEnd,
+      previousSessionFirefoxVersion,
     });
     this._updateMessageProviders();
     await this.loadMessagesFromAllProviders();
@@ -777,6 +780,10 @@ class _ASRouter {
 
   uninit() {
     this._storage.set("previousSessionEnd", Date.now());
+    this._storage.set(
+      "previousSessionFirefoxVersion",
+      ASRouterTargeting.Environment.firefoxVersion
+    );
 
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {
       type: "CLEAR_ALL",
@@ -1037,14 +1044,25 @@ class _ASRouter {
   // Return an object containing targeting parameters used to select messages
   _getMessagesContext() {
     const {
+      messageImpressions,
       previousSessionEnd,
+      previousSessionFirefoxVersion,
       trailheadInterrupt,
       trailheadTriplet,
     } = this.state;
 
     return {
+      get messageImpressions() {
+        return messageImpressions;
+      },
       get previousSessionEnd() {
         return previousSessionEnd;
+      },
+      get previousSessionFirefoxVersion() {
+        // Any comparison with `undefined` will return false
+        return isNaN(previousSessionFirefoxVersion)
+          ? undefined
+          : previousSessionFirefoxVersion;
       },
       get trailheadInterrupt() {
         return trailheadInterrupt;
@@ -1270,7 +1288,7 @@ class _ASRouter {
         }
         break;
       case "toolbar_badge":
-        ToolbarBadgeHub.registerBadgeNotificationListener(message);
+        ToolbarBadgeHub.registerBadgeNotificationListener(message, { force });
         break;
       default:
         target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {

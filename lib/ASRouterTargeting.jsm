@@ -206,6 +206,28 @@ function sortMessagesByTargeting(messages) {
   });
 }
 
+/**
+ * Sort messages in descending order based on the value of `priority`
+ * Messages with no `priority` are ranked lowest (even after a message with
+ * priority 0).
+ */
+function sortMessagesByPriority(messages) {
+  return messages.sort((a, b) => {
+    if (isNaN(a.priority) && isNaN(b.priority)) {
+      return 0;
+    }
+    if (!isNaN(a.priority) && isNaN(b.priority)) {
+      return -1;
+    }
+    if (isNaN(a.priority) && !isNaN(b.priority)) {
+      return 1;
+    }
+
+    // Descending order; higher priority comes first
+    return a.priority > b.priority ? -1 : 1;
+  });
+}
+
 const TargetingGetters = {
   get locale() {
     return Services.locale.appLocaleAsLangTag;
@@ -365,6 +387,12 @@ const TargetingGetters = {
       true
     );
   },
+  get hasWhatsNewPanelEnabled() {
+    return Services.prefs.getBoolPref(
+      "browser.messaging-system.whatsNewPanel.enabled",
+      false
+    );
+  },
 };
 
 this.ASRouterTargeting = {
@@ -471,7 +499,8 @@ this.ASRouterTargeting = {
    */
   async findMatchingMessage({ messages, trigger, context, onError }) {
     const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
-    const sortedMessages = sortMessagesByTargeting(weightSortedMessages);
+    let sortedMessages = sortMessagesByTargeting(weightSortedMessages);
+    sortedMessages = sortMessagesByPriority(sortedMessages);
     const triggerContext = trigger ? trigger.context : {};
     const combinedContext = this.combineContexts(context, triggerContext);
 

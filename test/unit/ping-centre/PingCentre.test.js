@@ -340,6 +340,7 @@ describe("PingCentre", () => {
           locale: FAKE_LOCALE,
           topic: "activity-stream",
           client_id: FAKE_TELEMETRY_ID,
+          version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
         fakePingJSON
@@ -363,6 +364,7 @@ describe("PingCentre", () => {
         {
           locale: FAKE_LOCALE,
           client_id: FAKE_TELEMETRY_ID,
+          version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
         fakePingJSON
@@ -424,6 +426,7 @@ describe("PingCentre", () => {
           locale: FAKE_LOCALE,
           topic: "activity-stream",
           client_id: FAKE_TELEMETRY_ID,
+          version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
         fakePingJSON
@@ -524,6 +527,7 @@ describe("PingCentre", () => {
         {
           locale: FAKE_LOCALE,
           client_id: FAKE_TELEMETRY_ID,
+          version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
         fakePingJSON
