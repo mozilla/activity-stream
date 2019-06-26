@@ -59,6 +59,7 @@ describe("ASRouter", () => {
   let dispatchStub;
   let fakeAttributionCode;
   let FakeBookmarkPanelHub;
+  let FakeToolbarBadgeHub;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -116,6 +117,9 @@ describe("ASRouter", () => {
       uninit: sandbox.stub(),
       _forceShowMessage: sandbox.stub(),
     };
+    FakeToolbarBadgeHub = {
+      init: sandbox.stub(),
+    };
     globals.set({
       AttributionCode: fakeAttributionCode,
       // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
@@ -123,6 +127,7 @@ describe("ASRouter", () => {
       SnippetsTestMessageProvider,
       PanelTestProvider,
       BookmarkPanelHub: FakeBookmarkPanelHub,
+      ToolbarBadgeHub: FakeToolbarBadgeHub,
     });
     await createRouterAndInit();
   });
@@ -500,7 +505,7 @@ describe("ASRouter", () => {
       // Just return the first message provided as arg
       sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
 
-      const result = Router.handleMessageRequest({id: "foo"});
+      const result = Router.handleMessageRequest({triggerId: "foo"});
 
       assert.deepEqual(result, message);
     });
