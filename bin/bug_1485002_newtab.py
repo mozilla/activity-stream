@@ -73,7 +73,8 @@ newtab-search-box-search-the-web-input =
     .title = { COPY(from_path, "search_web_placeholder") }
     .aria-label = { COPY(from_path, "search_web_placeholder") }
 
-newtab-topsites-add-search-engine-header = { COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-topsites-add-search-engine-header =
+    { COPY(from_path, "section_menu_action_add_search_engine") }
 newtab-topsites-add-topsites-header = { COPY(from_path, "topsites_form_add_header") }
 newtab-topsites-edit-topsites-header = { COPY(from_path, "topsites_form_edit_header") }
 newtab-topsites-title-label = { COPY(from_path, "topsites_form_title_label") }
