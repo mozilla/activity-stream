@@ -5,12 +5,18 @@
 
 ChromeUtils.defineModuleGetter(this, "Services",
   "resource://gre/modules/Services.jsm");
+ChromeUtils.defineModuleGetter(this, "EveryWindow",
+  "resource:///modules/EveryWindow.jsm");
+
+const notificationsByWindow = new WeakMap();
 
 class _ToolbarBadgeHub {
   constructor() {
     this.id = "toolbar-badge-hub";
     this.state = null;
+    this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
+    this.addBadge = this.addBadge.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
@@ -27,31 +33,60 @@ class _ToolbarBadgeHub {
   }
 
   async messageRequest(triggerId) {
-    const browserWindow = Services.wm.getMostRecentBrowserWindow();
+    // const browserWindow = Services.wm.getMostRecentBrowserWindow();
     const message = await this._handleMessageRequest({triggerId, template: "badge"});
-    this.addBadge(browserWindow, message);
+    // this.addBadge(browserWindow, message);
+    this.registerBadgeNotificationListener(message);
   }
 
-  addBadge(target, message) {
+  registerBadgeNotificationListener(message) {
+    this._addImpression(message);
+    EveryWindow.registerCallback(
+      this.id,
+      win => {
+        if (notificationsByWindow.has(win)) {
+          // nothing to do
+          return;
+        }
+        const el = this.addBadge(win, message);
+        notificationsByWindow.set(win, el);
+      },
+      win => {
+        const el = notificationsByWindow.get(win);
+        this.removeToolbarNotification(el);
+        notificationsByWindow.delete(win);
+      }
+    );
+  }
+
+  addBadge(win, message) {
     if (message) {
-      const document = target.browser.ownerDocument;
+      const document = win.browser.ownerDocument;
       let toolbarbutton = document.getElementById(message.content.target);
       if (toolbarbutton) {
         toolbarbutton.setAttribute("badged", true);
         toolbarbutton.querySelector(".toolbarbutton-badge").setAttribute("value", "x");
 
-        toolbarbutton.addEventListener("click", this.removeToolbarNotification, {once: true});
+        toolbarbutton.addEventListener("click", this.removeAllNotifications, {once: true});
         this.state = {badge: {id: message.id}};
-        this._addImpression(message);
+
+        return toolbarbutton;
       }
     }
+
+    return null;
   }
 
-  removeToolbarNotification(event) {
-    event.target.querySelector(".toolbarbutton-badge").removeAttribute("value");
-    event.target.removeAttribute("badged");
+  removeAllNotifications(event) {
+    // Will call uninit on every window
+    EveryWindow.unregisterCallback(this.id);
     this._blockMessageById(this.state.badge.id);
     this.state = null;
+  }
+
+  removeToolbarNotification(toolbarButton) {
+    toolbarButton.querySelector(".toolbarbutton-badge").removeAttribute("value");
+    toolbarButton.removeAttribute("badged");
   }
 }
 
