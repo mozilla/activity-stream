@@ -11,6 +11,10 @@ class _ToolbarBadgeHub {
     this.id = "toolbar-badge-hub";
     this.state = null;
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
+
+    this._handleMessageRequest = null;
+    this._addImpression = null;
+    this._blockMessageById = null;
   }
 
   async init(waitForInitialized, {handleMessageRequest, addImpression, blockMessageById}) {
