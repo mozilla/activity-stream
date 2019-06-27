@@ -201,7 +201,7 @@ export class TopSiteForm extends React.PureComponent {
     return (
       <form className="topsite-form" onSubmit={onSubmit}>
         <div className="form-input-container">
-          <h3 className="section-title grey-title" data-l10n-id={showAsAdd ? "newtab-topsites-add-header" : "newtab-topsites-edit-header"} />
+          <h3 className="section-title grey-title" data-l10n-id={showAsAdd ? "newtab-topsites-add-topsites-header" : "newtab-topsites-edit-topsites-header"} />
           <div className="fields-and-preview">
             <div className="form-wrapper">
               <TopSiteFormInput onChange={this.onLabelChange}

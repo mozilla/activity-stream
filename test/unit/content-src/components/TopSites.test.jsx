@@ -807,7 +807,7 @@ describe("<TopSiteForm>", () => {
       assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
-      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-header").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-topsites-header").length, 1);
     });
     it("should have the correct button text", () => {
       assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-save-button").length, 0);
@@ -880,7 +880,7 @@ describe("<TopSiteForm>", () => {
       assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
-      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-edit-header").length, 1);
+      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-edit-topsites-header").length, 1);
     });
     it("should have the correct button text", () => {
       assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-add-button").length, 0);

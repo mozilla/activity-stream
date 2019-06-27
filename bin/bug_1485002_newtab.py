@@ -73,8 +73,11 @@ newtab-search-box-search-the-web-input =
     .title = { COPY(from_path, "search_web_placeholder") }
     .aria-label = { COPY(from_path, "search_web_placeholder") }
 
-newtab-topsites-add-header = { COPY(from_path, "topsites_form_add_header") }
-newtab-topsites-edit-header = { COPY(from_path, "topsites_form_edit_header") }
+newtab-topsites-add-search-engine-header =
+    { COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-topsites-add-topsites-header = { COPY(from_path, "topsites_form_add_header") }
+newtab-topsites-edit-topsites-header = { COPY(from_path, "topsites_form_edit_header") }
+
 newtab-topsites-title-label = { COPY(from_path, "topsites_form_title_label") }
 newtab-topsites-title-input =
     .placeholder = { COPY(from_path, "topsites_form_title_placeholder") }
@@ -97,7 +100,6 @@ newtab-topsites-add-button = { COPY(from_path, "topsites_form_add_button") }
 newtab-confirm-delete-history-p1 = { COPY(from_path, "confirm_history_delete_p1") }
 newtab-confirm-delete-history-p2 = { COPY(from_path, "confirm_history_delete_notice_p2") }
 
-newtab-topsites-add-search-engine = { COPY(from_path, "section_menu_action_add_search_engine") }
 newtab-menu-section-tooltip =
     .title = { COPY(from_path, "context_menu_title") }
     .aria-label = { COPY(from_path, "context_menu_title") }
@@ -123,14 +125,10 @@ newtab-menu-remove-download = { COPY(from_path, "menu_action_remove_download") }
 newtab-menu-show-file =
     { PLATFORM() ->
       [macos] { COPY(from_path, "menu_action_show_file_mac_os") }
-      [windows] { COPY(from_path, "menu_action_show_file_windows") }
-      [linux] { COPY(from_path, "menu_action_show_file_linux") }
-       *[other] { COPY(from_path, "menu_action_show_file_default") }
+       *[other] { COPY(from_path, "menu_action_show_file_windows") }
     }
 newtab-menu-open-file = { COPY(from_path, "menu_action_open_file") }
 
-newtab-card-tooltip =
-    .title = { COPY(from_path, "context_menu_title") }
 newtab-label-visited = { COPY(from_path, "type_label_visited") }
 newtab-label-bookmarked = { COPY(from_path, "type_label_bookmarked") }
 newtab-label-recommended = { COPY(from_path, "type_label_recommended") }
