@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.defineModuleGetter(this, "Services",
-  "resource://gre/modules/Services.jsm");
 ChromeUtils.defineModuleGetter(this, "EveryWindow",
   "resource:///modules/EveryWindow.jsm");
 
@@ -33,10 +31,10 @@ class _ToolbarBadgeHub {
   }
 
   async messageRequest(triggerId) {
-    // const browserWindow = Services.wm.getMostRecentBrowserWindow();
     const message = await this._handleMessageRequest({triggerId, template: "badge"});
-    // this.addBadge(browserWindow, message);
-    this.registerBadgeNotificationListener(message);
+    if (message) {
+      this.registerBadgeNotificationListener(message);
+    }
   }
 
   registerBadgeNotificationListener(message) {
@@ -60,18 +58,16 @@ class _ToolbarBadgeHub {
   }
 
   addBadge(win, message) {
-    if (message) {
-      const document = win.browser.ownerDocument;
-      let toolbarbutton = document.getElementById(message.content.target);
-      if (toolbarbutton) {
-        toolbarbutton.setAttribute("badged", true);
-        toolbarbutton.querySelector(".toolbarbutton-badge").setAttribute("value", "x");
+    const document = win.browser.ownerDocument;
+    let toolbarbutton = document.getElementById(message.content.target);
+    if (toolbarbutton) {
+      toolbarbutton.setAttribute("badged", true);
+      toolbarbutton.querySelector(".toolbarbutton-badge").setAttribute("value", "x");
 
-        toolbarbutton.addEventListener("click", this.removeAllNotifications, {once: true});
-        this.state = {badge: {id: message.id}};
+      toolbarbutton.addEventListener("click", this.removeAllNotifications, { once: true });
+      this.state = { badge: { id: message.id } };
 
-        return toolbarbutton;
-      }
+      return toolbarbutton;
     }
 
     return null;
