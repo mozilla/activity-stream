@@ -59,7 +59,7 @@ describe("BookmarkPanelHub", () => {
       assert.calledOnce(handleMessageRequestStub);
       assert.calledWithExactly(handleMessageRequestStub, {triggerId: "trigger", template: "badge"});
     });
-    it("should call addBadge with browser window and message", async () => {
+    it("should call addToolbarNotification with browser window and message", async () => {
       await instance.messageRequest("trigger"); 
 
       assert.calledOnce(instance.registerBadgeNotificationListener);
@@ -72,7 +72,7 @@ describe("BookmarkPanelHub", () => {
       assert.notCalled(instance.registerBadgeNotificationListener);
     });
   });
-  describe("addBadge", () => {
+  describe("addToolbarNotification", () => {
     let target;
     let fakeDocument;
     beforeEach(() => {
@@ -81,25 +81,25 @@ describe("BookmarkPanelHub", () => {
     });
     it("shouldn't do anything if target element is not found", () => {
       fakeDocument.getElementById.returns(null);
-      instance.addBadge(target, fxaMessage);
+      instance.addToolbarNotification(target, fxaMessage);
 
       assert.notCalled(fakeElement.setAttribute);
     });
     it("should target the element specified in the message", () => {
-      instance.addBadge(target, fxaMessage);
+      instance.addToolbarNotification(target, fxaMessage);
 
       assert.calledOnce(fakeDocument.getElementById);
       assert.calledWithExactly(fakeDocument.getElementById, fxaMessage.content.target);
     });
-    it("should show a badge", () => {
-      instance.addBadge(target, fxaMessage);
+    it("should show a notification", () => {
+      instance.addToolbarNotification(target, fxaMessage);
 
       assert.calledTwice(fakeElement.setAttribute);
       assert.calledWithExactly(fakeElement.setAttribute, "badged", true);
       assert.calledWithExactly(fakeElement.setAttribute, "value", "x");
     });
-    it("should attach a cb on the badge", () => {
-      instance.addBadge(target, fxaMessage);
+    it("should attach a cb on the notification", () => {
+      instance.addToolbarNotification(target, fxaMessage);
 
       assert.calledOnce(fakeElement.addEventListener);
       assert.calledWithExactly(fakeElement.addEventListener, "click",
@@ -109,7 +109,7 @@ describe("BookmarkPanelHub", () => {
   describe("registerBadgeNotificationListener", () => {
     beforeEach(() => {
       sandbox.stub(instance, "_addImpression").value(fakeAddImpression);
-      sandbox.stub(instance, "addBadge").returns(fakeElement);
+      sandbox.stub(instance, "addToolbarNotification").returns(fakeElement);
       sandbox.stub(instance, "removeToolbarNotification");
     });
     it("should add an impression for the message", () => {
@@ -131,8 +131,8 @@ describe("BookmarkPanelHub", () => {
       // Test that it doesn't try to add a second notification
       initFn(window);
 
-      assert.calledOnce(instance.addBadge);
-      assert.calledWithExactly(instance.addBadge, window, fxaMessage);
+      assert.calledOnce(instance.addToolbarNotification);
+      assert.calledWithExactly(instance.addToolbarNotification, window, fxaMessage);
 
       uninitFn(window);
 
@@ -141,7 +141,7 @@ describe("BookmarkPanelHub", () => {
     });
   });
   describe("removeToolbarNotification", () => {
-    it("should remove the badge", () => {
+    it("should remove the notification", () => {
       instance.removeToolbarNotification(fakeElement);
 
       assert.calledTwice(fakeElement.removeAttribute);
@@ -153,7 +153,7 @@ describe("BookmarkPanelHub", () => {
     beforeEach(() => {
       blockMessageByIdStub = sandbox.stub();
       sandbox.stub(instance, "_blockMessageById").value(blockMessageByIdStub);
-      instance.state = {badge: {id: fxaMessage.id}};
+      instance.state = {notification: {id: fxaMessage.id}};
     }); 
     it("should call to block the message", () => {
       instance.removeAllNotifications();

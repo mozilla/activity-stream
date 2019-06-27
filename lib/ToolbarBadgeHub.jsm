@@ -14,7 +14,7 @@ class _ToolbarBadgeHub {
     this.state = null;
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
-    this.addBadge = this.addBadge.bind(this);
+    this.addToolbarNotification = this.addToolbarNotification.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
@@ -30,15 +30,37 @@ class _ToolbarBadgeHub {
     this.messageRequest("firstRunFxAccounts");
   }
 
-  async messageRequest(triggerId) {
-    const message = await this._handleMessageRequest({triggerId, template: "badge"});
-    if (message) {
-      this.registerBadgeNotificationListener(message);
+  removeAllNotifications() {
+    // Will call uninit on every window
+    EveryWindow.unregisterCallback(this.id);
+    this._blockMessageById(this.state.notification.id);
+    this.state = null;
+  }
+
+  removeToolbarNotification(toolbarButton) {
+    toolbarButton.querySelector(".toolbarbutton-badge").removeAttribute("value");
+    toolbarButton.removeAttribute("badged");
+  }
+
+  addToolbarNotification(win, message) {
+    const document = win.browser.ownerDocument;
+    let toolbarbutton = document.getElementById(message.content.target);
+    if (toolbarbutton) {
+      toolbarbutton.setAttribute("badged", true);
+      toolbarbutton.querySelector(".toolbarbutton-badge").setAttribute("value", "x");
+
+      toolbarbutton.addEventListener("click", this.removeAllNotifications, { once: true });
+      this.state = { notification: { id: message.id } };
+
+      return toolbarbutton;
     }
+
+    return null;
   }
 
   registerBadgeNotificationListener(message) {
     this._addImpression(message);
+
     EveryWindow.registerCallback(
       this.id,
       win => {
@@ -46,7 +68,7 @@ class _ToolbarBadgeHub {
           // nothing to do
           return;
         }
-        const el = this.addBadge(win, message);
+        const el = this.addToolbarNotification(win, message);
         notificationsByWindow.set(win, el);
       },
       win => {
@@ -57,32 +79,11 @@ class _ToolbarBadgeHub {
     );
   }
 
-  addBadge(win, message) {
-    const document = win.browser.ownerDocument;
-    let toolbarbutton = document.getElementById(message.content.target);
-    if (toolbarbutton) {
-      toolbarbutton.setAttribute("badged", true);
-      toolbarbutton.querySelector(".toolbarbutton-badge").setAttribute("value", "x");
-
-      toolbarbutton.addEventListener("click", this.removeAllNotifications, { once: true });
-      this.state = { badge: { id: message.id } };
-
-      return toolbarbutton;
+  async messageRequest(triggerId) {
+    const message = await this._handleMessageRequest({triggerId, template: "badge"});
+    if (message) {
+      this.registerBadgeNotificationListener(message);
     }
-
-    return null;
-  }
-
-  removeAllNotifications() {
-    // Will call uninit on every window
-    EveryWindow.unregisterCallback(this.id);
-    this._blockMessageById(this.state.badge.id);
-    this.state = null;
-  }
-
-  removeToolbarNotification(toolbarButton) {
-    toolbarButton.querySelector(".toolbarbutton-badge").removeAttribute("value");
-    toolbarButton.removeAttribute("badged");
   }
 }
 
