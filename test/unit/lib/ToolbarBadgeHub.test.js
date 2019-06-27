@@ -1,4 +1,5 @@
 import {_ToolbarBadgeHub} from "lib/ToolbarBadgeHub.jsm";
+import {GlobalOverrider} from "test/unit/utils";
 import {OnboardingMessageProvider} from "lib/OnboardingMessageProvider.jsm";
 
 describe("BookmarkPanelHub", () => {
@@ -7,7 +8,10 @@ describe("BookmarkPanelHub", () => {
   let fakeAddImpression;
   let fxaMessage;
   let fakeElement;
+  let globals;
+  let everyWindowStub;
   beforeEach(async () => {
+    globals = new GlobalOverrider();
     sandbox = sinon.createSandbox();
     instance = new _ToolbarBadgeHub();
     fakeAddImpression = sandbox.stub();
@@ -20,6 +24,11 @@ describe("BookmarkPanelHub", () => {
     };
     // Share the same element when selecting child nodes
     fakeElement.querySelector.returns(fakeElement);
+    everyWindowStub = {
+      registerCallback: sandbox.stub(),
+      unregisterCallback: sandbox.stub(),
+    };
+    globals.set("EveryWindow", everyWindowStub);
   });
   afterEach(() => {
     sandbox.restore();
@@ -34,7 +43,7 @@ describe("BookmarkPanelHub", () => {
 
       await instance.init(waitForInitialized, {});
       assert.calledOnce(instance.messageRequest);
-      assert.calledWithExactly(instance.messageRequest, "firstRun");
+      assert.calledWithExactly(instance.messageRequest, "firstRunFxAccounts");
     });
   });
   describe("messageRequest", () => {
@@ -42,7 +51,7 @@ describe("BookmarkPanelHub", () => {
     beforeEach(() => {
       handleMessageRequestStub = sandbox.stub().returns(fxaMessage);
       sandbox.stub(instance, "_handleMessageRequest").value(handleMessageRequestStub);
-      sandbox.stub(instance, "addBadge");
+      sandbox.stub(instance, "registerBadgeNotificationListener");
     });
     it("should fetch a message with the provided trigger and template", async () => {
       await instance.messageRequest("trigger"); 
@@ -53,9 +62,14 @@ describe("BookmarkPanelHub", () => {
     it("should call addBadge with browser window and message", async () => {
       await instance.messageRequest("trigger"); 
 
-      assert.calledOnce(instance.addBadge);
-      assert.calledWithExactly(instance.addBadge,
-        Services.wm.getMostRecentBrowserWindow(), fxaMessage);
+      assert.calledOnce(instance.registerBadgeNotificationListener);
+      assert.calledWithExactly(instance.registerBadgeNotificationListener, fxaMessage);
+    });
+    it("shouldn't do anything if no message is provided", () => {
+      handleMessageRequestStub.returns(null);
+      instance.messageRequest("trigger");
+
+      assert.notCalled(instance.registerBadgeNotificationListener);
     });
   });
   describe("addBadge", () => {
@@ -64,12 +78,6 @@ describe("BookmarkPanelHub", () => {
     beforeEach(() => {
       fakeDocument = {getElementById: sandbox.stub().returns(fakeElement)};
       target = {browser: {ownerDocument: fakeDocument}};  
-      sandbox.stub(instance, "_addImpression").value(fakeAddImpression);
-    });
-    it("shouldn't do anything if no message is provided", () => {
-      instance.addBadge(target, null);
-
-      assert.notCalled(fakeDocument.getElementById);
     });
     it("shouldn't do anything if target element is not found", () => {
       fakeDocument.getElementById.returns(null);
@@ -95,35 +103,69 @@ describe("BookmarkPanelHub", () => {
 
       assert.calledOnce(fakeElement.addEventListener);
       assert.calledWithExactly(fakeElement.addEventListener, "click",
-        instance.removeToolbarNotification, {once: true});
+        instance.removeAllNotifications, {once: true});
+    });
+  });
+  describe("registerBadgeNotificationListener", () => {
+    beforeEach(() => {
+      sandbox.stub(instance, "_addImpression").value(fakeAddImpression);
+      sandbox.stub(instance, "addBadge").returns(fakeElement);
+      sandbox.stub(instance, "removeToolbarNotification");
     });
     it("should add an impression for the message", () => {
-      instance.addBadge(target, fxaMessage);
+      instance.registerBadgeNotificationListener(fxaMessage);
 
       assert.calledOnce(instance._addImpression);
       assert.calledWithExactly(instance._addImpression, fxaMessage);
     });
+    it("should register a callback that adds/removes the notification", () => {
+      instance.registerBadgeNotificationListener(fxaMessage);
+
+      assert.calledOnce(everyWindowStub.registerCallback);
+      assert.calledWithExactly(everyWindowStub.registerCallback, instance.id,
+        sinon.match.func, sinon.match.func);
+
+      const [, initFn, uninitFn] = everyWindowStub.registerCallback.firstCall.args;
+
+      initFn(window);
+      // Test that it doesn't try to add a second notification
+      initFn(window);
+
+      assert.calledOnce(instance.addBadge);
+      assert.calledWithExactly(instance.addBadge, window, fxaMessage);
+
+      uninitFn(window);
+
+      assert.calledOnce(instance.removeToolbarNotification);
+      assert.calledWithExactly(instance.removeToolbarNotification, fakeElement);
+    });
   });
   describe("removeToolbarNotification", () => {
-    let fakeEvent;
-    let blockMessageByIdStub
-    beforeEach(() => {
-      fakeEvent = {target: fakeElement};
-      blockMessageByIdStub = sandbox.stub();
-      sandbox.stub(instance, "_blockMessageById").value(blockMessageByIdStub);
-      instance.state = {badge: {id: fxaMessage.id}};
-    }); 
     it("should remove the badge", () => {
-      instance.removeToolbarNotification(fakeEvent);
+      instance.removeToolbarNotification(fakeElement);
 
       assert.calledTwice(fakeElement.removeAttribute);
       assert.calledWithExactly(fakeElement.removeAttribute, "badged");
     });
+  });
+  describe("removeAllNotifications", () => {
+    let blockMessageByIdStub
+    beforeEach(() => {
+      blockMessageByIdStub = sandbox.stub();
+      sandbox.stub(instance, "_blockMessageById").value(blockMessageByIdStub);
+      instance.state = {badge: {id: fxaMessage.id}};
+    }); 
     it("should call to block the message", () => {
-      instance.removeToolbarNotification(fakeEvent);
+      instance.removeAllNotifications();
 
       assert.calledOnce(blockMessageByIdStub);
       assert.calledWithExactly(blockMessageByIdStub, fxaMessage.id);
+    });
+    it("should remove the window listener", () => {
+      instance.removeAllNotifications();
+
+      assert.calledOnce(everyWindowStub.unregisterCallback);
+      assert.calledWithExactly(everyWindowStub.unregisterCallback, instance.id);
     });
   });
 });

@@ -73,7 +73,7 @@ class _ToolbarBadgeHub {
     return null;
   }
 
-  removeAllNotifications(event) {
+  removeAllNotifications() {
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
     this._blockMessageById(this.state.badge.id);
