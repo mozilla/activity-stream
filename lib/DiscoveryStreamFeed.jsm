@@ -416,6 +416,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           headers,
           body: JSON.stringify({
             pocket_id: this._impressionId,
+            version: 1,
             consumer_key: apiKey,
           }),
         });
