@@ -29,7 +29,7 @@ class _ToolbarBadgeHub {
     this._addImpression = addImpression;
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
-    this.messageRequest("firstRun");
+    this.messageRequest("firstRunFxAccounts");
   }
 
   async messageRequest(triggerId) {
