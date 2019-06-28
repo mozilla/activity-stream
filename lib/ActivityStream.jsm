@@ -240,7 +240,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["discoverystream.endpoints", {
     title: "Endpoint prefixes (comma-separated) that are allowed to be requested",
-    value: "https://getpocket.cdn.mozilla.net/",
+    value: "https://getpocket.cdn.mozilla.net/,https://spocs.getpocket.com",
   }],
   ["discoverystream.spoc.impressions", {
     title: "Track spoc impressions",
@@ -249,7 +249,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["discoverystream.endpointSpocsClear", {
     title: "Endpoint for when a user opts-out of sponsored content to delete the user's data from the ad server.",
-    value: "",
+    value: "https://spocs.getpocket.com/user",
   }],
   ["discoverystream.rec.impressions", {
     title: "Track rec impressions",
