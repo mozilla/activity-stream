@@ -240,7 +240,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["discoverystream.endpoints", {
     title: "Endpoint prefixes (comma-separated) that are allowed to be requested",
-    value: "https://getpocket.cdn.mozilla.net/,https://spocs.getpocket.com",
+    value: "https://getpocket.cdn.mozilla.net/,https://spocs.getpocket.com/",
   }],
   ["discoverystream.spoc.impressions", {
     title: "Track spoc impressions",
