@@ -8,39 +8,6 @@ const {AttributionCode} = ChromeUtils.import("resource:///modules/AttributionCod
 const {AddonRepository} = ChromeUtils.import("resource://gre/modules/addons/AddonRepository.jsm");
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-async function getAddonInfo() {
-  try {
-    let {content, source} = await AttributionCode.getAttrDataAsync();
-    if (!content || source !== "addons.mozilla.org") {
-      return null;
-    }
-    // Attribution data can be double encoded
-    while (content.includes("%")) {
-      try {
-        const result = decodeURIComponent(content);
-        if (result === content) {
-          break;
-        }
-        content = result;
-      } catch (e) {
-        break;
-      }
-    }
-    const [addon] = await AddonRepository.getAddonsByIDs([content]);
-    if (addon.sourceURI.scheme !== "https") {
-      return null;
-    }
-    return {
-      name: addon.name,
-      url: addon.sourceURI.spec,
-      iconURL: addon.icons["64"] || addon.icons["32"],
-    };
-  } catch (e) {
-    Cu.reportError("Failed to get the latest add-on version for Return to AMO");
-    return null;
-  }
-}
-
 const L10N = new Localization([
   "branding/brand.ftl",
   "browser/branding/brandings.ftl",
@@ -476,7 +443,7 @@ const OnboardingMessageProvider = {
       // that, and update the message accordingly
       if (msg.template === "return_to_amo_overlay") {
         try {
-          const {name, iconURL, url} = await getAddonInfo();
+          const {name, iconURL, url} = await this.getAddonInfo();
           // If we do not have all the data from the AMO api to indicate to the user
           // what they are installing we don't want to show the message
           if (!name || !iconURL || !url) {
@@ -513,6 +480,38 @@ const OnboardingMessageProvider = {
       translatedMessages.push(translatedMessage);
     }
     return translatedMessages;
+  },
+  async getAddonInfo() {
+    try {
+      let {content, source} = await AttributionCode.getAttrDataAsync();
+      if (!content || source !== "addons.mozilla.org") {
+        return null;
+      }
+      // Attribution data can be double encoded
+      while (content.includes("%")) {
+        try {
+          const result = decodeURIComponent(content);
+          if (result === content) {
+            break;
+          }
+          content = result;
+        } catch (e) {
+          break;
+        }
+      }
+      const [addon] = await AddonRepository.getAddonsByIDs([content]);
+      if (addon.sourceURI.scheme !== "https") {
+        return null;
+      }
+      return {
+        name: addon.name,
+        url: addon.sourceURI.spec,
+        iconURL: addon.icons["64"] || addon.icons["32"],
+      };
+    } catch (e) {
+      Cu.reportError("Failed to get the latest add-on version for Return to AMO");
+      return null;
+    }
   },
 };
 this.OnboardingMessageProvider = OnboardingMessageProvider;
