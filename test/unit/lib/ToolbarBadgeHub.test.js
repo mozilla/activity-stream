@@ -43,7 +43,7 @@ describe("BookmarkPanelHub", () => {
 
       await instance.init(waitForInitialized, {});
       assert.calledOnce(instance.messageRequest);
-      assert.calledWithExactly(instance.messageRequest, "firstRunFxAccounts");
+      assert.calledWithExactly(instance.messageRequest, "toolbarBadgeUpdate");
     });
   });
   describe("messageRequest", () => {
@@ -57,7 +57,7 @@ describe("BookmarkPanelHub", () => {
       await instance.messageRequest("trigger"); 
 
       assert.calledOnce(handleMessageRequestStub);
-      assert.calledWithExactly(handleMessageRequestStub, {triggerId: "trigger", template: "badge"});
+      assert.calledWithExactly(handleMessageRequestStub, {triggerId: "trigger", template: instance.template});
     });
     it("should call addToolbarNotification with browser window and message", async () => {
       await instance.messageRequest("trigger"); 

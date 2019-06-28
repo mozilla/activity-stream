@@ -444,7 +444,7 @@ const ONBOARDING_MESSAGES = async () => ([
   },
   {
     id: "FXA_ACCOUNTS_BADGE",
-    template: "badge",
+    template: "toolbar-badge",
     content: {
       target: "fxa-toolbar-menu-button",
     },

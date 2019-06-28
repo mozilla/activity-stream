@@ -11,6 +11,7 @@ const notificationsByWindow = new WeakMap();
 class _ToolbarBadgeHub {
   constructor() {
     this.id = "toolbar-badge-hub";
+    this.template = "toolbar-badge";
     this.state = null;
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
@@ -27,7 +28,7 @@ class _ToolbarBadgeHub {
     this._addImpression = addImpression;
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
-    this.messageRequest("firstRunFxAccounts");
+    this.messageRequest("toolbarBadgeUpdate");
   }
 
   removeAllNotifications() {
@@ -80,7 +81,7 @@ class _ToolbarBadgeHub {
   }
 
   async messageRequest(triggerId) {
-    const message = await this._handleMessageRequest({triggerId, template: "badge"});
+    const message = await this._handleMessageRequest({triggerId, template: this.template});
     if (message) {
       this.registerBadgeNotificationListener(message);
     }

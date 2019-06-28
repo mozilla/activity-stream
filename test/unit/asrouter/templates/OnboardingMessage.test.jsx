@@ -1,6 +1,7 @@
 import {GlobalOverrider} from "test/unit/utils";
 import {OnboardingMessageProvider} from "lib/OnboardingMessageProvider.jsm";
 import schema from "content-src/asrouter/templates/OnboardingMessage/OnboardingMessage.schema.json";
+import badgeSchema from "content-src/asrouter/templates/OnboardingMessage/ToolbarBadgeMessage.schema.json";
 
 const DEFAULT_CONTENT = {
   "title": "A title",
@@ -48,6 +49,11 @@ describe("OnboardingMessage", () => {
     const messages = await OnboardingMessageProvider.getUntranslatedMessages();
     // FXA_1 doesn't have content - so filter it out
     messages.filter(msg => msg.template in ["onboarding", "return_to_amo_overlay"]).forEach(msg => assert.jsonSchema(msg.content, schema));
+  });
+  it("should validate all badge template messages", async () => {
+    const messages = await OnboardingMessageProvider.getUntranslatedMessages();
+
+    messages.filter(msg => msg.template === "toolbar-badge").forEach(msg => assert.jsonSchema(msg.content, badgeSchema));
   });
   it("should decode the content field (double decoding)", async () => {
     const fakeContent = "foo%2540bar.org";
