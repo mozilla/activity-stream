@@ -29,29 +29,28 @@ onboarding-join-form-legal = By proceeding, you agree to the <a data-l10n-name="
 onboarding-join-form-continue = Continue
 
 onboarding-start-browsing-button-label = Start Browsing
+onboarding-menu-dismiss =
+    .title = Dismiss
+    .aria-label = Dismiss
 
-## Welcome modal dialog strings for pre-trailhead about welcome.
+## Firefox Sync modal dialog strings.
 
-onboarding-control-welcome-header = Take { -brand-product-name } with You
-onboarding-control-welcome-content = Get your bookmarks, history, passwords and other settings on all your devices.
-onboarding-control-welcome-learn-more-link = Learn more about { -brand-product-name } Accounts
+onboarding-sync-welcome-header = Take { -brand-product-name } with You
+onboarding-sync-welcome-content = Get your bookmarks, history, passwords and other settings on all your devices.
+onboarding-sync-welcome-learn-more-link = Learn more about { -brand-product-name } Accounts
+onboarding-sync-form-invalid-input = Valid email required
+onboarding-sync-legal-notice = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
 
-onboarding-control-form-privacy-notice = Privacy Notice
-
-onboarding-control-form-invalid-input = Valid email required
-onboarding-control-legal-notice = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
-
-onboarding-control-form-input =
+onboarding-sync-form-input =
     .placeholder = Email
 
-onboarding-control-form-continue-button = Continue
-onboarding-control-form-skip-login-button = Skip this step
+onboarding-sync-form-continue-button = Continue
+onboarding-sync-form-skip-login-button = Skip this step
 
-## Welcome modal dialog strings for pre-trailhead about welcome. This is part of the line
-## "Enter your email to continue to Firefox Sync"
+## This is part of the line "Enter your email to continue to Firefox Sync"
 
-onboarding-control-form-header = Enter your email
-onboarding-control-form-sub-header = to continue to { -sync-brand-name }
+onboarding-sync-form-header = Enter your email
+onboarding-sync-form-sub-header = to continue to { -sync-brand-name }
 
 
 ## These are individual benefit messages shown with an image, title and

@@ -55,14 +55,16 @@ def migrate(ctx):
         SOURCE_FILE,
         transforms_from("""
 
-onboarding-control-form-privacy-notice = { COPY(from_path, "firstrun_privacy_notice") }
-onboarding-control-welcome-content = { COPY(from_path, "firstrun_content") }
-onboarding-control-form-invalid-input = { COPY(from_path, "firstrun_invalid_input") }
-onboarding-control-form-header = { COPY(from_path, "firstrun_form_header") }
-onboarding-control-form-input =
+onboarding-sync-welcome-content = { COPY(from_path, "firstrun_content") }
+onboarding-sync-form-invalid-input = { COPY(from_path, "firstrun_invalid_input") }
+onboarding-sync-form-header = { COPY(from_path, "firstrun_form_header") }
+onboarding-sync-form-input =
     .placeholder = { COPY(from_path, "firstrun_email_input_placeholder") }
-onboarding-control-form-continue-button = { COPY(from_path, "firstrun_continue_to_login") }
-onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_login") }
+onboarding-sync-form-continue-button = { COPY(from_path, "firstrun_continue_to_login") }
+onboarding-sync-form-skip-login-button = { COPY(from_path, "firstrun_skip_login") }
+onboarding-menu-dismiss =
+    .title = { COPY(from_path, "menu_action_dismiss") }
+    .aria-label = { COPY(from_path, "menu_action_dismiss") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
@@ -72,7 +74,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
         SOURCE_FILE,
         [
             FTL.Message(
-                id=FTL.Identifier("onboarding-control-welcome-header"),
+                id=FTL.Identifier("onboarding-sync-welcome-header"),
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_title",
@@ -82,7 +84,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
                 )
             ),
             FTL.Message(
-                id=FTL.Identifier("onboarding-control-welcome-learn-more-link"),
+                id=FTL.Identifier("onboarding-sync-welcome-learn-more-link"),
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_learn_more_link",
@@ -92,7 +94,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
                 )
             ),
             FTL.Message(
-                id=FTL.Identifier("onboarding-control-legal-notice"),
+                id=FTL.Identifier("onboarding-sync-legal-notice"),
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_extra_legal_links",
@@ -117,7 +119,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
                 )
             ),
             FTL.Message(
-                id=FTL.Identifier("onboarding-control-form-sub-header"),
+                id=FTL.Identifier("onboarding-sync-form-sub-header"),
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_form_sub_header",

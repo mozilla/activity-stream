@@ -183,20 +183,20 @@ const ONBOARDING_MESSAGES = async () => ([
     utm_term: "trailhead-sync",
     content: {
       className: "syncCohort",
-      title: {string_id: "onboarding-control-welcome-header"},
-      subtitle: {string_id: "onboarding-control-welcome-content"},
+      title: {string_id: "onboarding-sync-welcome-header"},
+      subtitle: {string_id: "onboarding-sync-welcome-content"},
       benefits: [],
       learn: {
-        text: {string_id: "onboarding-control-welcome-learn-more-link"},
+        text: {string_id: "onboarding-sync-welcome-learn-more-link"},
         url: "https://www.mozilla.org/firefox/accounts/",
       },
       form: {
-        title: {string_id: "onboarding-control-form-header"},
-        text: {string_id: "onboarding-control-form-sub-header"},
-        email: {string_id: "onboarding-control-form-input"},
-        button: {string_id: "onboarding-control-form-continue-button"},
+        title: {string_id: "onboarding-sync-form-header"},
+        text: {string_id: "onboarding-sync-form-sub-header"},
+        email: {string_id: "onboarding-sync-form-input"},
+        button: {string_id: "onboarding-sync-form-continue-button"},
       },
-      skipButton: {string_id: "onboarding-control-form-skip-login-button"},
+      skipButton: {string_id: "onboarding-sync-form-skip-login-button"},
     },
   },
   {

@@ -4,6 +4,7 @@ import React from "react";
 
 const FLUENT_FILES = [
   "branding/brand.ftl",
+  "browser/branding/sync-brand.ftl",
   "browser/newtab/onboarding.ftl",
 ];
 
@@ -130,14 +131,14 @@ export class _StartupOverlay extends React.PureComponent {
         <div className="firstrun-scene">
           <div className="fxaccounts-container">
             <div className="firstrun-left-divider">
-              <h1 className="firstrun-title" data-l10n-id="onboarding-control-welcome-header" />
-              <p className="firstrun-content" data-l10n-id="onboarding-control-welcome-content" />
-              <a className="firstrun-link" href={`https://www.mozilla.org/firefox/features/sync/?${this.utmParams}`} target="_blank" rel="noopener noreferrer" data-l10n-id="onboarding-control-welcome-learn-more-link" />
+              <h1 className="firstrun-title" data-l10n-id="onboarding-sync-welcome-header" />
+              <p className="firstrun-content" data-l10n-id="onboarding-sync-welcome-content" />
+              <a className="firstrun-link" href={`https://www.mozilla.org/firefox/features/sync/?${this.utmParams}`} target="_blank" rel="noopener noreferrer" data-l10n-id="onboarding-sync-welcome-learn-more-link" />
             </div>
             <div className="firstrun-sign-in">
               <p className="form-header">
-                <span data-l10n-id="onboarding-control-form-header"/>
-                <span className="sub-header" data-l10n-id="onboarding-control-form-sub-header" />
+                <span data-l10n-id="onboarding-sync-form-header"/>
+                <span className="sub-header" data-l10n-id="onboarding-sync-form-sub-header" />
               </p>
               <form method="get" action={this.props.fxa_endpoint} target="_blank" rel="noopener noreferrer" onSubmit={this.onSubmit}>
                 <input name="service" type="hidden" value="sync" />
@@ -151,19 +152,19 @@ export class _StartupOverlay extends React.PureComponent {
                 <input name="device_id" type="hidden" value={this.state.deviceId} />
                 <input name="flow_id" type="hidden" value={this.state.flowId} />
                 <input name="flow_begin_time" type="hidden" value={this.state.flowBeginTime} />
-                <span className="error" data-l10n-id="onboarding-control-form-invalid-input" />
-                <input className="email-input" name="email" type="email" required="true" onInvalid={this.onInputInvalid} onChange={this.onInputChange} data-l10n-id="onboarding-control-form-input" />
+                <span className="error" data-l10n-id="onboarding-sync-form-invalid-input" />
+                <input className="email-input" name="email" type="email" required="true" onInvalid={this.onInputInvalid} onChange={this.onInputChange} data-l10n-id="onboarding-sync-form-input" />
                 <div className="extra-links">
-                <p data-l10n-id="onboarding-control-legal-notice">
+                <p data-l10n-id="onboarding-sync-legal-notice">
                   <a data-l10n-name="terms" target="_blank" rel="noopener noreferrer"
                     href={`${this.props.fxa_endpoint}/legal/terms?${this.utmParams}`} />
                   <a data-l10n-name="privacy" target="_blank" rel="noopener noreferrer"
                     href={`${this.props.fxa_endpoint}/legal/privacy?${this.utmParams}`} />
                 </p>
                 </div>
-                <button className="continue-button" type="submit" data-l10n-id="onboarding-control-form-continue-button" />
+                <button className="continue-button" type="submit" data-l10n-id="onboarding-sync-form-continue-button" />
               </form>
-              <button className="skip-button" disabled={!!this.state.emailInput} onClick={this.clickSkip} data-l10n-id="onboarding-control-form-skip-login-button" />
+              <button className="skip-button" disabled={!!this.state.emailInput} onClick={this.clickSkip} data-l10n-id="onboarding-sync-form-skip-login-button" />
             </div>
           </div>
         </div>

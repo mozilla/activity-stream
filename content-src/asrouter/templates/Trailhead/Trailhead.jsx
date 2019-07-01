@@ -1,5 +1,4 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {injectIntl} from "react-intl";
 import {ModalOverlayWrapper} from "../../components/ModalOverlay/ModalOverlay";
 import {OnboardingCard} from "../OnboardingMessage/OnboardingMessage";
 import React from "react";
@@ -22,7 +21,7 @@ const FOCUSABLE_SELECTOR = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(", ");
 
-export class _Trailhead extends React.PureComponent {
+export class Trailhead extends React.PureComponent {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
@@ -301,13 +300,10 @@ export class _Trailhead extends React.PureComponent {
         {this.state.showCardPanel &&
           <button
             className="icon icon-dismiss" onClick={this.hideCardPanel}
-            title={props.intl.formatMessage({id: "menu_action_dismiss"})}
-            aria-label={props.intl.formatMessage({id: "menu_action_dismiss"})} />
+            data-l10n-id="onboarding-menu-dismiss" />
         }
       </div>
     </div> : null}
     </>);
   }
 }
-
-export const Trailhead = injectIntl(_Trailhead);
