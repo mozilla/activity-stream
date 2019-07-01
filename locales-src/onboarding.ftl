@@ -49,8 +49,9 @@ onboarding-control-form-skip-login-button = Skip this step
 
 ## Welcome modal dialog strings for pre-trailhead about welcome. This is part of the line
 ## "Enter your email to continue to Firefox Sync"
+
 onboarding-control-form-header = Enter your email
-onboarding-control-form-sub-header = to continue to { -brand-product-name } Sync
+onboarding-control-form-sub-header = to continue to { -sync-brand-name }
 
 
 ## These are individual benefit messages shown with an image, title and

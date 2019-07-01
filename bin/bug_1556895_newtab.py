@@ -43,9 +43,6 @@ NB: migrate-l10n will make local commits to gecko-strings
 
 The diff should result in no differences if the migration recipe matches the
 fluent file.
-
-
-NB: Move the following line out of this comment to test from activity-stream
 """
 SOURCE_FILE = 'locales-src/onboarding.ftl'
 
@@ -69,7 +66,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
-    
+
     ctx.add_transforms(
         TARGET_FILE,
         SOURCE_FILE,
@@ -125,7 +122,7 @@ onboarding-control-form-skip-login-button = { COPY(from_path, "firstrun_skip_log
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_form_sub_header",
                     {
-                        "Firefox": TERM_REFERENCE("brand-product-name")
+                        "Firefox Sync": TERM_REFERENCE("sync-brand-name")
                     },
                 )
             ),
