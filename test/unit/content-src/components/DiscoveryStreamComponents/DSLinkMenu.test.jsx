@@ -1,4 +1,4 @@
-import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import {mount, shallow} from "enzyme";
 import {_DSLinkMenu as DSLinkMenu} from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
@@ -9,7 +9,7 @@ describe("<DSLinkMenu>", () => {
 
   describe("DS link menu actions", () => {
     beforeEach(() => {
-      wrapper = mountWithIntl(<DSLinkMenu />);
+      wrapper = mount(<DSLinkMenu />);
       parentNode = wrapper.getDOMNode().parentNode;
     });
 
@@ -41,7 +41,7 @@ describe("<DSLinkMenu>", () => {
 
     it("Should add last-item to support resized window", async () => {
       const fakeWindow = {scrollMaxX: "20"};
-      wrapper = mountWithIntl(<DSLinkMenu windowObj={fakeWindow} />);
+      wrapper = mount(<DSLinkMenu windowObj={fakeWindow} />);
       parentNode = wrapper.getDOMNode().parentNode;
       wrapper.instance().onMenuShow();
       // Wait for next frame to allow fluent to render strings
@@ -75,7 +75,7 @@ describe("<DSLinkMenu>", () => {
     };
 
     beforeEach(() => {
-      wrapper = shallowWithIntl(<DSLinkMenu {...ValidDSLinkMenuProps} />);
+      wrapper = shallow(<DSLinkMenu {...ValidDSLinkMenuProps} />);
     });
 
     it("should render a context menu button", () => {
