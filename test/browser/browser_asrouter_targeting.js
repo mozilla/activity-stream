@@ -458,6 +458,14 @@ add_task(async function check_pinned_tabs() {
   });
 });
 
+add_task(async function check_hasAccessedFxAPanel() {
+  is(await ASRouterTargeting.Environment.hasAccessedFxAPanel, false, "Not accessed yet");
+
+  await pushPrefs(["identity.fxaccounts.toolbar.accessed", true]);
+
+  is(await ASRouterTargeting.Environment.hasAccessedFxAPanel, true, "Should detect panel access");
+});
+
 add_task(async function checkCFRPinnedTabsTargetting() {
   const now = Date.now();
   const timeMinutesAgo = numMinutes => now - numMinutes * 60 * 1000;
