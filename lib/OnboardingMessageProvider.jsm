@@ -450,7 +450,7 @@ const ONBOARDING_MESSAGES = async () => ([
     },
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
     targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`, 
-    trigger: {id: "firstRunFxAccounts"},
+    trigger: {id: "toolbarBadgeUpdate"},
   },
 ]);
 
