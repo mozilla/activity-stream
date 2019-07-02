@@ -45,6 +45,7 @@ The diff should result in no differences if the migration recipe matches the
 fluent file.
 """
 
+
 def migrate(ctx):
     """Bug 1556895 - Migrate newtab.properties to onboarding.ftl, part {index}"""
 
