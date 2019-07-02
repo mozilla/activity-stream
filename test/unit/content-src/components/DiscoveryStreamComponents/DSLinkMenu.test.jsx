@@ -1,5 +1,5 @@
 import {mount, shallow} from "enzyme";
-import {_DSLinkMenu as DSLinkMenu} from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
+import {DSLinkMenu} from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 
