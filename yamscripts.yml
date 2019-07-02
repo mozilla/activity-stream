@@ -83,3 +83,8 @@ scripts:
   # Utility scripts for use when vendoring in Node packages
   vendor:
     react: node ./bin/vendor-react.js
+
+  fix:
+    # Note that since we're currently running eslint-plugin-prettier,
+    # running fix:eslint will also reformat changed JS files using prettier.
+    eslint: =>lint:eslint -- --fix
