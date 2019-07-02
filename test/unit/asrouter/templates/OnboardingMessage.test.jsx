@@ -53,7 +53,7 @@ describe("OnboardingMessage", () => {
   it("should validate all badge template messages", async () => {
     const messages = await OnboardingMessageProvider.getUntranslatedMessages();
 
-    messages.filter(msg => msg.template === "toolbar-badge").forEach(msg => assert.jsonSchema(msg.content, badgeSchema));
+    messages.filter(msg => msg.template === "toolbar_badge").forEach(msg => assert.jsonSchema(msg.content, badgeSchema));
   });
   it("should decode the content field (double decoding)", async () => {
     const fakeContent = "foo%2540bar.org";

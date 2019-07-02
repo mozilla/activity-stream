@@ -11,7 +11,7 @@ const notificationsByWindow = new WeakMap();
 class _ToolbarBadgeHub {
   constructor() {
     this.id = "toolbar-badge-hub";
-    this.template = "toolbar-badge";
+    this.template = "toolbar_badge";
     this.state = null;
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);

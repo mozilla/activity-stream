@@ -119,6 +119,7 @@ describe("ASRouter", () => {
     };
     FakeToolbarBadgeHub = {
       init: sandbox.stub(),
+      registerBadgeNotificationListener: sandbox.stub(),
     };
     globals.set({
       AttributionCode: fakeAttributionCode,
@@ -333,6 +334,60 @@ describe("ASRouter", () => {
       await Router.evaluateExpression(targetStub, {});
 
       assert.isFalse(targetStub.sendAsyncMessage.firstCall.args[1].data.evaluationStatus.success);
+    });
+  });
+
+  describe("#routeMessageToTarget", () => {
+    let target;
+    beforeEach(() => {
+      sandbox.stub(CFRPageActions, "forceRecommendation");
+      sandbox.stub(CFRPageActions, "addRecommendation");
+      target = {sendAsyncMessage: sandbox.stub()};
+    });
+    it("should route toolbar_badge message to the right hub", () => {
+      Router.routeMessageToTarget({template: "toolbar_badge"}, target);
+
+      assert.calledOnce(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route fxa_bookmark_panel message to the right hub force = true", () => {
+      Router.routeMessageToTarget({template: "fxa_bookmark_panel"}, target, {}, true);
+
+      assert.calledOnce(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route cfr_doorhanger message to the right hub force = false", () => {
+      Router.routeMessageToTarget({template: "cfr_doorhanger"}, target, {param: {}}, false);
+
+      assert.calledOnce(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route cfr_doorhanger message to the right hub force = true", () => {
+      Router.routeMessageToTarget({template: "cfr_doorhanger"}, target, {}, true);
+
+      assert.calledOnce(CFRPageActions.forceRecommendation);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route default to sending to content", () => {
+      Router.routeMessageToTarget({template: "snippets"}, target, {}, true);
+
+      assert.calledOnce(target.sendAsyncMessage);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
     });
   });
 

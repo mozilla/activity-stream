@@ -1003,6 +1003,9 @@ class _ASRouter {
           BookmarkPanelHub._forceShowMessage(target, message);
         }
         break;
+      case "toolbar_badge":
+        ToolbarBadgeHub.registerBadgeNotificationListener(message);
+        break;
       default:
         target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
         break;
