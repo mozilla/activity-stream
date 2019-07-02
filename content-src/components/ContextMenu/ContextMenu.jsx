@@ -38,8 +38,9 @@ export class ContextMenu extends React.PureComponent {
 
   render() {
     // Disabling focus on the menu span allows the first tab to focus on the first menu item instead of the wrapper.
-    // eslint-disable-next-line jsx-a11y/interactive-supports-focus
-    return (<span role="menu" className="context-menu" onClick={this.onClick} onKeyDown={this.onClick} >
+    return (
+      // eslint-disable-next-line jsx-a11y/interactive-supports-focus
+      <span role="menu" className="context-menu" onClick={this.onClick} onKeyDown={this.onClick} >
       <ul className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :
@@ -55,11 +56,18 @@ export class ContextMenuItem extends React.PureComponent {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.focusFirst = this.focusFirst.bind(this);
   }
 
   onClick() {
     this.props.hideContext();
     this.props.option.onClick();
+  }
+
+  focusFirst(button) {
+    if (button) {
+      button.focus();
+    }
   }
 
   // This selects the correct node based on the key pressed
@@ -96,6 +104,9 @@ export class ContextMenuItem extends React.PureComponent {
         this.props.hideContext();
         option.onClick();
         break;
+      case "Escape":
+        this.props.hideContext();
+        break;
     }
   }
 
@@ -103,9 +114,9 @@ export class ContextMenuItem extends React.PureComponent {
     const {option} = this.props;
     return (
       <li role="menuitem" className="context-menu-item" >
-        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown}>
+        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown} ref={option.first ? this.focusFirst : null}>
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
-          {option.label}
+          <span data-l10n-id={option.string_id || option.id} />
         </button>
       </li>);
   }

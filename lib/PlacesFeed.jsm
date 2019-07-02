@@ -90,7 +90,8 @@ class BookmarksObserver extends Observer {
    * @param  {str} uri
    * @param  {str} guid      The unique id of the bookmark
    */
-  onItemRemoved(id, folderId, index, type, uri, guid, parentGuid, source) { // eslint-disable-line max-params
+  // eslint-disable-next-line max-params
+  onItemRemoved(id, folderId, index, type, uri, guid, parentGuid, source) {
     if (type === PlacesUtils.bookmarks.TYPE_BOOKMARK &&
         source !== PlacesUtils.bookmarks.SOURCES.IMPORT &&
         source !== PlacesUtils.bookmarks.SOURCES.RESTORE &&
@@ -248,8 +249,16 @@ class PlacesFeed {
     // Always include the referrer (even for http links) if we have one
     const {event, referrer, typedBonus} = action.data;
     if (referrer) {
-      params.referrerPolicy = Ci.nsIHttpChannel.REFERRER_POLICY_UNSAFE_URL;
-      params.referrerURI = Services.io.newURI(referrer);
+      const ReferrerInfo = Components.Constructor(
+        "@mozilla.org/referrer-info;1",
+        "nsIReferrerInfo",
+        "init"
+      );
+      params.referrerInfo = new ReferrerInfo(
+        Ci.nsIHttpChannel.REFERRER_POLICY_UNSAFE_URL,
+        true,
+        Services.io.newURI(referrer)
+      );
     }
 
     // Pocket gives us a special reader URL to open their stories in

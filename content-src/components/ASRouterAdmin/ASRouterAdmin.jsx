@@ -472,8 +472,11 @@ export class ASRouterAdminInner extends React.PureComponent {
     if (!this.state.providers) {
       return null;
     }
-    // eslint-disable-next-line jsx-a11y/no-onchange
-    return (<p>Show messages from <select value={this.state.messageFilter} onChange={this.onChangeMessageFilter}>
+    return (<p>
+      {/* eslint-disable-next-line prettier/prettier */}
+      Show messages from{" "}
+      {/* eslint-disable-next-line jsx-a11y/no-onchange */}
+      <select value={this.state.messageFilter} onChange={this.onChangeMessageFilter}>
       <option value="all">all providers</option>
       {this.state.providers.map(provider => (<option key={provider.id} value={provider.id}>{provider.id}</option>))}
     </select></p>);
@@ -815,9 +818,10 @@ export class CollapseToggle extends React.PureComponent {
     return (<React.Fragment>
       <a href="#devtools"
         title={label}
+        aria-label={label}
         className={`asrouter-toggle ${isCollapsed ? "collapsed" : "expanded"}`}
         onClick={this.renderAdmin ? this.onCollapseToggle : null}>
-        <span className="sr-only">{label}</span><span className="icon icon-devtools" />
+        <span className="icon icon-devtools" />
       </a>
       {renderAdmin ? <ASRouterAdminInner {...props} collapsed={this.state.collapsed} /> : null}
     </React.Fragment>);
