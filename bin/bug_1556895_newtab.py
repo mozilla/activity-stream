@@ -44,8 +44,6 @@ NB: migrate-l10n will make local commits to gecko-strings
 The diff should result in no differences if the migration recipe matches the
 fluent file.
 """
-SOURCE_FILE = 'locales-src/onboarding.ftl'
-
 
 def migrate(ctx):
     """Bug 1556895 - Migrate newtab.properties to onboarding.ftl, part {index}"""
@@ -56,13 +54,14 @@ def migrate(ctx):
         transforms_from("""
 
 onboarding-sync-welcome-content = { COPY(from_path, "firstrun_content") }
+onboarding-sync-welcome-learn-more-link = { COPY(from_path, "firstrun_learn_more_link") }
 onboarding-sync-form-invalid-input = { COPY(from_path, "firstrun_invalid_input") }
 onboarding-sync-form-header = { COPY(from_path, "firstrun_form_header") }
 onboarding-sync-form-input =
     .placeholder = { COPY(from_path, "firstrun_email_input_placeholder") }
 onboarding-sync-form-continue-button = { COPY(from_path, "firstrun_continue_to_login") }
 onboarding-sync-form-skip-login-button = { COPY(from_path, "firstrun_skip_login") }
-onboarding-menu-dismiss =
+onboarding-cards-dismiss =
     .title = { COPY(from_path, "menu_action_dismiss") }
     .aria-label = { COPY(from_path, "menu_action_dismiss") }
 
@@ -78,16 +77,6 @@ onboarding-menu-dismiss =
                 value=REPLACE(
                     "browser/chrome/browser/activity-stream/newtab.properties",
                     "firstrun_title",
-                    {
-                        "Firefox": TERM_REFERENCE("brand-product-name")
-                    },
-                )
-            ),
-            FTL.Message(
-                id=FTL.Identifier("onboarding-sync-welcome-learn-more-link"),
-                value=REPLACE(
-                    "browser/chrome/browser/activity-stream/newtab.properties",
-                    "firstrun_learn_more_link",
                     {
                         "Firefox": TERM_REFERENCE("brand-product-name")
                     },

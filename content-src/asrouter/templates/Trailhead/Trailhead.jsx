@@ -300,7 +300,7 @@ export class Trailhead extends React.PureComponent {
         {this.state.showCardPanel &&
           <button
             className="icon icon-dismiss" onClick={this.hideCardPanel}
-            data-l10n-id="onboarding-menu-dismiss" />
+            data-l10n-id="onboarding-cards-dismiss" />
         }
       </div>
     </div> : null}

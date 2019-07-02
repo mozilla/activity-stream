@@ -29,7 +29,7 @@ onboarding-join-form-legal = By proceeding, you agree to the <a data-l10n-name="
 onboarding-join-form-continue = Continue
 
 onboarding-start-browsing-button-label = Start Browsing
-onboarding-menu-dismiss =
+onboarding-cards-dismiss =
     .title = Dismiss
     .aria-label = Dismiss
 
@@ -37,7 +37,7 @@ onboarding-menu-dismiss =
 
 onboarding-sync-welcome-header = Take { -brand-product-name } with You
 onboarding-sync-welcome-content = Get your bookmarks, history, passwords and other settings on all your devices.
-onboarding-sync-welcome-learn-more-link = Learn more about { -brand-product-name } Accounts
+onboarding-sync-welcome-learn-more-link = Learn more about Firefox Accounts
 onboarding-sync-form-invalid-input = Valid email required
 onboarding-sync-legal-notice = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
 
