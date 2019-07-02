@@ -1,8 +1,7 @@
-import {injectIntl} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 
-export class _DSLinkMenu extends React.PureComponent {
+export class DSLinkMenu extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,5 +82,3 @@ export class _DSLinkMenu extends React.PureComponent {
     </div>);
   }
 }
-
-export const DSLinkMenu = injectIntl(_DSLinkMenu);

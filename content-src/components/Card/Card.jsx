@@ -1,7 +1,6 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {cardContextTypes} from "./types";
 import {connect} from "react-redux";
-import {injectIntl} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 import {ScreenshotUtils} from "content-src/lib/screenshot-utils";
@@ -265,5 +264,5 @@ export class _Card extends React.PureComponent {
   }
 }
 _Card.defaultProps = {link: {}};
-export const Card = connect(state => ({platform: state.Prefs.values.platform}))(injectIntl(_Card));
+export const Card = connect(state => ({platform: state.Prefs.values.platform}))(_Card);
 export const PlaceholderCard = props => <Card placeholder={true} className={props.className} />;
