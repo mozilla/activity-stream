@@ -111,6 +111,15 @@ describe("<Card>", () => {
     assert.isTrue(context.childAt(1).hasClass("card-context-label"));
     assert.equal(context.childAt(1).text(), linkWithCustomContext.context);
   });
+  it("should parse args for fluent correctly", () => {
+    const title = '"fluent"';
+    const link = {...DEFAULT_PROPS.link, title};
+
+    wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+    let button = wrapper.find("button[data-l10n-id='newtab-menu-content-tooltip']");
+
+    assert.equal(button.prop("data-l10n-args"), JSON.stringify({title}));
+  });
   it("should have .active class, on card-outer if context menu is open", () => {
     const button = wrapper.find(".context-menu-button");
     assert.isFalse(wrapper.find(".card-outer").hasClass("active"));

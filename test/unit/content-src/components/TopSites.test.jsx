@@ -560,6 +560,15 @@ describe("<TopSite>", () => {
     assert.equal(wrapper.find(TopSiteLink).props().title, "foobar");
   });
 
+  it("should parse args for fluent correctly", () => {
+    const title = '"fluent"';
+    link.hostname = title;
+
+    const wrapper = mount(<TopSite link={link} />);
+    const button = wrapper.find("button[data-l10n-id='newtab-menu-content-tooltip']");
+    assert.equal(button.prop("data-l10n-args"), JSON.stringify({title}));
+  });
+
   it("should have .active class, on top-site-outer if context menu is open", () => {
     const wrapper = shallow(<TopSite link={link} index={1} activeIndex={1} />);
     wrapper.setState({showContextMenu: true});

@@ -67,6 +67,14 @@ describe("<DSLinkMenu>", () => {
       await new Promise(r => requestAnimationFrame(r));
       assert.calledOnce(add);
     });
+
+    it("should parse args for fluent correctly ", () => {
+      const title = '"fluent"'
+      wrapper = shallow(<DSLinkMenu title={title} />);
+
+      const button = wrapper.find("button[data-l10n-id='newtab-menu-content-tooltip']");
+      assert.equal(button.prop("data-l10n-args"), JSON.stringify({title}));
+    });
   });
 
   describe("DS context menu options", () => {
