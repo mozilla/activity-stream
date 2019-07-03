@@ -16,6 +16,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   SnippetsTestMessageProvider: "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
   ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
+  ToolbarPanelHub: "resource://activity-stream/lib/ToolbarPanelHub.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
@@ -597,6 +598,7 @@ class _ASRouter {
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
     });
+    ToolbarPanelHub.init();
 
     this._loadLocalProviders();
 
@@ -631,6 +633,7 @@ class _ASRouter {
     ASRouterPreferences.removeListener(this.onPrefChange);
     ASRouterPreferences.uninit();
     BookmarkPanelHub.uninit();
+    ToolbarPanelHub.uninit();
 
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {

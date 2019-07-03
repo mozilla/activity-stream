@@ -60,6 +60,7 @@ describe("ASRouter", () => {
   let fakeAttributionCode;
   let FakeBookmarkPanelHub;
   let FakeToolbarBadgeHub;
+  let FakeToolbarPanelHub;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -121,6 +122,10 @@ describe("ASRouter", () => {
       init: sandbox.stub(),
       registerBadgeNotificationListener: sandbox.stub(),
     };
+    FakeToolbarPanelHub = {
+      init: sandbox.stub(),
+      uninit: sandbox.stub(),
+    };
     globals.set({
       AttributionCode: fakeAttributionCode,
       // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
@@ -129,6 +134,7 @@ describe("ASRouter", () => {
       PanelTestProvider,
       BookmarkPanelHub: FakeBookmarkPanelHub,
       ToolbarBadgeHub: FakeToolbarBadgeHub,
+      ToolbarPanelHub: FakeToolbarPanelHub,
     });
     await createRouterAndInit();
   });
