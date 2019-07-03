@@ -57,7 +57,7 @@ export class DSLinkMenu extends React.PureComponent {
               aria-haspopup="true"
               className="context-menu-button icon"
               data-l10n-id="newtab-menu-content-tooltip"
-              data-l10n-args={`{ "title": "${title}" }`}
+              data-l10n-args={JSON.stringify({title})}
               onClick={this.onMenuButtonClick} />
       {isContextMenuOpen &&
         <LinkMenu
