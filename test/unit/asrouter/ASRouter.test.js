@@ -59,6 +59,7 @@ describe("ASRouter", () => {
   let dispatchStub;
   let fakeAttributionCode;
   let FakeBookmarkPanelHub;
+  let FakeToolbarBadgeHub;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -116,6 +117,10 @@ describe("ASRouter", () => {
       uninit: sandbox.stub(),
       _forceShowMessage: sandbox.stub(),
     };
+    FakeToolbarBadgeHub = {
+      init: sandbox.stub(),
+      registerBadgeNotificationListener: sandbox.stub(),
+    };
     globals.set({
       AttributionCode: fakeAttributionCode,
       // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
@@ -123,6 +128,7 @@ describe("ASRouter", () => {
       SnippetsTestMessageProvider,
       PanelTestProvider,
       BookmarkPanelHub: FakeBookmarkPanelHub,
+      ToolbarBadgeHub: FakeToolbarBadgeHub,
     });
     await createRouterAndInit();
   });
@@ -331,6 +337,60 @@ describe("ASRouter", () => {
     });
   });
 
+  describe("#routeMessageToTarget", () => {
+    let target;
+    beforeEach(() => {
+      sandbox.stub(CFRPageActions, "forceRecommendation");
+      sandbox.stub(CFRPageActions, "addRecommendation");
+      target = {sendAsyncMessage: sandbox.stub()};
+    });
+    it("should route toolbar_badge message to the right hub", () => {
+      Router.routeMessageToTarget({template: "toolbar_badge"}, target);
+
+      assert.calledOnce(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route fxa_bookmark_panel message to the right hub force = true", () => {
+      Router.routeMessageToTarget({template: "fxa_bookmark_panel"}, target, {}, true);
+
+      assert.calledOnce(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route cfr_doorhanger message to the right hub force = false", () => {
+      Router.routeMessageToTarget({template: "cfr_doorhanger"}, target, {param: {}}, false);
+
+      assert.calledOnce(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route cfr_doorhanger message to the right hub force = true", () => {
+      Router.routeMessageToTarget({template: "cfr_doorhanger"}, target, {}, true);
+
+      assert.calledOnce(CFRPageActions.forceRecommendation);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(target.sendAsyncMessage);
+    });
+    it("should route default to sending to content", () => {
+      Router.routeMessageToTarget({template: "snippets"}, target, {}, true);
+
+      assert.calledOnce(target.sendAsyncMessage);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+    });
+  });
+
   describe("#loadMessagesFromAllProviders", () => {
     function assertRouterContainsMessages(messages) {
       const messageIdsInRouter = Router.state.messages.map(m => m.id);
@@ -495,14 +555,26 @@ describe("ASRouter", () => {
 
   describe("#handleMessageRequest", () => {
     it("should get unblocked messages that match the trigger", async () => {
-      const message = {id: "1", campaign: "foocampaign", trigger: {id: "foo"}};
-      await Router.setState({messages: [message]});
+      const message1 = {id: "1", campaign: "foocampaign", trigger: {id: "foo"}};
+      const message2 = {id: "2", campaign: "foocampaign", trigger: {id: "bar"}};
+      await Router.setState({messages: [message2, message1]});
       // Just return the first message provided as arg
       sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
 
-      const result = Router.handleMessageRequest({id: "foo"});
+      const result = Router.handleMessageRequest({triggerId: "foo"});
 
-      assert.deepEqual(result, message);
+      assert.deepEqual(result, message1);
+    });
+    it("should get unblocked messages that match trigger and template", async () => {
+      const message1 = {id: "1", campaign: "foocampaign", template: "badge", trigger: {id: "foo"}};
+      const message2 = {id: "2", campaign: "foocampaign", template: "snippet", trigger: {id: "foo"}};
+      await Router.setState({messages: [message2, message1]});
+      // Just return the first message provided as arg
+      sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
+
+      const result = Router.handleMessageRequest({triggerId: "foo", template: "badge"});
+
+      assert.deepEqual(result, message1);
     });
   });
 
