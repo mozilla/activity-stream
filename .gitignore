@@ -10,7 +10,6 @@ dist/
 firefox/
 *.update.rdf
 data/content/activity-stream.bundle.js
-data/locales.json
 css/*.css
 prerendered/
 aboutlibrary/content/aboutlibrary.bundle.js
