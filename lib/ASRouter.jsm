@@ -20,6 +20,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
   ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
   ToolbarPanelHub: "resource://activity-stream/lib/ToolbarPanelHub.jsm",
+  ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
 });
 const {
   ASRouterActions: ra,
@@ -730,6 +731,11 @@ class _ASRouter {
       blockMessageById: this.blockMessageById,
     });
     ToolbarPanelHub.init();
+    ToolbarBadgeHub.init(this.waitForInitialized, {
+      handleMessageRequest: this.handleMessageRequest,
+      addImpression: this.addImpression,
+      blockMessageById: this.blockMessageById,
+    });
 
     this._loadLocalProviders();
 
