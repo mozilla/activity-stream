@@ -359,6 +359,12 @@ const TargetingGetters = {
 
     return false;
   },
+  get hasAccessedFxAPanel() {
+    return Services.prefs.getBoolPref(
+      "identity.fxaccounts.toolbar.accessed",
+      true
+    );
+  },
 };
 
 this.ASRouterTargeting = {
