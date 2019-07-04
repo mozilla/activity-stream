@@ -34,6 +34,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [isFxAEnabled](#isFxAEnabled)
 * [xpinstallEnabled](#xpinstallEnabled)
 * [hasPinnedTabs](#haspinnedtabs)
+* [hasAccessedFxAPanel](#hasaccessedfxapanel)
 
 ## Detailed usage
 
@@ -473,4 +474,14 @@ Does the user have any pinned tabs in any windows.
 
 ```ts
 declare const hasPinnedTabs: boolean;
+```
+
+### `hasAccessedFxAPanel`
+
+Boolean pref that gets set the first time the user opens the FxA toolbar panel
+
+#### Definition
+
+```ts
+declare const hasAccessedFxAPanel: boolean;
 ```

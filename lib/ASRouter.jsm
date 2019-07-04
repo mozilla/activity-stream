@@ -18,6 +18,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   SnippetsTestMessageProvider:
     "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
+  ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
 });
 const {
   ASRouterActions: ra,
@@ -491,11 +492,13 @@ class _ASRouter {
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
+    this.blockMessageById = this.blockMessageById.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.handleMessageRequest = this.handleMessageRequest.bind(this);
     this.addImpression = this.addImpression.bind(this);
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
+    this.dispatch = this.dispatch.bind(this);
   }
 
   async onPrefChange(prefName) {
@@ -712,7 +715,6 @@ class _ASRouter {
     this._storage = storage;
     this.WHITELIST_HOSTS = this._loadSnippetsWhitelistHosts();
     this.dispatchToAS = dispatchToAS;
-    this.dispatch = this.dispatch.bind(this);
 
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
@@ -721,6 +723,11 @@ class _ASRouter {
       this.addImpression,
       this.dispatch
     );
+    ToolbarBadgeHub.init(this.waitForInitialized, {
+      handleMessageRequest: this.handleMessageRequest,
+      addImpression: this.addImpression,
+      blockMessageById: this.blockMessageById,
+    });
 
     this._loadLocalProviders();
 
@@ -1253,6 +1260,9 @@ class _ASRouter {
           BookmarkPanelHub._forceShowMessage(target, message);
         }
         break;
+      case "toolbar_badge":
+        ToolbarBadgeHub.registerBadgeNotificationListener(message);
+        break;
       default:
         target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {
           type: "SET_MESSAGE",
@@ -1446,12 +1456,18 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
-  handleMessageRequest(trigger) {
-    const msgs = this._getUnblockedMessages();
-    return this._findMessage(
-      msgs.filter(m => m.trigger && m.trigger.id === trigger.id),
-      trigger
-    );
+  handleMessageRequest({ triggerId, template }) {
+    const msgs = this._getUnblockedMessages().filter(m => {
+      if (template && m.template !== template) {
+        return false;
+      }
+      if (m.trigger && m.trigger.id !== triggerId) {
+        return false;
+      }
+
+      return true;
+    });
+    return this._findMessage(msgs, { id: triggerId });
   }
 
   async setMessageById(id, target, force = true, action = {}) {

@@ -1,0 +1,13 @@
+{
+  "title": "ToolbarBadgeMessage",
+  "description": "A template that specifies to which element in the browser toolbar to add a notification.",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "target": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["target"]
+}
