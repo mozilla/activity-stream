@@ -19,6 +19,19 @@ ChromeUtils.defineModuleGetter(
   "resource://gre/modules/PrivateBrowsingUtils.jsm"
 );
 
+const MARKUP_IDENTIFIERS = {
+  messageHeader: "editBookmarkPanelRecommendationTitle",
+  headerClass: "cfrMessageHeader",
+  contentParagraph: "editBookmarkPanelRecommendationContent",
+  ctaBtn: "editBookmarkPanelRecommendationCta",
+  // Div that contains header, message and cta
+  messageContainer: "cfrMessageContainer",
+  // Bookmark panel element where the messageContainer will be attached
+  panelAnchor: "editBookmarkPanelRecommendation",
+  // Bookmark panel info button used to toggle the message
+  infoButton: "editBookmarkPanelInfoButton",
+};
+
 class _BookmarkPanelHub {
   constructor() {
     this._id = "BookmarkPanelHub";
@@ -27,8 +40,7 @@ class _BookmarkPanelHub {
     this._addImpression = null;
     this._dispatch = null;
     this._initialized = false;
-    this._response = null;
-    this._l10n = null;
+    this._state = null;
 
     this.messageRequest = this.messageRequest.bind(this);
     this.toggleRecommendation = this.toggleRecommendation.bind(this);
@@ -45,17 +57,15 @@ class _BookmarkPanelHub {
     this._handleMessageRequest = handleMessageRequest;
     this._addImpression = addImpression;
     this._dispatch = dispatch;
-    this._l10n = new DOMLocalization();
     this._initialized = true;
   }
 
   uninit() {
-    this._l10n = null;
     this._initialized = false;
     this._handleMessageRequest = null;
     this._addImpression = null;
     this._dispatch = null;
-    this._response = null;
+    this._state = null;
   }
 
   /**
@@ -89,31 +99,33 @@ class _BookmarkPanelHub {
       triggerId: this._trigger.id,
     });
 
-    return this.onResponse(response, target, win);
+    return this.onResponse(target, win, response);
+  }
+
+  insertFTLIfNeeded(win) {
+    // Only insert localization files if we need to show a message
+    win.MozXULElement.insertFTLIfNeeded("browser/newtab/asrouter.ftl");
+    win.MozXULElement.insertFTLIfNeeded("browser/branding/sync-brand.ftl");
   }
 
   /**
    * If the response contains a message render it and send an impression.
    * Otherwise we remove the message from the container.
    */
-  onResponse(response, target, win) {
-    this._response = {
-      ...response,
+  onResponse(target, win, response) {
+    this._state = {
+      message: response,
       collapsed: false,
-      target,
-      win,
       url: target.url,
     };
 
     if (response && response.content) {
-      // Only insert localization files if we need to show a message
-      win.MozXULElement.insertFTLIfNeeded("browser/newtab/asrouter.ftl");
-      win.MozXULElement.insertFTLIfNeeded("browser/branding/sync-brand.ftl");
-      this.showMessage(response.content, target, win);
+      this.insertFTLIfNeeded(win);
+      this.showMessage(target, win, response.content);
       this.sendImpression();
       this.sendUserEventTelemetry("IMPRESSION", win);
     } else {
-      this.hideMessage(target);
+      this.removeMessage(target);
     }
 
     target.infoButton.disabled = !response;
@@ -121,20 +133,23 @@ class _BookmarkPanelHub {
     return !!response;
   }
 
-  showMessage(message, target, win) {
-    if (this._response && this._response.collapsed) {
-      this.toggleRecommendation(false);
+  showMessage(target, win, message) {
+    const { document } = win;
+    if (this._state.collapsed) {
+      this.toggleRecommendation(target, false);
       return;
     }
 
     const createElement = elem =>
       target.document.createElementNS("http://www.w3.org/1999/xhtml", elem);
-    let recommendation = target.container.querySelector("#cfrMessageContainer");
+    let recommendation = document.getElementById(
+      MARKUP_IDENTIFIERS.messageContainer
+    );
     if (!recommendation) {
       recommendation = createElement("div");
       const headerContainer = createElement("div");
-      headerContainer.classList.add("cfrMessageHeader");
-      recommendation.setAttribute("id", "cfrMessageContainer");
+      headerContainer.classList.add(MARKUP_IDENTIFIERS.headerClass);
+      recommendation.setAttribute("id", MARKUP_IDENTIFIERS.messageContainer);
       recommendation.addEventListener("click", async e => {
         target.hidePopup();
         const url = await FxAccounts.config.promiseEmailFirstURI("bookmark");
@@ -157,25 +172,25 @@ class _BookmarkPanelHub {
       close.style.color = message.color;
       close.addEventListener("click", e => {
         this.sendUserEventTelemetry("DISMISS", win);
-        this.collapseMessage();
+        this.collapseMessage(target);
         target.close(e);
       });
       const title = createElement("h1");
-      title.setAttribute("id", "editBookmarkPanelRecommendationTitle");
+      title.setAttribute("id", MARKUP_IDENTIFIERS.messageHeader);
       const content = createElement("p");
-      content.setAttribute("id", "editBookmarkPanelRecommendationContent");
+      content.setAttribute("id", MARKUP_IDENTIFIERS.contentParagraph);
       const cta = createElement("button");
-      cta.setAttribute("id", "editBookmarkPanelRecommendationCta");
+      cta.setAttribute("id", MARKUP_IDENTIFIERS.ctaBtn);
 
       // If `string_id` is present it means we are relying on fluent for translations
       if (message.text.string_id) {
-        this._l10n.setAttributes(
+        document.l10n.setAttributes(
           close,
           message.close_button.tooltiptext.string_id
         );
-        this._l10n.setAttributes(title, message.title.string_id);
-        this._l10n.setAttributes(content, message.text.string_id);
-        this._l10n.setAttributes(cta, message.cta.string_id);
+        document.l10n.setAttributes(title, message.title.string_id);
+        document.l10n.setAttributes(content, message.text.string_id);
+        document.l10n.setAttributes(cta, message.cta.string_id);
       } else {
         close.setAttribute("title", message.close_button.tooltiptext);
         title.textContent = message.title;
@@ -243,60 +258,57 @@ class _BookmarkPanelHub {
     }
     if (target.infoButton.checked) {
       // If it was ever collapsed we need to cancel the state
-      this._response.collapsed = false;
+      this._state.collapsed = false;
       target.container.removeAttribute("disabled");
     } else {
       target.container.setAttribute("disabled", "disabled");
     }
   }
 
-  collapseMessage() {
-    this._response.collapsed = true;
-    this.toggleRecommendation(false);
+  collapseMessage(target) {
+    this._state.collapsed = true;
+    this.toggleRecommendation(target, false);
   }
 
   _removeContainer(target) {
-    if (target || (this._response && this._response.target)) {
-      const container = (
-        target || this._response.target
-      ).container.querySelector("#cfrMessageContainer");
-      if (container) {
-        this._restorePanelHeight(this._response.win);
-        container.remove();
-      }
+    const container = target.document.getElementById(
+      MARKUP_IDENTIFIERS.messageContainer
+    );
+    if (container) {
+      this._restorePanelHeight(this._response.win);
+      container.remove();
     }
   }
 
-  hideMessage(target) {
+  removeMessage(target) {
     this._removeContainer(target);
-    this.toggleRecommendation(false);
-    this._response = null;
+    this.toggleRecommendation(target, false);
+    this._state = null;
   }
 
   _forceShowMessage(target, message) {
     const doc = target.browser.ownerGlobal.gBrowser.ownerDocument;
     const win = target.browser.ownerGlobal.window;
     const panelTarget = {
-      container: doc.getElementById("editBookmarkPanelRecommendation"),
-      infoButton: doc.getElementById("editBookmarkPanelInfoButton"),
+      container: doc.getElementById(`${MARKUP_IDENTIFIERS.panelAnchor}`),
+      infoButton: doc.getElementById(`${MARKUP_IDENTIFIERS.infoButton}`),
       document: doc,
-      close: e => {
-        e.stopPropagation();
-        this.toggleRecommendation(false);
-      },
+    };
+    panelTarget.close = e => {
+      e.stopPropagation();
+      this.toggleRecommendation(panelTarget, false);
     };
     // Remove any existing message
-    this.hideMessage(panelTarget);
+    this.removeMessage(panelTarget);
+
     // Reset the reference to the panel elements
-    this._response = { target: panelTarget, win };
-    // Required if we want to preview messages that include fluent strings
-    win.MozXULElement.insertFTLIfNeeded("browser/newtab/asrouter.ftl");
-    win.MozXULElement.insertFTLIfNeeded("browser/branding/sync-brand.ftl");
-    this.showMessage(message.content, panelTarget, win);
+    this._state = { message, collapsed: false };
+    this.insertFTLIfNeeded(win);
+    this.showMessage(panelTarget, win, message.content);
   }
 
   sendImpression() {
-    this._addImpression(this._response);
+    this._addImpression(this._state.message);
   }
 
   sendUserEventTelemetry(event, win) {
@@ -307,8 +319,8 @@ class _BookmarkPanelHub {
       )
     ) {
       this._sendTelemetry({
-        message_id: this._response.id,
-        bucket_id: this._response.id,
+        message_id: this._state.message.id,
+        bucket_id: this._state.message.id,
         event,
       });
     }
