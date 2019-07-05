@@ -49,6 +49,7 @@ describe("BookmarkPanelHub", () => {
       classList: { add: sandbox.stub() },
       appendChild: sandbox.stub(),
       querySelector: sandbox.stub(),
+      remove: sandbox.stub(),
       children: [],
       style: {},
       getBoundingClientRect: sandbox.stub(),
@@ -108,7 +109,6 @@ describe("BookmarkPanelHub", () => {
     assert.equal(instance._addImpression, fakeAddImpression);
     assert.equal(instance._handleMessageRequest, fakeHandleMessageRequest);
     assert.equal(instance._dispatch, fakeDispatch);
-    assert.ok(instance._l10n);
     assert.isTrue(instance._initialized);
   });
   it("should return early if not initialized", async () => {
@@ -123,7 +123,7 @@ describe("BookmarkPanelHub", () => {
       sandbox.restore();
     });
     it("should not re-request messages for the same URL", async () => {
-      instance._response = { url: "foo.com", content: true };
+      instance._state = { url: "foo.com", message: { content: true } };
       fakeTarget.url = "foo.com";
       sandbox.stub(instance, "showMessage");
 
@@ -178,6 +178,23 @@ describe("BookmarkPanelHub", () => {
     });
     it("should insert the appropriate ftl files with translations", () => {
       instance.onResponse({ content: "content" }, fakeTarget, fakeWindow);
+      sandbox.stub(instance, "removeMessage");
+      fakeTarget = { infoButton: { disabled: true } };
+    });
+    it("should show a message when called with a response", () => {
+      instance.onResponse(fakeTarget, fakeWindow, { content: "content" });
+
+      assert.calledOnce(instance.showMessage);
+      assert.calledWithExactly(
+        instance.showMessage,
+        fakeTarget,
+        fakeWindow,
+        "content"
+      );
+      assert.calledOnce(instance.sendImpression);
+    });
+    it("should insert the appropriate ftl files with translations", () => {
+      instance.onResponse(fakeTarget, fakeWindow, { content: "content" });
 
       assert.calledTwice(fakeWindow.MozXULElement.insertFTLIfNeeded);
       assert.calledWith(
@@ -192,7 +209,7 @@ describe("BookmarkPanelHub", () => {
     it("should dispatch a user impression", () => {
       sandbox.spy(instance, "sendUserEventTelemetry");
 
-      instance.onResponse({ content: "content" }, fakeTarget, fakeWindow);
+      instance.onResponse(fakeTarget, fakeWindow, { content: "content" });
 
       assert.calledOnce(instance.sendUserEventTelemetry);
       assert.calledWithExactly(
@@ -211,7 +228,7 @@ describe("BookmarkPanelHub", () => {
       isBrowserPrivateStub.returns(true);
       sandbox.spy(instance, "sendUserEventTelemetry");
 
-      instance.onResponse({ content: "content" }, fakeTarget, fakeWindow);
+      instance.onResponse(fakeTarget, fakeWindow, { content: "content" });
 
       assert.calledOnce(instance.sendUserEventTelemetry);
       assert.calledWithExactly(
@@ -222,39 +239,41 @@ describe("BookmarkPanelHub", () => {
       assert.notCalled(fakeDispatch);
     });
     it("should hide existing messages if no response is provided", () => {
-      instance.onResponse(null, fakeTarget);
+      instance.onResponse(fakeTarget, fakeWindow, null);
 
-      assert.calledOnce(instance.hideMessage);
-      assert.calledWithExactly(instance.hideMessage, fakeTarget);
+      assert.calledOnce(instance.removeMessage);
+      assert.calledWithExactly(instance.removeMessage, fakeTarget);
     });
   });
   describe("#showMessage.collapsed=false", () => {
     beforeEach(() => {
       instance.init(fakeHandleMessageRequest, fakeAddImpression, fakeDispatch);
       sandbox.stub(instance, "toggleRecommendation");
-      sandbox.stub(instance, "_response").value({ collapsed: false });
+      sandbox
+        .stub(instance, "_state")
+        .value({ collapsed: false, message: fakeMessage });
     });
     it("should create a container", () => {
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
 
       assert.equal(fakeTarget.document.createElementNS.callCount, 6);
       assert.calledOnce(fakeTarget.container.appendChild);
       assert.notCalled(fakeL10n.setAttributes);
     });
     it("should create a container (fluent message)", () => {
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessageFluent, fakeTarget);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessageFluent);
 
       assert.equal(fakeTarget.document.createElementNS.callCount, 6);
       assert.calledOnce(fakeTarget.container.appendChild);
     });
     it("should set l10n attributes", () => {
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessageFluent, fakeTarget);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessageFluent);
 
       assert.equal(fakeL10n.setAttributes.callCount, 4);
     });
@@ -272,16 +291,14 @@ describe("BookmarkPanelHub", () => {
       );
     });
     it("should reuse the container", () => {
-      fakeTarget.container.querySelector.returns(true);
-
-      instance.showMessage(fakeMessage, fakeTarget);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
 
       assert.notCalled(fakeTarget.container.appendChild);
     });
     it("should open a tab with FxA signup", async () => {
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
       // Call the event listener cb
       await fakeContainer.addEventListener.firstCall.args[1]();
 
@@ -289,9 +306,9 @@ describe("BookmarkPanelHub", () => {
     });
     it("should send a click event", async () => {
       sandbox.stub(instance, "sendUserEventTelemetry");
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
       // Call the event listener cb
       await fakeContainer.addEventListener.firstCall.args[1]();
 
@@ -304,9 +321,9 @@ describe("BookmarkPanelHub", () => {
     });
     it("should send a click event", async () => {
       sandbox.stub(instance, "sendUserEventTelemetry");
-      fakeTarget.container.querySelector.returns(false);
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
       // Call the event listener cb
       await fakeContainer.addEventListener.firstCall.args[1]();
 
@@ -318,11 +335,11 @@ describe("BookmarkPanelHub", () => {
       );
     });
     it("should collapse the message", () => {
-      fakeTarget.container.querySelector.returns(false);
       sandbox.spy(instance, "collapseMessage");
-      instance._response.collapsed = false;
+      instance._state.collapsed = false;
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
       // Show message calls it once so we need to reset
       instance.toggleRecommendation.reset();
       // Call the event listener cb
@@ -330,15 +347,16 @@ describe("BookmarkPanelHub", () => {
 
       assert.calledOnce(instance.collapseMessage);
       assert.calledOnce(fakeTarget.close);
-      assert.isTrue(instance._response.collapsed);
+      assert.isTrue(instance._state.collapsed);
       assert.calledOnce(instance.toggleRecommendation);
     });
     it("should send a dismiss event", () => {
       sandbox.stub(instance, "sendUserEventTelemetry");
       sandbox.spy(instance, "collapseMessage");
-      instance._response.collapsed = false;
+      instance._state.collapsed = false;
+      fakeWindow.document.getElementById.returns(null);
 
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
       // Call the event listener cb
       fakeContainer.addEventListener.secondCall.args[1]();
 
@@ -350,10 +368,10 @@ describe("BookmarkPanelHub", () => {
       );
     });
     it("should call toggleRecommendation `true`", () => {
-      instance.showMessage(fakeMessage, fakeTarget, fakeWindow);
+      instance.showMessage(fakeTarget, fakeWindow, fakeMessage);
 
       assert.calledOnce(instance.toggleRecommendation);
-      assert.calledWithExactly(instance.toggleRecommendation, true);
+      assert.calledWithExactly(instance.toggleRecommendation, fakeTarget, true);
     });
   });
   describe("#showMessage.collapsed=true", () => {
@@ -364,84 +382,77 @@ describe("BookmarkPanelHub", () => {
       sandbox.stub(instance, "toggleRecommendation");
     });
     it("should return early if the message is collapsed", () => {
-      instance.showMessage();
+      instance.showMessage(fakeTarget, fakeWindow);
 
       assert.calledOnce(instance.toggleRecommendation);
-      assert.calledWithExactly(instance.toggleRecommendation, false);
+      assert.calledWithExactly(
+        instance.toggleRecommendation,
+        fakeTarget,
+        false
+      );
     });
   });
-  describe("#hideMessage", () => {
-    let removeStub;
+  describe("#removeMessage", () => {
     beforeEach(() => {
       sandbox.stub(instance, "toggleRecommendation");
-      removeStub = sandbox.stub();
-      fakeTarget = {
-        container: {
-          querySelector: sandbox.stub().returns({ remove: removeStub }),
-        },
-      };
-      instance._response = { win: fakeWindow };
     });
     it("should remove the message", () => {
-      instance.hideMessage(fakeTarget);
+      instance.removeMessage(fakeTarget);
 
-      assert.calledOnce(removeStub);
+      assert.calledOnce(fakeContainer.remove);
     });
     it("should call toggleRecommendation `false`", () => {
-      instance.hideMessage(fakeTarget);
+      instance.removeMessage(fakeTarget);
 
       assert.calledOnce(instance.toggleRecommendation);
-      assert.calledWithExactly(instance.toggleRecommendation, false);
+      assert.calledWithExactly(
+        instance.toggleRecommendation,
+        fakeTarget,
+        false
+      );
     });
   });
   describe("#toggleRecommendation", () => {
-    let target;
     beforeEach(() => {
-      target = {
-        infoButton: {},
-        container: {
-          setAttribute: sandbox.stub(),
-          removeAttribute: sandbox.stub(),
-        },
-      };
-      sandbox.stub(instance, "_response").value({ target });
+      instance._state = {};
     });
     it("should check infoButton", () => {
-      instance.toggleRecommendation(true);
+      instance.toggleRecommendation(fakeTarget, true);
 
-      assert.isTrue(target.infoButton.checked);
+      assert.isTrue(fakeTarget.infoButton.checked);
     });
     it("should uncheck infoButton", () => {
-      instance.toggleRecommendation(false);
+      instance.toggleRecommendation(fakeTarget, false);
 
-      assert.isFalse(target.infoButton.checked);
+      assert.isFalse(fakeTarget.infoButton.checked);
     });
     it("should uncheck infoButton", () => {
-      target.infoButton.checked = true;
+      fakeTarget.infoButton.checked = true;
 
-      instance.toggleRecommendation();
+      instance.toggleRecommendation(fakeTarget);
 
-      assert.isFalse(target.infoButton.checked);
+      assert.isFalse(fakeTarget.infoButton.checked);
     });
     it("should disable the container", () => {
-      target.infoButton.checked = true;
+      fakeTarget.infoButton.checked = true;
 
-      instance.toggleRecommendation();
+      instance.toggleRecommendation(fakeTarget);
 
-      assert.calledOnce(target.container.setAttribute);
+      assert.calledOnce(fakeTarget.container.setAttribute);
     });
     it("should enable container", () => {
-      target.infoButton.checked = false;
+      fakeTarget.infoButton.checked = false;
 
-      instance.toggleRecommendation();
+      instance.toggleRecommendation(fakeTarget);
 
-      assert.calledOnce(target.container.removeAttribute);
+      assert.calledOnce(fakeTarget.container.removeAttribute);
+      assert.isFalse(instance._state.collapsed);
     });
   });
   describe("#_forceShowMessage", () => {
     it("should call showMessage with the correct args", () => {
       sandbox.spy(instance, "showMessage");
-      sandbox.stub(instance, "hideMessage");
+      sandbox.stub(instance, "removeMessage");
 
       instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
@@ -465,9 +476,17 @@ describe("BookmarkPanelHub", () => {
       sandbox.spy(instance, "showMessage");
       sandbox.stub(instance, "toggleRecommendation");
       sandbox.stub(instance, "sendUserEventTelemetry");
+      // Force rendering the message
+      fakeWindow.document.getElementById
+        .returns(null)
+        .withArgs("editBookmarkPanelRecommendation")
+        .returns(fakeContainer);
 
       instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
+      assert.calledTwice(fakeContainer.addEventListener);
+
+      const [target] = instance.showMessage.firstCall.args;
       const [
         ,
         eventListenerCb,
@@ -476,13 +495,13 @@ describe("BookmarkPanelHub", () => {
       instance.toggleRecommendation.reset();
       eventListenerCb({ stopPropagation: sandbox.stub() });
 
-      assert.calledWithExactly(instance.toggleRecommendation, false);
+      assert.calledWithExactly(instance.toggleRecommendation, target, false);
     });
   });
   describe("#sendImpression", () => {
     beforeEach(() => {
       instance.init(fakeHandleMessageRequest, fakeAddImpression, fakeDispatch);
-      instance._response = "foo";
+      instance._state = { message: "foo" };
     });
     it("should dispatch an impression", () => {
       instance.sendImpression();
