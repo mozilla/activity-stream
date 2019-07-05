@@ -56,7 +56,6 @@ export class ContextMenuItem extends React.PureComponent {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
-    this.focusFirst = this.focusFirst.bind(this);
   }
 
   onClick() {
@@ -64,11 +63,16 @@ export class ContextMenuItem extends React.PureComponent {
     this.props.option.onClick();
   }
 
-  focusFirst(button) {
-    if (button) {
-      button.focus();
-    }
-  }
+  // This function focuses the first option when the menu is rendered.
+  // It can be re-enabled after refactoring by adding the ref
+  // to the <button> element rendered by <ContextMenuItem>.
+
+  // focusFirst(button) {
+  //   if (button) {
+  //     button.focus();
+  //   }
+  // }
+  // ref={option.first ? this.focusFirst : null}
 
   // This selects the correct node based on the key pressed
   focusSibling(target, key) {
@@ -114,7 +118,7 @@ export class ContextMenuItem extends React.PureComponent {
     const {option} = this.props;
     return (
       <li role="menuitem" className="context-menu-item" >
-        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown} ref={option.first ? this.focusFirst : null}>
+        <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown} >
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
           <span data-l10n-id={option.string_id || option.id} />
         </button>
