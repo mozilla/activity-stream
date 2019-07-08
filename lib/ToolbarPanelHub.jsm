@@ -30,7 +30,8 @@ class _ToolbarPanelHub {
     this._hideToolbarButton = this._hideToolbarButton.bind(this);
   }
 
-  init() {
+  init({ getMessages }) {
+    this._getMessages = getMessages;
     if (this.whatsNewPanelEnabled) {
       this.enableAppmenuButton();
     }
@@ -65,6 +66,75 @@ class _ToolbarPanelHub {
       this._showToolbarButton,
       this._hideToolbarButton
     );
+  }
+
+  // Render what's new messages into the panel.
+  renderMessages(win, doc, containerId) {
+    const messages = this._getMessages({ template: "whatsnew_panel" });
+    const container = doc.getElementById(containerId);
+    const createElement = elem =>
+      doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
+
+    if (messages && !container.querySelector(".whatsNew-message")) {
+      for (let { content } of messages) {
+        const messageEl = createElement("div");
+        messageEl.classList.add("whatsNew-message");
+
+        const dateEl = createElement("p");
+        dateEl.classList.add("whatsNew-message-date");
+        dateEl.textContent = new Date(
+          content.published_date
+        ).toLocaleDateString("default", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        const wrapperEl = createElement("div");
+        wrapperEl.classList.add("whatsNew-message-body");
+
+        const titleEl = createElement("h2");
+        titleEl.classList.add("whatsNew-message-title");
+        this._setString(doc, titleEl, content.title);
+
+        const bodyEl = createElement("p");
+        this._setString(doc, bodyEl, content.body);
+
+        const linkEl = createElement("button");
+        linkEl.classList.add("text-link");
+        this._setString(doc, linkEl, content.link_text);
+        linkEl.addEventListener("click", () => {
+          win.ownerGlobal.openLinkIn(content.link_url, "tabshifted", {
+            private: false,
+            triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+              {}
+            ),
+            csp: null,
+          });
+
+          // TODO: TELEMETRY
+        });
+
+        messageEl.appendChild(dateEl);
+        messageEl.appendChild(wrapperEl);
+        wrapperEl.appendChild(titleEl);
+        wrapperEl.appendChild(bodyEl);
+        wrapperEl.appendChild(linkEl);
+        container.appendChild(messageEl);
+      }
+    }
+
+    // TODO: TELEMETRY
+  }
+
+  // If `string_id` is present it means we are relying on fluent for translations.
+  // Otherwise, we have a vanilla string.
+  _setString(doc, el, stringObj) {
+    if (stringObj.string_id) {
+      doc.l10n.setAttributes(el, stringObj.string_id);
+    } else {
+      el.textContent = stringObj;
+    }
   }
 
   _showAppmenuButton(win) {

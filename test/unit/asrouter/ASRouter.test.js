@@ -859,6 +859,29 @@ describe("ASRouter", () => {
     });
   });
 
+  describe("#getMessages", () => {
+    it("should get unblocked messages that match the template", async () => {
+      const message1 = {
+        id: "1",
+        template: "whatsnew-panel",
+      };
+      const message2 = {
+        id: "2",
+        template: "whatsnew-panel",
+      };
+      const message3 = {
+        id: "3",
+        template: "badge",
+      };
+      await Router.setState({ messages: [message3, message2, message1] });
+      const result = Router.getMessages({
+        template: "whatsnew-panel",
+      });
+
+      assert.deepEqual(result, [message2, message1]);
+    });
+  });
+
   describe("blocking", () => {
     it("should not return a blocked message", async () => {
       // Block all messages except the first

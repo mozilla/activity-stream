@@ -1,13 +1,31 @@
 import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
 
+const FAKE_MESSAGE = {
+  id: "WHATS_NEW_MESSAGE_123",
+  template: "whatsnew_panel",
+  content: {
+    published_date: 1560969794394,
+    title: "Protection Is Our Focus",
+    body:
+      "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
+    link_text: {
+      string_id: "learn-more",
+    },
+    link_url: "https://blog.mozilla.org/",
+  },
+};
+
 describe("ToolbarPanelHub", () => {
   let globals;
   let sandbox;
   let instance;
   let everyWindowStub;
+  let fakeDocument;
   let fakeWindow;
   let fakeElementById;
+  let createdElements = [];
+  let eventListeners = {};
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -16,18 +34,38 @@ describe("ToolbarPanelHub", () => {
     fakeElementById = {
       setAttribute: sandbox.stub(),
       removeAttribute: sandbox.stub(),
+      querySelector: sandbox.stub().returns(null),
+      appendChild: sandbox.stub(),
+    };
+    fakeDocument = {
+      l10n: {
+        setAttributes: sandbox.stub(),
+      },
+      getElementById: sandbox.stub().returns(fakeElementById),
+      querySelector: sandbox.stub().returns({}),
+      createElementNS: (ns, tagName) => {
+        const element = {
+          tagName,
+          classList: {
+            add: sandbox.stub(),
+          },
+          addEventListener: (ev, fn) => {
+            eventListeners[ev] = fn;
+          },
+          appendChild: sandbox.stub(),
+        };
+        createdElements.push(element);
+        return element;
+      },
     };
     fakeWindow = {
       browser: {
-        ownerDocument: {
-          l10n: {
-            setAttributes: sandbox.stub(),
-          },
-          getElementById: sandbox.stub().returns(fakeElementById),
-          querySelector: sandbox.stub().returns({}),
-        },
+        ownerDocument: fakeDocument,
       },
       MozXULElement: { insertFTLIfNeeded: sandbox.stub() },
+      ownerGlobal: {
+        openLinkIn: sandbox.stub(),
+      },
     };
     everyWindowStub = {
       registerCallback: sandbox.stub(),
@@ -42,44 +80,62 @@ describe("ToolbarPanelHub", () => {
   it("should create an instance", () => {
     assert.ok(instance);
   });
-  it("should not enableAppmenuButton() on init if pref is not enabled", () => {
+  it("should not enableAppmenuButton() on init() if pref is not enabled", () => {
     sandbox.stub(global.Services.prefs, "getBoolPref").returns(false);
     instance.enableAppmenuButton = sandbox.stub();
-    instance.init();
+    instance.init({ getMessages: () => {} });
     assert.notCalled(instance.enableAppmenuButton);
   });
-  it("should enableAppmenuButton() on init if pref is enabled", () => {
+  it("should enableAppmenuButton() on init() if pref is enabled", () => {
     sandbox.stub(global.Services.prefs, "getBoolPref").returns(true);
     instance.enableAppmenuButton = sandbox.stub();
-    instance.init();
+    instance.init({ getMessages: () => {} });
     assert.calledOnce(instance.enableAppmenuButton);
   });
-  it("should unregisterCallback on uninit", () => {
+  it("should unregisterCallback on uninit()", () => {
     instance.uninit();
     assert.calledTwice(everyWindowStub.unregisterCallback);
   });
-  it("should registerCallback on enableAppmenuButton", () => {
+  it("should registerCallback on enableAppmenuButton()", () => {
     instance.enableAppmenuButton();
     assert.calledOnce(everyWindowStub.registerCallback);
   });
-  it("should registerCallback on enableToolbarButton", () => {
+  it("should registerCallback on enableToolbarButton()", () => {
     instance.enableToolbarButton();
     assert.calledOnce(everyWindowStub.registerCallback);
   });
-  it("should unhide appmenu button on _showAppmenuButton", () => {
+  it("should unhide appmenu button on _showAppmenuButton()", () => {
     instance._showAppmenuButton(fakeWindow);
     assert.calledWith(fakeElementById.removeAttribute, "hidden");
   });
-  it("should hide appmenu button on _hideAppmenuButton", () => {
+  it("should hide appmenu button on _hideAppmenuButton()", () => {
     instance._hideAppmenuButton(fakeWindow);
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
   });
-  it("should unhide toolbar button on _showToolbarButton", () => {
+  it("should unhide toolbar button on _showToolbarButton()", () => {
     instance._showToolbarButton(fakeWindow);
     assert.calledWith(fakeElementById.removeAttribute, "hidden");
   });
-  it("should hide toolbar button on _hideToolbarButton", () => {
+  it("should hide toolbar button on _hideToolbarButton()", () => {
     instance._hideToolbarButton(fakeWindow);
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
+  });
+  it("should render messages to the panel on renderMessages()", () => {
+    instance.init({ getMessages: () => [FAKE_MESSAGE] });
+    instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+    assert.ok(
+      createdElements.find(
+        el =>
+          el.tagName === "h2" && el.textContent === FAKE_MESSAGE.content.title
+      )
+    );
+    assert.ok(
+      createdElements.find(
+        el => el.tagName === "p" && el.textContent === FAKE_MESSAGE.content.body
+      )
+    );
+    // Call the click handler to make coverage happy.
+    eventListeners.click();
+    assert.calledOnce(fakeWindow.ownerGlobal.openLinkIn);
   });
 });

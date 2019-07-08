@@ -2,6 +2,7 @@ import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
 import schema from "content-src/asrouter/templates/OnboardingMessage/OnboardingMessage.schema.json";
 import badgeSchema from "content-src/asrouter/templates/OnboardingMessage/ToolbarBadgeMessage.schema.json";
+import whatsNewSchema from "content-src/asrouter/templates/OnboardingMessage/WhatsNewMessage.schema.json";
 
 const DEFAULT_CONTENT = {
   title: "A title",
@@ -68,6 +69,13 @@ describe("OnboardingMessage", () => {
     messages
       .filter(msg => msg.template === "toolbar_badge")
       .forEach(msg => assert.jsonSchema(msg.content, badgeSchema));
+  });
+  it("should validate all What's New template messages", async () => {
+    const messages = await OnboardingMessageProvider.getUntranslatedMessages();
+
+    messages
+      .filter(msg => msg.template === "whatsnew_panel")
+      .forEach(msg => assert.jsonSchema(msg.content, whatsNewSchema));
   });
   it("should decode the content field (double decoding)", async () => {
     const fakeContent = "foo%2540bar.org";

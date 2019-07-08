@@ -496,6 +496,7 @@ class _ASRouter {
     this.blockMessageById = this.blockMessageById.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.handleMessageRequest = this.handleMessageRequest.bind(this);
+    this.getMessages = this.getMessages.bind(this);
     this.addImpression = this.addImpression.bind(this);
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
@@ -729,7 +730,9 @@ class _ASRouter {
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
     });
-    ToolbarPanelHub.init();
+    ToolbarPanelHub.init({
+      getMessages: this.getMessages,
+    });
     ToolbarBadgeHub.init(this.waitForInitialized, {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
@@ -1495,6 +1498,13 @@ class _ASRouter {
       return true;
     });
     return this._findMessage(msgs, { id: triggerId });
+  }
+
+  // Returns the unblocked messages for a given template.
+  getMessages({ template }) {
+    return this._getUnblockedMessages().filter(
+      ({ template: t }) => t === template
+    );
   }
 
   async setMessageById(id, target, force = true, action = {}) {
