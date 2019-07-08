@@ -1301,23 +1301,6 @@ describe("ASRouter", () => {
       });
     });
 
-    describe("#onMessage: DISMISS_BUNDLE", () => {
-      it("should add all the ids in the bundle to the messageBlockList and send a CLEAR_BUNDLE message", async () => {
-        await Router.setState({ lastMessageId: "foo" });
-        const msg = fakeAsyncMessage({
-          type: "DISMISS_BUNDLE",
-          data: { bundle: FAKE_BUNDLE },
-        });
-        await Router.onMessage(msg);
-
-        assert.calledWith(
-          channel.sendAsyncMessage,
-          PARENT_TO_CHILD_MESSAGE_NAME,
-          { type: "CLEAR_BUNDLE" }
-        );
-      });
-    });
-
     describe("#onMessage: UNBLOCK_MESSAGE_BY_ID", () => {
       it("should remove the id from the messageBlockList", async () => {
         await Router.onMessage(
