@@ -22,10 +22,8 @@
 .modalOverlayInner {
   width: 960px;
   position: fixed;
-  top: 20%;
+  top: 15%;
   left: calc(50% - 480px); // halfway across minus half the width of the modal
-  max-height: calc(100% - 100px);
-  overflow: scroll;
   background: $white;
   box-shadow: 0 1px 15px 0 $black-30;
   border-radius: 4px;
@@ -44,7 +42,8 @@
   }
 
   // if modal is short enough, add a vertical scroll bar
-  @media(max-width: 850px) and (max-height: 730px) {
+  @media(max-height: 730px) {
+    top: 5%;
     overflow-y: scroll;
   }
 
