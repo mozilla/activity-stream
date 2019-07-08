@@ -224,7 +224,14 @@ function sortMessagesByPriority(messages) {
     }
 
     // Descending order; higher priority comes first
-    return a.priority > b.priority ? -1 : 1;
+    if (a.priority > b.priority) {
+      return -1;
+    }
+    if (a.priority < b.priority) {
+      return 1;
+    }
+
+    return 0;
   });
 }
 
