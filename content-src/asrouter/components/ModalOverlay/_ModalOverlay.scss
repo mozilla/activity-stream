@@ -41,15 +41,9 @@
     border-radius: 0;
   }
 
-  // if modal is short enough, add a vertical scroll bar
+  // if modal is short enough, reduce the top margin
   @media(max-height: 730px) {
     top: 5%;
-    overflow-y: scroll;
-  }
-
-  // if modal is narrow enough, add a vertical scroll bar
-  @media(max-width: 650px) and (max-height: 600px) {
-    overflow-y: scroll;
   }
 
   &.active {
