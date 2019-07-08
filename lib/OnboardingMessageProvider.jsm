@@ -491,7 +491,7 @@ const ONBOARDING_MESSAGES = async () => [
       lifetime: Infinity,
     },
     // Never saw this message or saw it in the past 4 days or more recent
-    targeting: `hasWhatsNewPanelEnabled &&
+    targeting: `isWhatsNewPanelEnabled &&
       (firefoxVersion > previousSessionFirefoxVersion &&
         messageImpressions[.id == 'WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length == 0) ||
       (messageImpressions[.id == 'WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length >= 1 &&

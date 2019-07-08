@@ -35,7 +35,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [xpinstallEnabled](#xpinstallEnabled)
 * [hasPinnedTabs](#haspinnedtabs)
 * [hasAccessedFxAPanel](#hasaccessedfxapanel)
-* [hasWhatsNewPanelEnabled](#haswhatsnewpanelenabled)
+* [isWhatsNewPanelEnabled](#iswhatsnewpanelenabled)
 
 ## Detailed usage
 
@@ -487,12 +487,12 @@ Boolean pref that gets set the first time the user opens the FxA toolbar panel
 declare const hasAccessedFxAPanel: boolean;
 ```
 
-### `hasWhatsNewPanelEnabled`
+### `isWhatsNewPanelEnabled`
 
 Boolean pref that controls if the What's New panel feature is enabled
 
 #### Definition
 
 ```ts
-declare const hasWhatsNewPanelEnabled: boolean;
+declare const isWhatsNewPanelEnabled: boolean;
 ```

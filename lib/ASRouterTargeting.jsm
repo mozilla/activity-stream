@@ -394,7 +394,7 @@ const TargetingGetters = {
       true
     );
   },
-  get hasWhatsNewPanelEnabled() {
+  get isWhatsNewPanelEnabled() {
     return Services.prefs.getBoolPref(
       "browser.messaging-system.whatsNewPanel.enabled",
       false
