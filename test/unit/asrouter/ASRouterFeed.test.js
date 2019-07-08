@@ -31,6 +31,7 @@ describe("ASRouterFeed", () => {
     globals.set("BookmarkPanelHub", FakeBookmarkPanelHub);
     globals.set("ToolbarBadgeHub", FakeToolbarBadgeHub);
     globals.set("ToolbarPanelHub", FakeToolbarPanelHub);
+
     Router = new _ASRouter({ providers: [FAKE_LOCAL_PROVIDER] });
     storage = {
       get: sandbox.stub().returns(Promise.resolve([])),

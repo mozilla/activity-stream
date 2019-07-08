@@ -814,6 +814,30 @@ describe("ASRouter", () => {
 
       assert.deepEqual(result, message1);
     });
+    it("should get unblocked messages that match trigger and template", async () => {
+      const message1 = {
+        id: "1",
+        campaign: "foocampaign",
+        template: "badge",
+        trigger: { id: "foo" },
+      };
+      const message2 = {
+        id: "2",
+        campaign: "foocampaign",
+        template: "snippet",
+        trigger: { id: "foo" },
+      };
+      await Router.setState({ messages: [message2, message1] });
+      // Just return the first message provided as arg
+      sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
+
+      const result = Router.handleMessageRequest({
+        triggerId: "foo",
+        template: "badge",
+      });
+
+      assert.deepEqual(result, message1);
+    });
   });
 
   describe("blocking", () => {
