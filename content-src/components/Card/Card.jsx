@@ -340,6 +340,7 @@ export class _Card extends React.PureComponent {
         </a>
         {!props.placeholder && (
           <button
+            aria-haspopup="true"
             data-l10n-id="newtab-menu-content-tooltip"
             data-l10n-args={JSON.stringify({ title })}
             className="context-menu-button icon"
