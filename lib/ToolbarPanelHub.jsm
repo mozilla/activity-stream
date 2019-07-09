@@ -125,7 +125,7 @@ class _ToolbarPanelHub {
     }
     messageEl.appendChild(wrapperEl);
     wrapperEl.addEventListener("click", () => {
-      win.ownerGlobal.openLinkIn(content.link_url, "tabshifted", {
+      win.ownerGlobal.openLinkIn(content.cta_url, "tabshifted", {
         private: false,
         triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
           {}
