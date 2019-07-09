@@ -133,6 +133,7 @@ class _ToolbarPanelHub {
     wrapperEl.appendChild(titleEl);
     wrapperEl.appendChild(bodyEl);
     wrapperEl.appendChild(linkEl);
+    return messageEl;
   }
 
   _createElement(doc, elem) {
