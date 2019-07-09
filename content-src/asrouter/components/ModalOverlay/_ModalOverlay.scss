@@ -29,6 +29,7 @@
   border-radius: 4px;
   display: none;
   z-index: 1101;
+  overflow: scroll;
 
 
   // modal takes over entire screen
@@ -44,6 +45,7 @@
   // if modal is short enough, reduce the top margin
   @media(max-height: 730px) {
     top: 5%;
+    bottom: 5%;
   }
 
   &.active {
