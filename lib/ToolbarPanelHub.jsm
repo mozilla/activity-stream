@@ -95,14 +95,13 @@ class _ToolbarPanelHub {
 
     const dateEl = this._createElement(doc, "p");
     dateEl.classList.add("whatsNew-message-date");
-    dateEl.textContent = new Date(content.published_date).toLocaleDateString(
-      "default",
-      {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }
-    );
+    dateEl.textContent = new Date(
+      content.published_date
+    ).toLocaleDateString("default", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
