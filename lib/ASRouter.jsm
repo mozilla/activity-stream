@@ -729,7 +729,9 @@ class _ASRouter {
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
     });
-    ToolbarPanelHub.init();
+    ToolbarPanelHub.init({
+      getMessages: this.handleMessageRequest,
+    });
     ToolbarBadgeHub.init(this.waitForInitialized, {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
@@ -1071,6 +1073,20 @@ class _ASRouter {
         return trailheadTriplet;
       },
     };
+  }
+
+  _findAllMessages(candidateMessages, trigger) {
+    const messages = candidateMessages.filter(m =>
+      this.isBelowFrequencyCaps(m)
+    );
+    const context = this._getMessagesContext();
+
+    return ASRouterTargeting.findAllMatchingMessages({
+      messages,
+      trigger,
+      context,
+      onError: this._handleTargetingError,
+    });
   }
 
   _findMessage(candidateMessages, trigger) {
@@ -1483,7 +1499,7 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
-  handleMessageRequest({ triggerId, template }) {
+  handleMessageRequest({ triggerId, template, returnAll = false }) {
     const msgs = this._getUnblockedMessages().filter(m => {
       if (template && m.template !== template) {
         return false;
@@ -1494,6 +1510,11 @@ class _ASRouter {
 
       return true;
     });
+
+    if (returnAll) {
+      return this._findAllMessages(msgs, { id: triggerId });
+    }
+
     return this._findMessage(msgs, { id: triggerId });
   }
 

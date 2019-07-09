@@ -857,6 +857,33 @@ describe("ASRouter", () => {
         Router.state.messageImpressions
       );
     });
+    it("should return all unblocked messages that match the template, trigger if returnAll=true", async () => {
+      const message1 = {
+        id: "1",
+        template: "whatsnew_panel_message",
+        trigger: { id: "whatsNewPanelOpened" },
+      };
+      const message2 = {
+        id: "2",
+        template: "whatsnew_panel_message",
+        trigger: { id: "whatsNewPanelOpened" },
+      };
+      const message3 = {
+        id: "3",
+        template: "badge",
+      };
+      sandbox
+        .stub(Router, "_findAllMessages")
+        .callsFake(messages => [message2, message1]);
+      await Router.setState({ messages: [message3, message2, message1] });
+      const result = await Router.handleMessageRequest({
+        template: "whatsnew-panel",
+        triggerId: "whatsNewPanelOpened",
+        returnAll: true,
+      });
+
+      assert.deepEqual(result, [message2, message1]);
+    });
   });
 
   describe("blocking", () => {
@@ -1539,6 +1566,12 @@ describe("ASRouter", () => {
         });
         const message = await Router._findMessage(messages, data.data.trigger);
         assert.equal(message, messages[0]);
+
+        const matches = await Router._findAllMessages(
+          messages,
+          data.data.trigger
+        );
+        assert.deepEqual(matches, messages);
       });
       it("should pick a message with the right targeting and trigger", async () => {
         let messages = [

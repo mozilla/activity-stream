@@ -497,6 +497,48 @@ const ONBOARDING_MESSAGES = async () => [
       (messageImpressions[.id == 'WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length >= 1 &&
         currentDate|date - messageImpressions[.id == 'WHATS_NEW_BADGE_${FIREFOX_VERSION}'][0] <= 4 * 24 * 3600 * 1000)`,
   },
+  {
+    id: "WHATS_NEW_70_1",
+    template: "whatsnew_panel_message",
+    content: {
+      published_date: 1560969794394,
+      title: "Protection Is Our Focus",
+      body:
+        "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
+      link_text: "Learn more on our blog",
+      link_url: "https://blog.mozilla.org/",
+    },
+    targeting: `firefoxVersion > 69`,
+    trigger: { id: "whatsNewPanelOpened" },
+  },
+  {
+    id: "WHATS_NEW_70_2",
+    template: "whatsnew_panel_message",
+    content: {
+      published_date: 1560969794394,
+      title: "Another thing new in Firefox 70",
+      body:
+        "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
+      link_text: "Learn more on our blog",
+      link_url: "https://blog.mozilla.org/",
+    },
+    targeting: `firefoxVersion > 69`,
+    trigger: { id: "whatsNewPanelOpened" },
+  },
+  {
+    id: "WHATS_NEW_69_1",
+    template: "whatsnew_panel_message",
+    content: {
+      published_date: 1557346235089,
+      title: "Something new in Firefox 69",
+      body:
+        "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
+      link_text: "Learn more on our blog",
+      link_url: "https://blog.mozilla.org/",
+    },
+    targeting: `firefoxVersion > 68`,
+    trigger: { id: "whatsNewPanelOpened" },
+  },
 ];
 
 const OnboardingMessageProvider = {

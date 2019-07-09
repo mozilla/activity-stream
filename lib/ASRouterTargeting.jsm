@@ -494,38 +494,76 @@ this.ASRouterTargeting = {
     return result;
   },
 
+  _getSortedMessages(messages) {
+    const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
+    const sortedMessages = sortMessagesByTargeting(weightSortedMessages);
+    return sortMessagesByPriority(sortedMessages);
+  },
+
+  _getCombinedContext(trigger, context) {
+    const triggerContext = trigger ? trigger.context : {};
+    return this.combineContexts(context, triggerContext);
+  },
+
+  _isMessageMatch(message, trigger, context, onError) {
+    return (
+      message &&
+      (trigger
+        ? this.isTriggerMatch(trigger, message.trigger)
+        : !message.trigger) &&
+      // If a trigger expression was passed to this function, the message should match it.
+      // Otherwise, we should choose a message with no trigger property (i.e. a message that can show up at any time)
+      this.checkMessageTargeting(message, context, onError)
+    );
+  },
+
   /**
    * findMatchingMessage - Given an array of messages, returns one message
    *                       whos targeting expression evaluates to true
    *
    * @param {Array} messages An array of AS router messages
-   * @param {obj} impressions An object containing impressions, where keys are message ids
    * @param {trigger} string A trigger expression if a message for that trigger is desired
    * @param {obj|null} context A FilterExpression context. Defaults to TargetingGetters above.
+   * @param {func} onError A function to handle errors (takes two params; error, message)
    * @returns {obj} an AS router message
    */
   async findMatchingMessage({ messages, trigger, context, onError }) {
-    const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
-    let sortedMessages = sortMessagesByTargeting(weightSortedMessages);
-    sortedMessages = sortMessagesByPriority(sortedMessages);
-    const triggerContext = trigger ? trigger.context : {};
-    const combinedContext = this.combineContexts(context, triggerContext);
+    const sortedMessages = this._getSortedMessages(messages);
+    const combinedContext = this._getCombinedContext(trigger, context);
 
     for (const candidate of sortedMessages) {
       if (
-        candidate &&
-        (trigger
-          ? this.isTriggerMatch(trigger, candidate.trigger)
-          : !candidate.trigger) &&
-        // If a trigger expression was passed to this function, the message should match it.
-        // Otherwise, we should choose a message with no trigger property (i.e. a message that can show up at any time)
-        (await this.checkMessageTargeting(candidate, combinedContext, onError))
+        await this._isMessageMatch(candidate, trigger, combinedContext, onError)
       ) {
         return candidate;
       }
     }
-
     return null;
+  },
+
+  /**
+   * findAllMatchingMessages - Given an array of messages, returns an array of
+   *                           messages that that match the targeting.
+   *
+   * @param {Array} messages An array of AS router messages.
+   * @param {trigger} string A trigger expression if a message for that trigger is desired.
+   * @param {obj|null} context A FilterExpression context. Defaults to TargetingGetters above.
+   * @param {func} onError A function to handle errors (takes two params; error, message)
+   * @returns {Array} An array of AS router messages that match.
+   */
+  async findAllMatchingMessages({ messages, trigger, context, onError }) {
+    const sortedMessages = this._getSortedMessages(messages);
+    const combinedContext = this._getCombinedContext(trigger, context);
+    const matchingMessages = [];
+
+    for (const candidate of sortedMessages) {
+      if (
+        await this._isMessageMatch(candidate, trigger, combinedContext, onError)
+      ) {
+        matchingMessages.push(candidate);
+      }
+    }
+    return matchingMessages;
   },
 };
 
