@@ -56,6 +56,7 @@ export class ContextMenu extends React.PureComponent {
                   key={i}
                   option={option}
                   hideContext={this.hideContext}
+                  keyboardAccess={this.props.keyboardAccess}
                   tabIndex="0"
                 />
               )
@@ -77,6 +78,13 @@ export class ContextMenuItem extends React.PureComponent {
   onClick() {
     this.props.hideContext();
     this.props.option.onClick();
+  }
+
+  // Focus the first menu item if the menu was accessed via the keyboard.
+  focusFirst(button) {
+    if (this.props.keyboardAccess && button) {
+      button.focus();
+    }
   }
 
   // This selects the correct node based on the key pressed

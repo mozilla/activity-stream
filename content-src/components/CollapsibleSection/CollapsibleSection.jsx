@@ -17,6 +17,7 @@ export class CollapsibleSection extends React.PureComponent {
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuButtonMouseEnter = this.onMenuButtonMouseEnter.bind(this);
     this.onMenuButtonMouseLeave = this.onMenuButtonMouseLeave.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
@@ -25,6 +26,7 @@ export class CollapsibleSection extends React.PureComponent {
       isAnimating: false,
       menuButtonHover: false,
       showContextMenu: false,
+      contextMenuKeyboard: false,
     };
     this.setContextMenuButtonRef = this.setContextMenuButtonRef.bind(this);
   }
@@ -159,6 +161,16 @@ export class CollapsibleSection extends React.PureComponent {
     this.setState({ showContextMenu: true });
   }
 
+  onMenuKeyPress(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this.setState({
+        showContextMenu: true,
+        contextMenuKeyboard: true,
+      });
+    }
+  }
+
   onMenuButtonMouseEnter() {
     this.setState({ menuButtonHover: true });
   }
@@ -259,6 +271,7 @@ export class CollapsibleSection extends React.PureComponent {
               className="context-menu-button icon"
               data-l10n-id="newtab-menu-section-tooltip"
               onClick={this.onMenuButtonClick}
+              onKeyDown={this.onMenuKeyPress}
               ref={this.setContextMenuButtonRef}
             />
             {showContextMenu && (
@@ -275,6 +288,7 @@ export class CollapsibleSection extends React.PureComponent {
                 isLast={isLast}
                 dispatch={dispatch}
                 isWebExtension={isWebExtension}
+                keyboardAccess={this.state.contextMenuKeyboard}
               />
             )}
           </div>

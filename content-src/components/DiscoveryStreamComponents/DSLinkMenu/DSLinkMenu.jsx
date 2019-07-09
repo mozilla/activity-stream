@@ -7,9 +7,11 @@ export class DSLinkMenu extends React.PureComponent {
     this.state = {
       activeCard: null,
       showContextMenu: false,
+      contextMenuKeyboard: false,
     };
     this.windowObj = this.props.windowObj || window; // Added to support unit tests
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.onMenuShow = this.onMenuShow.bind(this);
     this.contextMenuButtonRef = React.createRef();
@@ -21,6 +23,17 @@ export class DSLinkMenu extends React.PureComponent {
       activeCard: this.props.index,
       showContextMenu: true,
     });
+  }
+
+  onMenuKeyPress(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this.setState({
+        activeCard: this.props.index,
+        showContextMenu: true,
+        contextMenuKeyboard: true,
+      });
+    }
   }
 
   onMenuUpdate(showContextMenu) {
@@ -69,6 +82,7 @@ export class DSLinkMenu extends React.PureComponent {
           className="context-menu-button icon"
           data-l10n-id="newtab-menu-content-tooltip"
           data-l10n-args={JSON.stringify({ title })}
+          onKeyDown={this.onMenuKeyPress}
           onClick={this.onMenuButtonClick}
         />
         {isContextMenuOpen && (
@@ -80,6 +94,7 @@ export class DSLinkMenu extends React.PureComponent {
             onShow={this.onMenuShow}
             options={TOP_STORIES_CONTEXT_MENU_OPTIONS}
             shouldSendImpressionStats={true}
+            keyboardAccess={this.state.contextMenuKeyboard}
             site={{
               referrer: "https://getpocket.com/recommendations",
               title: this.props.title,

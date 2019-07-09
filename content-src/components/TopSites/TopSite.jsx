@@ -267,9 +267,10 @@ TopSiteLink.defaultProps = {
 export class TopSite extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { showContextMenu: false };
+    this.state = { showContextMenu: false, contextMenuKeyboard: false };
     this.onLinkClick = this.onLinkClick.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
 
@@ -337,6 +338,17 @@ export class TopSite extends React.PureComponent {
     this.setState({ showContextMenu: true });
   }
 
+  onMenuKeyPress(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this.props.onActivate(this.props.index);
+      this.setState({
+        showContextMenu: true,
+        contextMenuKeyboard: true,
+      });
+    }
+  }
+
   onMenuUpdate(showContextMenu) {
     this.setState({ showContextMenu });
   }
@@ -364,6 +376,7 @@ export class TopSite extends React.PureComponent {
             data-l10n-id="newtab-menu-content-tooltip"
             data-l10n-args={JSON.stringify({ title })}
             onClick={this.onMenuButtonClick}
+            onKeyDown={this.onMenuKeyPress}
           />
           {isContextMenuOpen && (
             <LinkMenu
@@ -378,6 +391,7 @@ export class TopSite extends React.PureComponent {
               site={link}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE}
+              keyboardAccess={this.state.contextMenuKeyboard}
             />
           )}
         </div>

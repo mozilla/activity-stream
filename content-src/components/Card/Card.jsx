@@ -24,9 +24,11 @@ export class _Card extends React.PureComponent {
       activeCard: null,
       imageLoaded: false,
       showContextMenu: false,
+      contextMenuKeyboard: false,
       cardImage: null,
     };
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
   }
@@ -119,6 +121,17 @@ export class _Card extends React.PureComponent {
       activeCard: this.props.index,
       showContextMenu: true,
     });
+  }
+
+  onMenuKeyPress(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this.setState({
+        activeCard: this.props.index,
+        showContextMenu: true,
+        contextMenuKeyboard: true,
+      });
+    }
   }
 
   /**
@@ -326,10 +339,10 @@ export class _Card extends React.PureComponent {
         </a>
         {!props.placeholder && (
           <button
-            aria-haspopup="true"
             data-l10n-id="newtab-menu-content-tooltip"
             data-l10n-args={JSON.stringify({ title })}
             className="context-menu-button icon"
+            onKeyDown={this.onMenuKeyPress}
             onClick={this.onMenuButtonClick}
           />
         )}
@@ -343,6 +356,7 @@ export class _Card extends React.PureComponent {
             site={link}
             siteInfo={this._getTelemetryInfo()}
             shouldSendImpressionStats={shouldSendImpressionStats}
+            keyboardAccess={this.state.contextMenuKeyboard}
           />
         )}
       </li>
