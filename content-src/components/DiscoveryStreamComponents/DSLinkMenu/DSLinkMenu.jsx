@@ -22,6 +22,7 @@ export class DSLinkMenu extends React.PureComponent {
     this.setState({
       activeCard: this.props.index,
       showContextMenu: true,
+      contextMenuKeyboard: false,
     });
   }
 

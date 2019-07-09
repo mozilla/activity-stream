@@ -158,7 +158,10 @@ export class CollapsibleSection extends React.PureComponent {
 
   onMenuButtonClick(event) {
     event.preventDefault();
-    this.setState({ showContextMenu: true });
+    this.setState({
+      showContextMenu: true,
+      contextMenuKeyboard: false,
+    });
   }
 
   onMenuKeyPress(event) {

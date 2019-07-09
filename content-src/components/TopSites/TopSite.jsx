@@ -335,7 +335,10 @@ export class TopSite extends React.PureComponent {
   onMenuButtonClick(event) {
     event.preventDefault();
     this.props.onActivate(this.props.index);
-    this.setState({ showContextMenu: true });
+    this.setState({
+      showContextMenu: true,
+      contextMenuKeyboard: false,
+    });
   }
 
   onMenuKeyPress(event) {
