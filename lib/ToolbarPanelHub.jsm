@@ -76,6 +76,7 @@ class _ToolbarPanelHub {
     const messages = this._getMessages({
       template: "whatsnew_panel_message",
       triggerId: "whatsNewPanelOpened",
+      returnAll: true,
     });
     const container = doc.getElementById(containerId);
 
