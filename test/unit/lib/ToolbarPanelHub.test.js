@@ -7,7 +7,6 @@ describe("ToolbarPanelHub", () => {
   let sandbox;
   let instance;
   let everyWindowStub;
-  let message;
   let fakeDocument;
   let fakeWindow;
   let fakeElementById;
@@ -18,9 +17,6 @@ describe("ToolbarPanelHub", () => {
     sandbox = sinon.createSandbox();
     globals = new GlobalOverrider();
     instance = new _ToolbarPanelHub();
-    message = (await OnboardingMessageProvider.getMessages()).find(
-      m => m.template === "whatsnew_panel_message"
-    );
     fakeElementById = {
       setAttribute: sandbox.stub(),
       removeAttribute: sandbox.stub(),
@@ -111,19 +107,24 @@ describe("ToolbarPanelHub", () => {
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
   });
   it("should render messages to the panel on renderMessages()", async () => {
-    message.content.link_text = { string_id: "link_text_id" };
-    instance.init({ getMessages: sandbox.stub().returns([message]) });
+    const messages = (await OnboardingMessageProvider.getMessages()).filter(
+      m => m.template === "whatsnew_panel_message"
+    );
+    messages[0].content.link_text = { string_id: "link_text_id" };
+    instance.init({ getMessages: sandbox.stub().returns(messages) });
     await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
-    assert.ok(
-      createdElements.find(
-        el => el.tagName === "h2" && el.textContent === message.content.title
-      )
-    );
-    assert.ok(
-      createdElements.find(
-        el => el.tagName === "p" && el.textContent === message.content.body
-      )
-    );
+    for (let message of messages) {
+      assert.ok(
+        createdElements.find(
+          el => el.tagName === "h2" && el.textContent === message.content.title
+        )
+      );
+      assert.ok(
+        createdElements.find(
+          el => el.tagName === "p" && el.textContent === message.content.body
+        )
+      );
+    }
     // Call the click handler to make coverage happy.
     eventListeners.click();
     assert.calledOnce(fakeWindow.ownerGlobal.openLinkIn);

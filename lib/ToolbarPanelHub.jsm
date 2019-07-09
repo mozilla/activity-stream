@@ -78,43 +78,44 @@ class _ToolbarPanelHub {
     const container = doc.getElementById(containerId);
 
     if (messages && !container.querySelector(".whatsNew-message")) {
+      let previousDate = 0;
       for (let { content } of messages) {
-        container.appendChild(this._createMessageElements(win, doc, content));
+        container.appendChild(
+          this._createMessageElements(win, doc, content, previousDate)
+        );
+        previousDate = content.published_date;
       }
     }
 
     // TODO: TELEMETRY
   }
 
-  _createMessageElements(win, doc, content) {
+  _createMessageElements(win, doc, content, previousDate) {
     const messageEl = this._createElement(doc, "div");
     messageEl.classList.add("whatsNew-message");
 
-    const dateEl = this._createElement(doc, "p");
-    dateEl.classList.add("whatsNew-message-date");
-    dateEl.textContent = new Date(content.published_date).toLocaleDateString(
-      "default",
-      {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }
-    );
+    // Only render date if it is different from the one rendered before.
+    if (content.published_date !== previousDate) {
+      const dateEl = this._createElement(doc, "p");
+      dateEl.classList.add("whatsNew-message-date");
+      dateEl.textContent = new Date(content.published_date).toLocaleDateString(
+        "default",
+        {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }
+      );
+      messageEl.appendChild(dateEl);
+    }
 
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
-
-    const titleEl = this._createElement(doc, "h2");
-    titleEl.classList.add("whatsNew-message-title");
-    this._setString(doc, titleEl, content.title);
-
-    const bodyEl = this._createElement(doc, "p");
-    this._setString(doc, bodyEl, content.body);
-
-    const linkEl = this._createElement(doc, "button");
-    linkEl.classList.add("text-link");
-    this._setString(doc, linkEl, content.link_text);
-    linkEl.addEventListener("click", () => {
+    if (content.icon_url) {
+      wrapperEl.classList.add("has-icon");
+    }
+    messageEl.appendChild(wrapperEl);
+    wrapperEl.addEventListener("click", () => {
       win.ownerGlobal.openLinkIn(content.link_url, "tabshifted", {
         private: false,
         triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
@@ -126,11 +127,29 @@ class _ToolbarPanelHub {
       // TODO: TELEMETRY
     });
 
-    messageEl.appendChild(dateEl);
-    messageEl.appendChild(wrapperEl);
+    if (content.icon_url) {
+      const iconEl = this._createElement(doc, "img");
+      iconEl.src = content.icon_url;
+      iconEl.classList.add("whatsNew-message-icon");
+      wrapperEl.appendChild(iconEl);
+    }
+
+    const titleEl = this._createElement(doc, "h2");
+    titleEl.classList.add("whatsNew-message-title");
+    this._setString(doc, titleEl, content.title);
     wrapperEl.appendChild(titleEl);
+
+    const bodyEl = this._createElement(doc, "p");
+    this._setString(doc, bodyEl, content.body);
     wrapperEl.appendChild(bodyEl);
-    wrapperEl.appendChild(linkEl);
+
+    if (content.link_text) {
+      const linkEl = this._createElement(doc, "button");
+      linkEl.classList.add("text-link");
+      this._setString(doc, linkEl, content.link_text);
+      wrapperEl.appendChild(linkEl);
+    }
+
     return messageEl;
   }
 

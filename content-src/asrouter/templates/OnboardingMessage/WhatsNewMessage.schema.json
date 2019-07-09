@@ -46,12 +46,17 @@
         {"description": "Id of localized string or message override of What's New message link text"}
       ]
     },
-    "link_url": {
-      "description": "Target the What's New message link.",
+    "cta_url": {
+      "description": "Target URL for the What's New message.",
+      "type": "string",
+      "format": "uri"
+    },
+    "icon_url": {
+      "description": " URL for the What's New message icon.",
       "type": "string",
       "format": "uri"
     }
   },
   "additionalProperties": false,
-  "required": ["published_date", "title", "body", "link_text"]
+  "required": ["published_date", "title", "body", "cta_url"]
 }
