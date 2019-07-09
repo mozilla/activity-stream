@@ -1075,7 +1075,21 @@ class _ASRouter {
     };
   }
 
-  _findMessage(candidateMessages, trigger, returnAll = false) {
+  _findAllMessages(candidateMessages, trigger) {
+    const messages = candidateMessages.filter(m =>
+      this.isBelowFrequencyCaps(m)
+    );
+    const context = this._getMessagesContext();
+
+    return ASRouterTargeting.findAllMatchingMessages({
+      messages,
+      trigger,
+      context,
+      onError: this._handleTargetingError,
+    });
+  }
+
+  _findMessage(candidateMessages, trigger) {
     const messages = candidateMessages.filter(m =>
       this.isBelowFrequencyCaps(m)
     );
@@ -1088,7 +1102,6 @@ class _ASRouter {
       trigger,
       context,
       onError: this._handleTargetingError,
-      returnAll,
     });
   }
 
@@ -1498,7 +1511,11 @@ class _ASRouter {
       return true;
     });
 
-    return this._findMessage(msgs, { id: triggerId }, returnAll);
+    if (returnAll) {
+      return this._findAllMessages(msgs, { id: triggerId });
+    }
+
+    return this._findMessage(msgs, { id: triggerId });
   }
 
   async setMessageById(id, target, force = true, action = {}) {
