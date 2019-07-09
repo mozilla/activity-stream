@@ -75,13 +75,14 @@ class _ToolbarPanelHub {
       triggerId: "whatsNewPanelOpened",
       returnAll: true,
     })).sort((m1, m2) => {
-      if (m1 === m2) {
+      // Sort by published_date in descending order.
+      if (m1.content.published_date === m2.content.published_date) {
         return 0;
       }
-      if (m1 > m2) {
-        return 1;
+      if (m1.content.published_date > m2.content.published_date) {
+        return -1;
       }
-      return 0;
+      return 1;
     });
     const container = doc.getElementById(containerId);
 

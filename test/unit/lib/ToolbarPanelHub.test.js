@@ -111,7 +111,11 @@ describe("ToolbarPanelHub", () => {
       m => m.template === "whatsnew_panel_message"
     );
     messages[0].content.link_text = { string_id: "link_text_id" };
-    instance.init({ getMessages: sandbox.stub().returns(messages) });
+    instance.init({
+      getMessages: sandbox
+        .stub()
+        .returns([messages[0], messages[2], messages[1]]),
+    });
     await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
     for (let message of messages) {
       assert.ok(
