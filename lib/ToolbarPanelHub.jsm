@@ -34,9 +34,6 @@ class _ToolbarPanelHub {
     this._getMessages = getMessages;
     if (this.whatsNewPanelEnabled) {
       this.enableAppmenuButton();
-      // TODO: this will eventually be called when the badge message gets triggered
-      // instead of here in init.
-      this.enableToolbarButton();
     }
   }
 
@@ -72,8 +69,8 @@ class _ToolbarPanelHub {
   }
 
   // Render what's new messages into the panel.
-  renderMessages(win, doc, containerId) {
-    const messages = this._getMessages({
+  async renderMessages(win, doc, containerId) {
+    const messages = await this._getMessages({
       template: "whatsnew_panel_message",
       triggerId: "whatsNewPanelOpened",
       returnAll: true,
@@ -95,13 +92,14 @@ class _ToolbarPanelHub {
 
     const dateEl = this._createElement(doc, "p");
     dateEl.classList.add("whatsNew-message-date");
-    dateEl.textContent = new Date(
-      content.published_date
-    ).toLocaleDateString("default", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+    dateEl.textContent = new Date(content.published_date).toLocaleDateString(
+      "default",
+      {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }
+    );
 
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");

@@ -110,10 +110,10 @@ describe("ToolbarPanelHub", () => {
     instance._hideToolbarButton(fakeWindow);
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
   });
-  it("should render messages to the panel on renderMessages()", () => {
+  it("should render messages to the panel on renderMessages()", async () => {
     message.content.link_text = { string_id: "link_text_id" };
-    instance.init({ getMessages: () => [message] });
-    instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+    instance.init({ getMessages: sandbox.stub().returns([message]) });
+    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
     assert.ok(
       createdElements.find(
         el => el.tagName === "h2" && el.textContent === message.content.title

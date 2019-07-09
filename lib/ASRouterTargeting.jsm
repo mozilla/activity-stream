@@ -502,14 +502,22 @@ this.ASRouterTargeting = {
    * @param {obj} impressions An object containing impressions, where keys are message ids
    * @param {trigger} string A trigger expression if a message for that trigger is desired
    * @param {obj|null} context A FilterExpression context. Defaults to TargetingGetters above.
+   * @param {boolean} returnAll If true, returns a list of all matching messages.
    * @returns {obj} an AS router message
    */
-  async findMatchingMessage({ messages, trigger, context, onError }) {
+  async findMatchingMessage({
+    messages,
+    trigger,
+    context,
+    onError,
+    returnAll = false,
+  }) {
     const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
     let sortedMessages = sortMessagesByTargeting(weightSortedMessages);
     sortedMessages = sortMessagesByPriority(sortedMessages);
     const triggerContext = trigger ? trigger.context : {};
     const combinedContext = this.combineContexts(context, triggerContext);
+    const matchingMessages = [];
 
     for (const candidate of sortedMessages) {
       if (
@@ -521,11 +529,13 @@ this.ASRouterTargeting = {
         // Otherwise, we should choose a message with no trigger property (i.e. a message that can show up at any time)
         (await this.checkMessageTargeting(candidate, combinedContext, onError))
       ) {
-        return candidate;
+        if (!returnAll) {
+          return candidate;
+        }
+        matchingMessages.push(candidate);
       }
     }
-
-    return null;
+    return returnAll ? matchingMessages : null;
   },
 };
 

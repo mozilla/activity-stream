@@ -1075,7 +1075,7 @@ class _ASRouter {
     };
   }
 
-  _findMessage(candidateMessages, trigger) {
+  _findMessage(candidateMessages, trigger, returnAll = false) {
     const messages = candidateMessages.filter(m =>
       this.isBelowFrequencyCaps(m)
     );
@@ -1088,6 +1088,7 @@ class _ASRouter {
       trigger,
       context,
       onError: this._handleTargetingError,
+      returnAll,
     });
   }
 
@@ -1485,7 +1486,7 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
-  handleMessageRequest({ triggerId, template, returnAll }) {
+  handleMessageRequest({ triggerId, template, returnAll = false }) {
     const msgs = this._getUnblockedMessages().filter(m => {
       if (template && m.template !== template) {
         return false;
@@ -1497,12 +1498,7 @@ class _ASRouter {
       return true;
     });
 
-    if (returnAll) {
-      // TODO: return only the messages that match targetting
-      return msgs;
-    }
-
-    return this._findMessage(msgs, { id: triggerId });
+    return this._findMessage(msgs, { id: triggerId }, returnAll);
   }
 
   async setMessageById(id, target, force = true, action = {}) {

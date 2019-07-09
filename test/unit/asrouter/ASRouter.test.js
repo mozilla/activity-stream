@@ -860,18 +860,23 @@ describe("ASRouter", () => {
     it("should return all unblocked messages that match the template, trigger if returnAll=true", async () => {
       const message1 = {
         id: "1",
-        template: "whatsnew-panel",
+        template: "whatsnew_panel_message",
+        trigger: { id: "whatsNewPanelOpened" },
       };
       const message2 = {
         id: "2",
-        template: "whatsnew-panel",
+        template: "whatsnew_panel_message",
+        trigger: { id: "whatsNewPanelOpened" },
       };
       const message3 = {
         id: "3",
         template: "badge",
       };
+      sandbox
+        .stub(Router, "_findMessage")
+        .callsFake(messages => [message2, message1]);
       await Router.setState({ messages: [message3, message2, message1] });
-      const result = Router.handleMessageRequest({
+      const result = await Router.handleMessageRequest({
         template: "whatsnew-panel",
         triggerId: "whatsNewPanelOpened",
         returnAll: true,
