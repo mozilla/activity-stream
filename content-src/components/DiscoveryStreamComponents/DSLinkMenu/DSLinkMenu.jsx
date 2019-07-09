@@ -1,40 +1,14 @@
 import { LinkMenu } from "content-src/components/LinkMenu/LinkMenu";
+import { ContextMenuButton } from "content-src/components/ContextMenu/ContextMenuButton";
 import React from "react";
 
 export class DSLinkMenu extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      activeCard: null,
-      showContextMenu: false,
-      contextMenuKeyboard: false,
-    };
     this.windowObj = this.props.windowObj || window; // Added to support unit tests
-    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
-    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.onMenuShow = this.onMenuShow.bind(this);
     this.contextMenuButtonRef = React.createRef();
-  }
-
-  onMenuButtonClick(event) {
-    event.preventDefault();
-    this.setState({
-      activeCard: this.props.index,
-      showContextMenu: true,
-      contextMenuKeyboard: false,
-    });
-  }
-
-  onMenuKeyPress(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      this.setState({
-        activeCard: this.props.index,
-        showContextMenu: true,
-        contextMenuKeyboard: true,
-      });
-    }
   }
 
   onMenuUpdate(showContextMenu) {
@@ -42,7 +16,6 @@ export class DSLinkMenu extends React.PureComponent {
       const dsLinkMenuHostDiv = this.contextMenuButtonRef.current.parentElement;
       dsLinkMenuHostDiv.parentElement.classList.remove("active", "last-item");
     }
-    this.setState({ showContextMenu });
   }
 
   nextAnimationFrame() {
@@ -61,8 +34,6 @@ export class DSLinkMenu extends React.PureComponent {
 
   render() {
     const { index, dispatch } = this.props;
-    const isContextMenuOpen =
-      this.state.showContextMenu && this.state.activeCard === index;
     const TOP_STORIES_CONTEXT_MENU_OPTIONS = [
       "CheckBookmarkOrArchive",
       "CheckSavedToPocket",
@@ -77,25 +48,19 @@ export class DSLinkMenu extends React.PureComponent {
 
     return (
       <div>
-        <button
-          ref={this.contextMenuButtonRef}
-          aria-haspopup="true"
-          className="context-menu-button icon"
-          data-l10n-id="newtab-menu-content-tooltip"
-          data-l10n-args={JSON.stringify({ title })}
-          onKeyDown={this.onMenuKeyPress}
-          onClick={this.onMenuButtonClick}
-        />
-        {isContextMenuOpen && (
+        <ContextMenuButton
+          refFunction={this.contextMenuButtonRef}
+          tooltip={"newtab-menu-content-tooltip"}
+          tooltipArgs={{ title }}
+          onUpdate={this.onMenuUpdate}
+        >
           <LinkMenu
             dispatch={dispatch}
             index={index}
             source={type.toUpperCase()}
-            onUpdate={this.onMenuUpdate}
             onShow={this.onMenuShow}
             options={TOP_STORIES_CONTEXT_MENU_OPTIONS}
             shouldSendImpressionStats={true}
-            keyboardAccess={this.state.contextMenuKeyboard}
             site={{
               referrer: "https://getpocket.com/recommendations",
               title: this.props.title,
@@ -107,7 +72,7 @@ export class DSLinkMenu extends React.PureComponent {
               bookmarkGuid: this.props.bookmarkGuid,
             }}
           />
-        )}
+        </ContextMenuButton>
       </div>
     );
   }
