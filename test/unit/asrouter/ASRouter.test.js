@@ -60,6 +60,7 @@ describe("ASRouter", () => {
   let messageImpressions;
   let providerImpressions;
   let previousSessionEnd;
+  let previousSessionFirefoxVersion;
   let fetchStub;
   let clock;
   let getStringPrefStub;
@@ -87,6 +88,9 @@ describe("ASRouter", () => {
     getStub
       .withArgs("previousSessionEnd")
       .returns(Promise.resolve(previousSessionEnd));
+    getStub
+      .withArgs("previousSessionFirefoxVersion")
+      .returns(Promise.resolve(previousSessionFirefoxVersion));
     return {
       get: getStub,
       set: sandbox.stub().returns(Promise.resolve()),
@@ -113,6 +117,7 @@ describe("ASRouter", () => {
     messageImpressions = {};
     providerImpressions = {};
     previousSessionEnd = 100;
+    previousSessionFirefoxVersion = 69;
     sandbox = sinon.createSandbox();
 
     sandbox.spy(ASRouterPreferences, "init");
@@ -141,13 +146,13 @@ describe("ASRouter", () => {
       uninit: sandbox.stub(),
       _forceShowMessage: sandbox.stub(),
     };
-    FakeToolbarBadgeHub = {
-      init: sandbox.stub(),
-      registerBadgeNotificationListener: sandbox.stub(),
-    };
     FakeToolbarPanelHub = {
       init: sandbox.stub(),
       uninit: sandbox.stub(),
+    };
+    FakeToolbarBadgeHub = {
+      init: sandbox.stub(),
+      registerBadgeNotificationListener: sandbox.stub(),
     };
     globals.set({
       AttributionCode: fakeAttributionCode,
@@ -814,6 +819,44 @@ describe("ASRouter", () => {
 
       assert.deepEqual(result, message1);
     });
+    it("should get unblocked messages that match trigger and template", async () => {
+      const message1 = {
+        id: "1",
+        campaign: "foocampaign",
+        template: "badge",
+        trigger: { id: "foo" },
+      };
+      const message2 = {
+        id: "2",
+        campaign: "foocampaign",
+        template: "snippet",
+        trigger: { id: "foo" },
+      };
+      await Router.setState({ messages: [message2, message1] });
+      // Just return the first message provided as arg
+      sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
+
+      const result = Router.handleMessageRequest({
+        triggerId: "foo",
+        template: "badge",
+      });
+
+      assert.deepEqual(result, message1);
+    });
+    it("should have previousSessionFirefoxVersion in the message context", () => {
+      assert.propertyVal(
+        Router._getMessagesContext(),
+        "previousSessionFirefoxVersion",
+        parseInt(AppConstants.MOZ_APP_VERSION, 10)
+      );
+    });
+    it("should have messageImpressions in the message context", () => {
+      assert.propertyVal(
+        Router._getMessagesContext(),
+        "messageImpressions",
+        Router.state.messageImpressions
+      );
+    });
   });
 
   describe("blocking", () => {
@@ -897,10 +940,15 @@ describe("ASRouter", () => {
     it("should save previousSessionEnd", () => {
       Router.uninit();
 
-      assert.calledOnce(Router._storage.set);
+      assert.calledTwice(Router._storage.set);
       assert.calledWithExactly(
         Router._storage.set,
         "previousSessionEnd",
+        sinon.match.number
+      );
+      assert.calledWithExactly(
+        Router._storage.set,
+        "previousSessionFirefoxVersion",
         sinon.match.number
       );
     });
