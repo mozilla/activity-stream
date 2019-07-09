@@ -873,7 +873,7 @@ describe("ASRouter", () => {
         template: "badge",
       };
       sandbox
-        .stub(Router, "_findMessage")
+        .stub(Router, "_findAllMessages")
         .callsFake(messages => [message2, message1]);
       await Router.setState({ messages: [message3, message2, message1] });
       const result = await Router.handleMessageRequest({
@@ -1566,6 +1566,12 @@ describe("ASRouter", () => {
         });
         const message = await Router._findMessage(messages, data.data.trigger);
         assert.equal(message, messages[0]);
+
+        const matches = await Router._findAllMessages(
+          messages,
+          data.data.trigger
+        );
+        assert.deepEqual(matches, messages);
       });
       it("should pick a message with the right targeting and trigger", async () => {
         let messages = [
