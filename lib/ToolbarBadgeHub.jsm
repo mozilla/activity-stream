@@ -37,6 +37,13 @@ class _ToolbarBadgeHub {
     this.messageRequest("toolbarBadgeUpdate");
   }
 
+  executeAction({ id }) {
+    switch (id) {
+      case "show-whatsnew-button":
+        break;
+    }
+  }
+
   removeAllNotifications() {
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
@@ -53,6 +60,9 @@ class _ToolbarBadgeHub {
 
   addToolbarNotification(win, message) {
     const document = win.browser.ownerDocument;
+    if (message.content.action) {
+      this.executeAction(message.content.action);
+    }
     let toolbarbutton = document.getElementById(message.content.target);
     if (toolbarbutton) {
       toolbarbutton.setAttribute("badged", true);
@@ -71,8 +81,14 @@ class _ToolbarBadgeHub {
     return null;
   }
 
-  registerBadgeNotificationListener(message) {
+  registerBadgeNotificationListener(message, options = {}) {
     this._addImpression(message);
+
+    // We need to clear any existing notifications and only show
+    // the one set by devtools
+    if (options.force) {
+      EveryWindow.unregisterCallback(this.id);
+    }
 
     EveryWindow.registerCallback(
       this.id,

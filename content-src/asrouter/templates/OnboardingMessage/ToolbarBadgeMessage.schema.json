@@ -6,6 +6,16 @@
   "properties": {
     "target": {
       "type": "string"
+    },
+    "action": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["id"]
     }
   },
   "additionalProperties": false,
