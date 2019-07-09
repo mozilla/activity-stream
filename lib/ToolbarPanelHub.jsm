@@ -70,10 +70,18 @@ class _ToolbarPanelHub {
 
   // Render what's new messages into the panel.
   async renderMessages(win, doc, containerId) {
-    const messages = await this._getMessages({
+    const messages = (await this._getMessages({
       template: "whatsnew_panel_message",
       triggerId: "whatsNewPanelOpened",
       returnAll: true,
+    })).sort((m1, m2) => {
+      if (m1 === m2) {
+        return 0;
+      }
+      if (m1 > m2) {
+        return 1;
+      }
+      return 0;
     });
     const container = doc.getElementById(containerId);
 
