@@ -43,7 +43,7 @@
     "link_text": {
       "allOf": [
         {"$ref": "#/definitions/localizableText"},
-        {"description": "Id of localized string or message override of What's New message link text"}
+        {"description": "(optional) Id of localized string or message override of What's New message link text"}
       ]
     },
     "cta_url": {
@@ -52,7 +52,7 @@
       "format": "uri"
     },
     "icon_url": {
-      "description": " URL for the What's New message icon.",
+      "description": "(optional) URL for the What's New message icon.",
       "type": "string",
       "format": "uri"
     }
