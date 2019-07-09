@@ -496,7 +496,7 @@ this.ASRouterTargeting = {
 
   _getSortedMessages(messages) {
     const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
-    let sortedMessages = sortMessagesByTargeting(weightSortedMessages);
+    const sortedMessages = sortMessagesByTargeting(weightSortedMessages);
     return sortMessagesByPriority(sortedMessages);
   },
 
