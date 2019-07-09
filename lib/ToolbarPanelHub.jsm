@@ -34,6 +34,9 @@ class _ToolbarPanelHub {
     this._getMessages = getMessages;
     if (this.whatsNewPanelEnabled) {
       this.enableAppmenuButton();
+      // TODO: this will eventually be called when the badge message gets triggered
+      // instead of here in init.
+      this.enableToolbarButton();
     }
   }
 
@@ -70,61 +73,70 @@ class _ToolbarPanelHub {
 
   // Render what's new messages into the panel.
   renderMessages(win, doc, containerId) {
-    const messages = this._getMessages({ template: "whatsnew_panel" });
+    const messages = this._getMessages({
+      template: "whatsnew_panel_message",
+      triggerId: "whatsNewPanelOpened",
+    });
     const container = doc.getElementById(containerId);
-    const createElement = elem =>
-      doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
 
     if (messages && !container.querySelector(".whatsNew-message")) {
       for (let { content } of messages) {
-        const messageEl = createElement("div");
-        messageEl.classList.add("whatsNew-message");
-
-        const dateEl = createElement("p");
-        dateEl.classList.add("whatsNew-message-date");
-        dateEl.textContent = new Date(
-          content.published_date
-        ).toLocaleDateString("default", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
-
-        const wrapperEl = createElement("div");
-        wrapperEl.classList.add("whatsNew-message-body");
-
-        const titleEl = createElement("h2");
-        titleEl.classList.add("whatsNew-message-title");
-        this._setString(doc, titleEl, content.title);
-
-        const bodyEl = createElement("p");
-        this._setString(doc, bodyEl, content.body);
-
-        const linkEl = createElement("button");
-        linkEl.classList.add("text-link");
-        this._setString(doc, linkEl, content.link_text);
-        linkEl.addEventListener("click", () => {
-          win.ownerGlobal.openLinkIn(content.link_url, "tabshifted", {
-            private: false,
-            triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
-              {}
-            ),
-            csp: null,
-          });
-
-          // TODO: TELEMETRY
-        });
-
-        messageEl.appendChild(dateEl);
-        messageEl.appendChild(wrapperEl);
-        wrapperEl.appendChild(titleEl);
-        wrapperEl.appendChild(bodyEl);
-        wrapperEl.appendChild(linkEl);
-        container.appendChild(messageEl);
+        container.appendChild(this._createMessageElements(win, doc, content));
       }
     }
 
     // TODO: TELEMETRY
+  }
+
+  _createMessageElements(win, doc, content) {
+    const messageEl = this._createElement(doc, "div");
+    messageEl.classList.add("whatsNew-message");
+
+    const dateEl = this._createElement(doc, "p");
+    dateEl.classList.add("whatsNew-message-date");
+    dateEl.textContent = new Date(content.published_date).toLocaleDateString(
+      "default",
+      {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }
+    );
+
+    const wrapperEl = this._createElement(doc, "div");
+    wrapperEl.classList.add("whatsNew-message-body");
+
+    const titleEl = this._createElement(doc, "h2");
+    titleEl.classList.add("whatsNew-message-title");
+    this._setString(doc, titleEl, content.title);
+
+    const bodyEl = this._createElement(doc, "p");
+    this._setString(doc, bodyEl, content.body);
+
+    const linkEl = this._createElement(doc, "button");
+    linkEl.classList.add("text-link");
+    this._setString(doc, linkEl, content.link_text);
+    linkEl.addEventListener("click", () => {
+      win.ownerGlobal.openLinkIn(content.link_url, "tabshifted", {
+        private: false,
+        triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+          {}
+        ),
+        csp: null,
+      });
+
+      // TODO: TELEMETRY
+    });
+
+    messageEl.appendChild(dateEl);
+    messageEl.appendChild(wrapperEl);
+    wrapperEl.appendChild(titleEl);
+    wrapperEl.appendChild(bodyEl);
+    wrapperEl.appendChild(linkEl);
+  }
+
+  _createElement(doc, elem) {
+    return doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
   }
 
   // If `string_id` is present it means we are relying on fluent for translations.

@@ -857,10 +857,7 @@ describe("ASRouter", () => {
         Router.state.messageImpressions
       );
     });
-  });
-
-  describe("#getMessages", () => {
-    it("should get unblocked messages that match the template", async () => {
+    it("should return all unblocked messages that match the template, trigger if returnAll=true", async () => {
       const message1 = {
         id: "1",
         template: "whatsnew-panel",
@@ -874,8 +871,10 @@ describe("ASRouter", () => {
         template: "badge",
       };
       await Router.setState({ messages: [message3, message2, message1] });
-      const result = Router.getMessages({
+      const result = Router.handleMessageRequest({
         template: "whatsnew-panel",
+        triggerId: "whatsNewPanelOpened",
+        returnAll: true,
       });
 
       assert.deepEqual(result, [message2, message1]);

@@ -499,7 +499,7 @@ const ONBOARDING_MESSAGES = async () => [
   },
   {
     id: "WHATS_NEW_70_1",
-    template: "whatsnew_panel",
+    template: "whatsnew_panel_message",
     content: {
       published_date: 1560969794394,
       title: "Protection Is Our Focus",
@@ -509,10 +509,11 @@ const ONBOARDING_MESSAGES = async () => [
       link_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 69`,
+    trigger: { id: "whatsNewPanelOpened" },
   },
   {
     id: "WHATS_NEW_70_2",
-    template: "whatsnew_panel",
+    template: "whatsnew_panel_message",
     content: {
       published_date: 1560969794394,
       title: "Another thing new in Firefox 70",
@@ -522,10 +523,11 @@ const ONBOARDING_MESSAGES = async () => [
       link_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 69`,
+    trigger: { id: "whatsNewPanelOpened" },
   },
   {
     id: "WHATS_NEW_69_1",
-    template: "whatsnew_panel",
+    template: "whatsnew_panel_message",
     content: {
       published_date: 1557346235089,
       title: "Something new in Firefox 69",
@@ -535,6 +537,7 @@ const ONBOARDING_MESSAGES = async () => [
       link_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 68`,
+    trigger: { id: "whatsNewPanelOpened" },
   },
 ];
 

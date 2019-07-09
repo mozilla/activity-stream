@@ -74,7 +74,7 @@ describe("OnboardingMessage", () => {
     const messages = await OnboardingMessageProvider.getUntranslatedMessages();
 
     messages
-      .filter(msg => msg.template === "whatsnew_panel")
+      .filter(msg => msg.template === "whatsnew_panel_message")
       .forEach(msg => assert.jsonSchema(msg.content, whatsNewSchema));
   });
   it("should decode the content field (double decoding)", async () => {
