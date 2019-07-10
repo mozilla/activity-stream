@@ -36,7 +36,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [hasPinnedTabs](#haspinnedtabs)
 * [hasAccessedFxAPanel](#hasaccessedfxapanel)
 * [isWhatsNewPanelEnabled](#iswhatsnewpanelenabled)
-* [previousFirefoxVersion](#previousFirefoxVersion)
+* [previousFirefoxVersion](#previousfirefoxversion)
 
 ## Detailed usage
 
@@ -505,5 +505,5 @@ Integer value of the first Firefox version the profile ran on
 #### Definition
 
 ```ts
-declare const isWhatsNewPanelEnabled: number;
+declare const previousFirefoxVersion: boolean;
 ```
