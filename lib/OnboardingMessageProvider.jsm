@@ -503,10 +503,11 @@ const ONBOARDING_MESSAGES = async () => [
     content: {
       published_date: 1560969794394,
       title: "Protection Is Our Focus",
+      icon_url:
+        "resource://activity-stream/data/content/assets/whatsnew-send-icon.png",
       body:
         "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
-      link_text: "Learn more on our blog",
-      link_url: "https://blog.mozilla.org/",
+      cta_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 69`,
     trigger: { id: "whatsNewPanelOpened" },
@@ -520,7 +521,7 @@ const ONBOARDING_MESSAGES = async () => [
       body:
         "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
       link_text: "Learn more on our blog",
-      link_url: "https://blog.mozilla.org/",
+      cta_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 69`,
     trigger: { id: "whatsNewPanelOpened" },
@@ -534,7 +535,7 @@ const ONBOARDING_MESSAGES = async () => [
       body:
         "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
       link_text: "Learn more on our blog",
-      link_url: "https://blog.mozilla.org/",
+      cta_url: "https://blog.mozilla.org/",
     },
     targeting: `firefoxVersion > 68`,
     trigger: { id: "whatsNewPanelOpened" },
