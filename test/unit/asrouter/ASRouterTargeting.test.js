@@ -48,18 +48,20 @@ describe("#CachedTargetingGetter", () => {
       global.NewTabUtils.activityStreamProvider.getTopFrecentSites
     );
   });
-  it("should report errors", async () => {
+  it("throws when failing getter", async () => {
     frecentStub.rejects(new Error("fake error"));
     clock.tick(sixHours);
 
     // assert.throws expect a function as the first parameter, try/catch is a
     // workaround
+    let rejected = false;
     try {
       await topsitesCache.get();
-      assert.isTrue(false);
     } catch (e) {
-      assert.calledOnce(global.Cu.reportError);
+      rejected = true;
     }
+
+    assert(rejected);
   });
   it("should check targeted message before message without targeting", async () => {
     const messages = await OnboardingMessageProvider.getUntranslatedMessages();
