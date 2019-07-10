@@ -267,7 +267,6 @@ export class CollapsibleSection extends React.PureComponent {
                 isLast={isLast}
                 dispatch={dispatch}
                 isWebExtension={isWebExtension}
-                keyboardAccess={this.state.contextMenuKeyboard}
               />
             </ContextMenuButton>
           </div>
