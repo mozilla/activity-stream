@@ -156,6 +156,22 @@ describe("ASRouter", () => {
       BookmarkPanelHub: FakeBookmarkPanelHub,
       ToolbarBadgeHub: FakeToolbarBadgeHub,
       ToolbarPanelHub: FakeToolbarPanelHub,
+      KintoHttpClient: class {
+        bucket() {
+          return this;
+        }
+        collection() {
+          return this;
+        }
+        getRecord() {
+          return Promise.resolve({ data: {} });
+        }
+      },
+      Downloader: class {
+        download() {
+          return Promise.resolve("/path/to/downlowned");
+        }
+      },
     });
     await createRouterAndInit();
   });
@@ -685,6 +701,25 @@ describe("ASRouter", () => {
         meta: { from: "ActivityStream:Content", to: "ActivityStream:Main" },
         type: "AS_ROUTER_TELEMETRY_USER_EVENT",
       });
+    });
+    it("should download the attachment if RemoteSettings returns some messages", async () => {
+      sandbox
+        .stub(global.Services.locale, "appLocaleAsLangTag")
+        .get(() => "en-US");
+      sandbox
+        .stub(MessageLoaderUtils, "_getRemoteSettingsMessages")
+        .resolves([{ id: "message_1" }]);
+      const spy = sandbox.spy();
+      global.Downloader.prototype.download = spy;
+      const provider = {
+        id: "cfr",
+        enabled: true,
+        type: "remote-settings",
+        bucket: "cfr",
+      };
+      await createRouterAndInit([provider]);
+
+      assert.calledOnce(spy);
     });
   });
 

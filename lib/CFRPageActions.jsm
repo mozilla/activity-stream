@@ -7,7 +7,14 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { L10nRegistry, FileSource } = ChromeUtils.import(
+  "resource://gre/modules/L10nRegistry.jsm"
+);
+const { FluentBundle } = ChromeUtils.import(
+  "resource://gre/modules/Fluent.jsm"
+);
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 
 ChromeUtils.defineModuleGetter(
   this,
@@ -30,6 +37,12 @@ const CATEGORY_ICONS = {
   cfrAddons: "webextensions-icon",
   cfrFeatures: "recommendations-icon",
 };
+const L10N_FLUENT_DIR = OS.Path.join(
+  OS.Constants.Path.localProfileDir,
+  "settings",
+  "main",
+  "ms-language-packs"
+);
 
 /**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
@@ -68,15 +81,40 @@ class PageAction {
     this._showPopupOnClick = this._showPopupOnClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
-    this._l10n = new DOMLocalization([
-      "browser/newtab/asrouter.ftl",
-      "browser/branding/brandings.ftl",
-      "browser/branding/sync-brand.ftl",
-      "branding/brand.ftl",
-    ]);
+    this._l10n = this._createDOML10n();
 
     // Saved timeout IDs for scheduled state changes, so they can be cancelled
     this.stateTransitionTimeoutIDs = [];
+  }
+
+  /**
+   * Creates a new DOMLocalization instance with the Fluent file from Remote Settings.
+   * Note that it still uses the packaged Fluent file as a fallback.
+   */
+  _createDOML10n() {
+    async function* generateBundles(locales, resources) {
+      const locale = Services.locale.appLocaleAsLangTag;
+      const fs = new FileSource("cfr", [locale], `file://${L10N_FLUENT_DIR}/`);
+      // In the case that the Fluent file has not been downloaded from Remote Settings,
+      // `fetchFile` will return `false` and fall back to the packaged Fluent file.
+      const resource = await fs.fetchFile(locale, "asrouter.json");
+      if (resource) {
+        const bundle = new FluentBundle([locale]);
+        bundle.addResource(resource);
+        yield bundle;
+      }
+      yield* L10nRegistry.generateBundles(locales, resources);
+    }
+
+    return new DOMLocalization(
+      [
+        "browser/newtab/asrouter.ftl",
+        "browser/branding/brandings.ftl",
+        "browser/branding/sync-brand.ftl",
+        "branding/brand.ftl",
+      ],
+      generateBundles
+    );
   }
 
   async showAddressBarNotifier(recommendation, shouldExpand = false) {

@@ -82,6 +82,16 @@ ChromeUtils.defineModuleGetter(
   "Sampling",
   "resource://gre/modules/components-utils/Sampling.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "KintoHttpClient",
+  "resource://services-common/kinto-http-client.js"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Downloader",
+  "resource://services-settings/Attachments.jsm"
+);
 
 const TRAILHEAD_CONFIG = {
   OVERRIDE_PREF: "trailhead.firstrun.branches",
@@ -120,6 +130,12 @@ const LOCAL_MESSAGE_PROVIDERS = {
   CFRMessageProvider,
 };
 const STARTPAGE_VERSION = "6";
+
+// Remote Settings
+const RS_SERVER_PREF = "services.settings.server";
+const RS_MAIN_BUCKET = "main";
+const RS_COLLECTION_L10N = "ms-language-packs"; // "ms" stands for Messaging System
+const RS_FLUENT_VERSION = "v1";
 
 /**
  * chooseBranch<T> -  Choose an item from a list of "branches" pseudorandomly using a seed / ratio configuration
@@ -294,6 +310,28 @@ const MessageLoaderUtils = {
             provider.id,
             options.dispatchToAS
           );
+        } else if (["cfr", "cfr-fxa"].includes(provider.id)) {
+          // Both "cfr" and "cfr-fxa" require the Fluent file for l10n, currently
+          // they share the same attachment of the record "cfr-${version}-${locale}",
+          // e.g. for "en-US" with version "v1", the record ID is "cfr-v1-en-US".
+
+          const locale = Services.locale.appLocaleAsLangTag;
+          const recordId = `cfr-${RS_FLUENT_VERSION}-${locale}`;
+          const kinto = new KintoHttpClient(
+            Services.prefs.getStringPref(RS_SERVER_PREF)
+          );
+          const record = await kinto
+            .bucket(RS_MAIN_BUCKET)
+            .collection(RS_COLLECTION_L10N)
+            .getRecord(recordId);
+          if (record && record.data) {
+            const downloader = new Downloader(
+              RS_MAIN_BUCKET,
+              RS_COLLECTION_L10N
+            );
+            // Await here in order to capture the exceptions for reporting.
+            await downloader.download(record.data, { retries: 2 });
+          }
         }
       } catch (e) {
         MessageLoaderUtils._handleRemoteSettingsUndesiredEvent(
