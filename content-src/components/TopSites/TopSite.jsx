@@ -268,7 +268,7 @@ TopSiteLink.defaultProps = {
 export class TopSite extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { showContextMenu: false, contextMenuKeyboard: false };
+    this.state = { showContextMenu: false };
     this.onLinkClick = this.onLinkClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
@@ -372,7 +372,6 @@ export class TopSite extends React.PureComponent {
               site={link}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE}
-              keyboardAccess={this.state.contextMenuKeyboard}
             />
           </ContextMenuButton>
         </div>
