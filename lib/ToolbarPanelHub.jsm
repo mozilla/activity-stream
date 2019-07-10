@@ -164,6 +164,7 @@ class _ToolbarPanelHub {
       day: "numeric",
       year: "numeric",
     });
+    return dateEl;
   }
 
   // If `string_id` is present it means we are relying on fluent for translations.
