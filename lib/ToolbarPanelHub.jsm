@@ -120,9 +120,6 @@ class _ToolbarPanelHub {
 
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
-    if (content.icon_url) {
-      wrapperEl.classList.add("has-icon");
-    }
     messageEl.appendChild(wrapperEl);
     wrapperEl.addEventListener("click", () => {
       win.ownerGlobal.openLinkIn(content.cta_url, "tabshifted", {
@@ -137,6 +134,7 @@ class _ToolbarPanelHub {
     });
 
     if (content.icon_url) {
+      wrapperEl.classList.add("has-icon");
       const iconEl = this._createElement(doc, "img");
       iconEl.src = content.icon_url;
       iconEl.classList.add("whatsNew-message-icon");
