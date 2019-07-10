@@ -4,6 +4,7 @@ import { FluentOrText } from "content-src/components/FluentOrText/FluentOrText";
 import React from "react";
 import { SectionMenu } from "content-src/components/SectionMenu/SectionMenu";
 import { SectionMenuOptions } from "content-src/lib/section-menu-options";
+import { ContextMenuButton } from "content-src/components/ContextMenu/ContextMenuButton";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -16,8 +17,6 @@ export class CollapsibleSection extends React.PureComponent {
     this.onKeyPress = this.onKeyPress.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
-    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
-    this.onMenuKeyPress = this.onMenuKeyPress.bind(this);
     this.onMenuButtonMouseEnter = this.onMenuButtonMouseEnter.bind(this);
     this.onMenuButtonMouseLeave = this.onMenuButtonMouseLeave.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
@@ -156,24 +155,6 @@ export class CollapsibleSection extends React.PureComponent {
     );
   }
 
-  onMenuButtonClick(event) {
-    event.preventDefault();
-    this.setState({
-      showContextMenu: true,
-      contextMenuKeyboard: false,
-    });
-  }
-
-  onMenuKeyPress(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      this.setState({
-        showContextMenu: true,
-        contextMenuKeyboard: true,
-      });
-    }
-  }
-
   onMenuButtonMouseEnter() {
     this.setState({ menuButtonHover: true });
   }
@@ -269,15 +250,11 @@ export class CollapsibleSection extends React.PureComponent {
             </span>
           </h3>
           <div>
-            <button
-              aria-haspopup="true"
-              className="context-menu-button icon"
-              data-l10n-id="newtab-menu-section-tooltip"
-              onClick={this.onMenuButtonClick}
-              onKeyDown={this.onMenuKeyPress}
-              ref={this.setContextMenuButtonRef}
-            />
-            {showContextMenu && (
+            <ContextMenuButton
+              tooltip="newtab-menu-section-tooltip"
+              onUpdate={this.onMenuUpdate}
+              refFunction={this.setContextMenuButtonRef}
+            >
               <SectionMenu
                 id={id}
                 extraOptions={extraMenuOptions}
@@ -285,7 +262,6 @@ export class CollapsibleSection extends React.PureComponent {
                 showPrefName={showPrefName}
                 privacyNoticeURL={privacyNoticeURL}
                 collapsed={collapsed}
-                onUpdate={this.onMenuUpdate}
                 isFixed={isFixed}
                 isFirst={isFirst}
                 isLast={isLast}
@@ -293,7 +269,7 @@ export class CollapsibleSection extends React.PureComponent {
                 isWebExtension={isWebExtension}
                 keyboardAccess={this.state.contextMenuKeyboard}
               />
-            )}
+            </ContextMenuButton>
           </div>
         </div>
         <ErrorBoundary className="section-body-fallback">
