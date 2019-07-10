@@ -25,7 +25,6 @@ export class CollapsibleSection extends React.PureComponent {
       isAnimating: false,
       menuButtonHover: false,
       showContextMenu: false,
-      contextMenuKeyboard: false,
     };
     this.setContextMenuButtonRef = this.setContextMenuButtonRef.bind(this);
   }
