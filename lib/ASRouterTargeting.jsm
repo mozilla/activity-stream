@@ -43,6 +43,12 @@ ChromeUtils.defineModuleGetter(
   "AttributionCode",
   "resource:///modules/AttributionCode.jsm"
 );
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "UpdateManager",
+  "@mozilla.org/updates/update-manager;1",
+  "nsIUpdateManager"
+);
 
 const FXA_USERNAME_PREF = "services.sync.username";
 const FXA_ENABLED_PREF = "identity.fxaccounts.enabled";
@@ -399,6 +405,16 @@ const TargetingGetters = {
       "browser.messaging-system.whatsNewPanel.enabled",
       false
     );
+  },
+  get previousFirefoxVersion() {
+    if (UpdateManager.updateCount) {
+      const previousFirefoxVersion = UpdateManager.getUpdateAt(
+        UpdateManager.updateCount - 1
+      ).previousAppVersion;
+      return parseInt(previousFirefoxVersion.match(/\d+/), 10);
+    }
+
+    return null;
   },
 };
 

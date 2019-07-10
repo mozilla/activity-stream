@@ -60,7 +60,6 @@ describe("ASRouter", () => {
   let messageImpressions;
   let providerImpressions;
   let previousSessionEnd;
-  let previousSessionFirefoxVersion;
   let fetchStub;
   let clock;
   let getStringPrefStub;
@@ -88,9 +87,6 @@ describe("ASRouter", () => {
     getStub
       .withArgs("previousSessionEnd")
       .returns(Promise.resolve(previousSessionEnd));
-    getStub
-      .withArgs("previousSessionFirefoxVersion")
-      .returns(Promise.resolve(previousSessionFirefoxVersion));
     return {
       get: getStub,
       set: sandbox.stub().returns(Promise.resolve()),
@@ -117,7 +113,6 @@ describe("ASRouter", () => {
     messageImpressions = {};
     providerImpressions = {};
     previousSessionEnd = 100;
-    previousSessionFirefoxVersion = 69;
     sandbox = sinon.createSandbox();
 
     sandbox.spy(ASRouterPreferences, "init");
@@ -843,13 +838,6 @@ describe("ASRouter", () => {
 
       assert.deepEqual(result, message1);
     });
-    it("should have previousSessionFirefoxVersion in the message context", () => {
-      assert.propertyVal(
-        Router._getMessagesContext(),
-        "previousSessionFirefoxVersion",
-        parseInt(AppConstants.MOZ_APP_VERSION, 10)
-      );
-    });
     it("should have messageImpressions in the message context", () => {
       assert.propertyVal(
         Router._getMessagesContext(),
@@ -967,15 +955,10 @@ describe("ASRouter", () => {
     it("should save previousSessionEnd", () => {
       Router.uninit();
 
-      assert.calledTwice(Router._storage.set);
+      assert.calledOnce(Router._storage.set);
       assert.calledWithExactly(
         Router._storage.set,
         "previousSessionEnd",
-        sinon.match.number
-      );
-      assert.calledWithExactly(
-        Router._storage.set,
-        "previousSessionFirefoxVersion",
         sinon.match.number
       );
     });
