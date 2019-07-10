@@ -133,4 +133,18 @@ describe("ToolbarPanelHub", () => {
     eventListeners.click();
     assert.calledOnce(fakeWindow.ownerGlobal.openLinkIn);
   });
+  it("should only render unique dates (no duplicates)", async () => {
+    instance._createDateElement = sandbox.stub();
+    const messages = (await OnboardingMessageProvider.getMessages()).filter(
+      m => m.template === "whatsnew_panel_message"
+    );
+    const uniqueDates = [
+      ...new Set(messages.map(m => m.content.published_date)),
+    ];
+    instance.init({
+      getMessages: sandbox.stub().returns(messages),
+    });
+    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+    assert.callCount(instance._createDateElement, uniqueDates.length);
+  });
 });

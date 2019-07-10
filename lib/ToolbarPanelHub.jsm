@@ -105,17 +105,9 @@ class _ToolbarPanelHub {
 
     // Only render date if it is different from the one rendered before.
     if (content.published_date !== previousDate) {
-      const dateEl = this._createElement(doc, "p");
-      dateEl.classList.add("whatsNew-message-date");
-      dateEl.textContent = new Date(content.published_date).toLocaleDateString(
-        "default",
-        {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }
+      messageEl.appendChild(
+        this._createDateElement(doc, content.published_date)
       );
-      messageEl.appendChild(dateEl);
     }
 
     const wrapperEl = this._createElement(doc, "div");
@@ -162,6 +154,16 @@ class _ToolbarPanelHub {
 
   _createElement(doc, elem) {
     return doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
+  }
+
+  _createDateElement(doc, date) {
+    const dateEl = this._createElement(doc, "p");
+    dateEl.classList.add("whatsNew-message-date");
+    dateEl.textContent = new Date(date).toLocaleDateString("default", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
   }
 
   // If `string_id` is present it means we are relying on fluent for translations.
