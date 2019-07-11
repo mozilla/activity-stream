@@ -1,6 +1,6 @@
 import { _ToolbarBadgeHub } from "lib/ToolbarBadgeHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
-import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
+import { PanelTestProvider } from "lib/PanelTestProvider.jsm";
 
 describe("ToolbarBadgeHub", () => {
   let sandbox;
@@ -18,7 +18,7 @@ describe("ToolbarBadgeHub", () => {
     sandbox = sinon.createSandbox();
     instance = new _ToolbarBadgeHub();
     fakeAddImpression = sandbox.stub();
-    const msgs = await OnboardingMessageProvider.getUntranslatedMessages();
+    const msgs = await PanelTestProvider.getMessages();
     fxaMessage = msgs.find(({ id }) => id === "FXA_ACCOUNTS_BADGE");
     whatsnewMessage = msgs.find(({ id }) => id.includes("WHATS_NEW_BADGE_"));
     fakeElement = {
