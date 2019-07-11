@@ -732,11 +732,6 @@ class _ASRouter {
     ToolbarPanelHub.init({
       getMessages: this.handleMessageRequest,
     });
-    ToolbarBadgeHub.init(this.waitForInitialized, {
-      handleMessageRequest: this.handleMessageRequest,
-      addImpression: this.addImpression,
-      blockMessageById: this.blockMessageById,
-    });
 
     this._loadLocalProviders();
 
@@ -793,6 +788,7 @@ class _ASRouter {
     ASRouterPreferences.uninit();
     BookmarkPanelHub.uninit();
     ToolbarPanelHub.uninit();
+    ToolbarBadgeHub.uninit();
 
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {
