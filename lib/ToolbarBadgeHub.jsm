@@ -86,8 +86,11 @@ class _ToolbarBadgeHub {
         return;
       }
 
-      event.target.removeEventListener("mousedown");
-      event.target.removeEventListener("click");
+      event.target.removeEventListener(
+        "mousedown",
+        this.removeAllNotifications
+      );
+      event.target.removeEventListener("click", this.removeAllNotifications);
     }
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);

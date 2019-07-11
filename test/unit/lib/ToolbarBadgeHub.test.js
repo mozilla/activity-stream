@@ -292,7 +292,13 @@ describe("ToolbarBadgeHub", () => {
       assert.calledTwice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
-        "mousedown"
+        "mousedown",
+        instance.removeAllNotifications
+      );
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "click",
+        instance.removeAllNotifications
       );
     });
     it("should remove the event listeners after succesfully focusing the element", () => {
@@ -304,7 +310,13 @@ describe("ToolbarBadgeHub", () => {
       assert.calledTwice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
-        "mousedown"
+        "mousedown",
+        instance.removeAllNotifications
+      );
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "click",
+        instance.removeAllNotifications
       );
     });
   });
