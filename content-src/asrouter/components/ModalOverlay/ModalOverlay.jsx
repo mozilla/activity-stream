@@ -32,7 +32,7 @@ export class ModalOverlayWrapper extends React.PureComponent {
 
     this.props.document
       .getElementById("header-asrouter-container")
-      .classList.remove(".modal-scroll");
+      .classList.remove("modal-scroll");
     this.props.document.getElementById("root").classList.remove("modal-height");
   }
 
