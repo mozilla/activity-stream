@@ -46,7 +46,7 @@ export class ContextMenuButton extends React.PureComponent {
     const { showContextMenu, contextMenuKeyboard } = this.state;
 
     return (
-      <>
+      <React.Fragment>
         <button
           aria-haspopup="true"
           data-l10n-id={tooltip}
@@ -62,7 +62,7 @@ export class ContextMenuButton extends React.PureComponent {
               onUpdate: this.onUpdate,
             })
           : null}
-      </>
+      </React.Fragment>
     );
   }
 }
