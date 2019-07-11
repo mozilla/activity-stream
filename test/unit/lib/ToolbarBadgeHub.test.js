@@ -135,10 +135,16 @@ describe("ToolbarBadgeHub", () => {
     it("should attach a cb on the notification", () => {
       instance.addToolbarNotification(target, fxaMessage);
 
-      assert.calledOnce(fakeElement.addEventListener);
+      assert.calledTwice(fakeElement.addEventListener);
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "mousedown",
+        instance.removeAllNotifications,
+        { once: true }
+      );
+      assert.calledWithExactly(
+        fakeElement.addEventListener,
+        "click",
         instance.removeAllNotifications,
         { once: true }
       );

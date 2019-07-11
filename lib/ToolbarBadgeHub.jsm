@@ -71,7 +71,9 @@ class _ToolbarBadgeHub {
   removeAllNotifications() {
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
-    this._blockMessageById(this.state.notification.id);
+    if (this.state.notification) {
+      this._blockMessageById(this.state.notification.id);
+    }
     this._clearBadgeTimeout();
     this.state = {};
   }
@@ -98,6 +100,10 @@ class _ToolbarBadgeHub {
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
       toolbarbutton.addEventListener("mousedown", this.removeAllNotifications, {
+        once: true,
+      });
+      // `click` event required for keyboard accessibility
+      toolbarbutton.addEventListener("click", this.removeAllNotifications, {
         once: true,
       });
       this.state = { notification: { id: message.id } };
@@ -134,8 +140,7 @@ class _ToolbarBadgeHub {
     // We need to clear any existing notifications and only show
     // the one set by devtools
     if (options.force) {
-      EveryWindow.unregisterCallback(this.id);
-      this._clearBadgeTimeout();
+      this.removeAllNotifications();
     }
 
     if (message.content.delay) {
