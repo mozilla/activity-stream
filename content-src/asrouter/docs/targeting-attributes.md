@@ -36,7 +36,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [hasPinnedTabs](#haspinnedtabs)
 * [hasAccessedFxAPanel](#hasaccessedfxapanel)
 * [isWhatsNewPanelEnabled](#iswhatsnewpanelenabled)
-* [previousFirefoxVersion](#previousfirefoxversion)
+* [earliestFirefoxVersion](#earliestfirefoxversion)
 
 ## Detailed usage
 
@@ -498,12 +498,12 @@ Boolean pref that controls if the What's New panel feature is enabled
 declare const isWhatsNewPanelEnabled: boolean;
 ```
 
-### `previousFirefoxVersion`
+### `earliestFirefoxVersion`
 
 Integer value of the first Firefox version the profile ran on
 
 #### Definition
 
 ```ts
-declare const previousFirefoxVersion: boolean;
+declare const earliestFirefoxVersion: boolean;
 ```

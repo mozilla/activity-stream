@@ -409,12 +409,12 @@ const TargetingGetters = {
       false
     );
   },
-  get previousFirefoxVersion() {
+  get earliestFirefoxVersion() {
     if (UpdateManager.updateCount) {
-      const previousFirefoxVersion = UpdateManager.getUpdateAt(
+      const earliestFirefoxVersion = UpdateManager.getUpdateAt(
         UpdateManager.updateCount - 1
       ).previousAppVersion;
-      return parseInt(previousFirefoxVersion.match(/\d+/), 10);
+      return parseInt(earliestFirefoxVersion.match(/\d+/), 10);
     }
 
     return null;
