@@ -75,20 +75,13 @@ function CachedTargetingGetter(
       this._lastUpdated = 0;
       this._value = null;
     },
-    get() {
-      return new Promise(async (resolve, reject) => {
-        const now = Date.now();
-        if (now - this._lastUpdated >= updateInterval) {
-          try {
-            this._value = await asProvider[property](options);
-            this._lastUpdated = now;
-          } catch (e) {
-            Cu.reportError(e);
-            reject(e);
-          }
-        }
-        resolve(this._value);
-      });
+    async get() {
+      const now = Date.now();
+      if (now - this._lastUpdated >= updateInterval) {
+        this._value = await asProvider[property](options);
+        this._lastUpdated = now;
+      }
+      return this._value;
     },
   };
 }
