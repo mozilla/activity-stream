@@ -732,11 +732,6 @@ class _ASRouter {
     ToolbarPanelHub.init({
       getMessages: this.handleMessageRequest,
     });
-    ToolbarBadgeHub.init(this.waitForInitialized, {
-      handleMessageRequest: this.handleMessageRequest,
-      addImpression: this.addImpression,
-      blockMessageById: this.blockMessageById,
-    });
 
     this._loadLocalProviders();
 

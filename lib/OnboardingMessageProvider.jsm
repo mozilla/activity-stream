@@ -473,13 +473,15 @@ const ONBOARDING_MESSAGES = async () => [
       target: "fxa-toolbar-menu-button",
     },
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
-    targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
+    targeting: `false && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
     trigger: { id: "toolbarBadgeUpdate" },
   },
   {
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
     template: "toolbar_badge",
     content: {
+      // delay: 5 * 3600 * 1000,
+      delay: 5000,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
     },

@@ -13,6 +13,16 @@ ChromeUtils.defineModuleGetter(
   "ToolbarPanelHub",
   "resource://activity-stream/lib/ToolbarPanelHub.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "setTimeout",
+  "resource://gre/modules/Timer.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "clearTimeout",
+  "resource://gre/modules/Timer.jsm"
+);
 
 const notificationsByWindow = new WeakMap();
 
@@ -24,6 +34,7 @@ class _ToolbarBadgeHub {
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
     this.addToolbarNotification = this.addToolbarNotification.bind(this);
+    this.registerBadgeToAllWindows = this.registerBadgeToAllWindows.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
@@ -50,10 +61,17 @@ class _ToolbarBadgeHub {
     }
   }
 
+  _clearBadgeTimeout() {
+    if (this.state && this.state.showBadgeTimeoutId) {
+      clearTimeout(this.state.showBadgeTimeoutId);
+    }
+  }
+
   removeAllNotifications() {
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
     this._blockMessageById(this.state.notification.id);
+    this._clearBadgeTimeout();
     this.state = null;
   }
 
@@ -87,15 +105,7 @@ class _ToolbarBadgeHub {
     return null;
   }
 
-  registerBadgeNotificationListener(message, options = {}) {
-    this._addImpression(message);
-
-    // We need to clear any existing notifications and only show
-    // the one set by devtools
-    if (options.force) {
-      EveryWindow.unregisterCallback(this.id);
-    }
-
+  registerBadgeToAllWindows(message) {
     EveryWindow.registerCallback(
       this.id,
       win => {
@@ -114,6 +124,25 @@ class _ToolbarBadgeHub {
     );
   }
 
+  registerBadgeNotificationListener(message, options = {}) {
+    // We need to clear any existing notifications and only show
+    // the one set by devtools
+    if (options.force) {
+      EveryWindow.unregisterCallback(this.id);
+      this._clearBadgeTimeout();
+    }
+
+    if (message.content.delay) {
+      this.state.showBadgeTimeoutId = setTimeout(() => {
+        this._addImpression(message);
+        this.registerBadgeToAllWindows(message);
+      }, message.content.delay);
+    } else {
+      this._addImpression(message);
+      this.registerBadgeToAllWindows(message);
+    }
+  }
+
   async messageRequest(triggerId) {
     const message = await this._handleMessageRequest({
       triggerId,
@@ -122,6 +151,10 @@ class _ToolbarBadgeHub {
     if (message) {
       this.registerBadgeNotificationListener(message);
     }
+  }
+
+  uninit() {
+    this._clearBadgeTimeout();
   }
 }
 
