@@ -788,6 +788,7 @@ class _ASRouter {
     ASRouterPreferences.uninit();
     BookmarkPanelHub.uninit();
     ToolbarPanelHub.uninit();
+    ToolbarBadgeHub.uninit();
 
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {

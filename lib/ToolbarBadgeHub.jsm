@@ -94,7 +94,9 @@ class _ToolbarBadgeHub {
         .querySelector(".toolbarbutton-badge")
         .setAttribute("value", "x");
 
-      toolbarbutton.addEventListener("click", this.removeAllNotifications, {
+      // `mousedown` event required because of the `onmousedown` defined on
+      // the button that prevents `click` events from firing
+      toolbarbutton.addEventListener("mousedown", this.removeAllNotifications, {
         once: true,
       });
       this.state = { notification: { id: message.id } };
@@ -106,6 +108,9 @@ class _ToolbarBadgeHub {
   }
 
   registerBadgeToAllWindows(message) {
+    // Impression should be added when the badge becomes visible
+    this._addImpression(message);
+
     EveryWindow.registerCallback(
       this.id,
       win => {
@@ -134,11 +139,9 @@ class _ToolbarBadgeHub {
 
     if (message.content.delay) {
       this.state.showBadgeTimeoutId = setTimeout(() => {
-        this._addImpression(message);
         this.registerBadgeToAllWindows(message);
       }, message.content.delay);
     } else {
-      this._addImpression(message);
       this.registerBadgeToAllWindows(message);
     }
   }
