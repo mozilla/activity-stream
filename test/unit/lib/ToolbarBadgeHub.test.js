@@ -3,7 +3,7 @@ import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
 import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 
-describe("BookmarkBadgeHub", () => {
+describe("ToolbarBadgeHub", () => {
   let sandbox;
   let instance;
   let fakeAddImpression;
