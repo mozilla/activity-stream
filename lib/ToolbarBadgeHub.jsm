@@ -48,6 +48,7 @@ class _ToolbarBadgeHub {
     this._handleMessageRequest = handleMessageRequest;
     this._blockMessageById = blockMessageById;
     this._addImpression = addImpression;
+    this.state = {};
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
     this.messageRequest("toolbarBadgeUpdate");
@@ -62,7 +63,7 @@ class _ToolbarBadgeHub {
   }
 
   _clearBadgeTimeout() {
-    if (this.state && this.state.showBadgeTimeoutId) {
+    if (this.state.showBadgeTimeoutId) {
       clearTimeout(this.state.showBadgeTimeoutId);
     }
   }
@@ -72,7 +73,7 @@ class _ToolbarBadgeHub {
     EveryWindow.unregisterCallback(this.id);
     this._blockMessageById(this.state.notification.id);
     this._clearBadgeTimeout();
-    this.state = null;
+    this.state = {};
   }
 
   removeToolbarNotification(toolbarButton) {
@@ -158,6 +159,7 @@ class _ToolbarBadgeHub {
 
   uninit() {
     this._clearBadgeTimeout();
+    this.state = null;
   }
 }
 

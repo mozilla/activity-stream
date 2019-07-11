@@ -15,7 +15,12 @@
         }
       },
       "additionalProperties": false,
-      "required": ["id"]
+      "required": ["id"],
+      "description": "Optional action to take in addition to showing the notification"
+    },
+    "delay": {
+      "type": "number",
+      "description": "Optional delay in ms after which to show the notification"
     }
   },
   "additionalProperties": false,

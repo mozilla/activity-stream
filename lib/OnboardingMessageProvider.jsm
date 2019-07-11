@@ -473,7 +473,7 @@ const ONBOARDING_MESSAGES = async () => [
       target: "fxa-toolbar-menu-button",
     },
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
-    targeting: `false && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
+    targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
     trigger: { id: "toolbarBadgeUpdate" },
   },
   {

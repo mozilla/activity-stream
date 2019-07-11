@@ -3,7 +3,7 @@ import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
 import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 
-describe("BookmarkPanelHub", () => {
+describe("BookmarkBadgeHub", () => {
   let sandbox;
   let instance;
   let fakeAddImpression;
@@ -12,6 +12,8 @@ describe("BookmarkPanelHub", () => {
   let fakeElement;
   let globals;
   let everyWindowStub;
+  let clearTimeoutStub;
+  let setTimeoutStub;
   beforeEach(async () => {
     globals = new GlobalOverrider();
     sandbox = sinon.createSandbox();
@@ -32,10 +34,15 @@ describe("BookmarkPanelHub", () => {
       registerCallback: sandbox.stub(),
       unregisterCallback: sandbox.stub(),
     };
+    clearTimeoutStub = sandbox.stub();
+    setTimeoutStub = sandbox.stub();
     globals.set("EveryWindow", everyWindowStub);
+    globals.set("setTimeout", setTimeoutStub);
+    globals.set("clearTimeout", clearTimeoutStub);
   });
   afterEach(() => {
     sandbox.restore();
+    globals.restore();
   });
   it("should create an instance", () => {
     assert.ok(instance);
@@ -48,6 +55,18 @@ describe("BookmarkPanelHub", () => {
       await instance.init(waitForInitialized, {});
       assert.calledOnce(instance.messageRequest);
       assert.calledWithExactly(instance.messageRequest, "toolbarBadgeUpdate");
+    });
+  });
+  describe("#uninit", () => {
+    it("should clear any setTimeout cbs", () => {
+      instance.init(sandbox.stub().resolves(), {});
+
+      instance.state.showBadgeTimeoutId = 2;
+
+      instance.uninit();
+
+      assert.calledOnce(clearTimeoutStub);
+      assert.calledWithExactly(clearTimeoutStub, 2);
     });
   });
   describe("messageRequest", () => {
@@ -119,7 +138,7 @@ describe("BookmarkPanelHub", () => {
       assert.calledOnce(fakeElement.addEventListener);
       assert.calledWithExactly(
         fakeElement.addEventListener,
-        "click",
+        "mousedown",
         instance.removeAllNotifications,
         { once: true }
       );
@@ -137,9 +156,14 @@ describe("BookmarkPanelHub", () => {
   });
   describe("registerBadgeNotificationListener", () => {
     beforeEach(() => {
-      sandbox.stub(instance, "_addImpression").value(fakeAddImpression);
+      instance.init(sandbox.stub().resolves(), {
+        addImpression: fakeAddImpression,
+      });
       sandbox.stub(instance, "addToolbarNotification").returns(fakeElement);
       sandbox.stub(instance, "removeToolbarNotification");
+    });
+    afterEach(() => {
+      instance.uninit();
     });
     it("should add an impression for the message", () => {
       instance.registerBadgeNotificationListener(fxaMessage);
@@ -225,6 +249,47 @@ describe("BookmarkPanelHub", () => {
 
       assert.calledOnce(everyWindowStub.unregisterCallback);
       assert.calledWithExactly(everyWindowStub.unregisterCallback, instance.id);
+    });
+  });
+  describe("message with delay", () => {
+    let msg_with_delay;
+    beforeEach(() => {
+      instance.init(sandbox.stub().resolves(), {
+        addImpression: fakeAddImpression,
+      });
+      msg_with_delay = {
+        ...fxaMessage,
+        content: {
+          ...fxaMessage.content,
+          delay: 500,
+        },
+      };
+      sandbox.stub(instance, "registerBadgeToAllWindows");
+    });
+    afterEach(() => {
+      instance.uninit();
+    });
+    it("should register a cb to fire after msg.content.delay ms", () => {
+      instance.registerBadgeNotificationListener(msg_with_delay);
+
+      assert.calledOnce(setTimeoutStub);
+      assert.calledWithExactly(
+        setTimeoutStub,
+        sinon.match.func,
+        msg_with_delay.content.delay
+      );
+
+      const [cb] = setTimeoutStub.firstCall.args;
+
+      assert.notCalled(instance.registerBadgeToAllWindows);
+
+      cb();
+
+      assert.calledOnce(instance.registerBadgeToAllWindows);
+      assert.calledWithExactly(
+        instance.registerBadgeToAllWindows,
+        msg_with_delay
+      );
     });
   });
 });

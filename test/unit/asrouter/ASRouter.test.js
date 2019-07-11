@@ -147,6 +147,7 @@ describe("ASRouter", () => {
     };
     FakeToolbarBadgeHub = {
       init: sandbox.stub(),
+      uninit: sandbox.stub(),
       registerBadgeNotificationListener: sandbox.stub(),
     };
     globals.set({
@@ -190,6 +191,34 @@ describe("ASRouter", () => {
       await Router.init(channel, createFakeStorage(), dispatchStub);
 
       assert.deepEqual(Router.state.messageBlockList, ["foo"]);
+    });
+    it("should initialize all the hub providers", async () => {
+      // ASRouter init called in `beforeEach` block above
+
+      assert.calledOnce(FakeToolbarBadgeHub.init);
+      assert.calledOnce(FakeToolbarPanelHub.init);
+      assert.calledOnce(FakeBookmarkPanelHub.init);
+
+      assert.calledWithExactly(
+        FakeToolbarBadgeHub.init,
+        Router.waitForInitialized,
+        {
+          handleMessageRequest: Router.handleMessageRequest,
+          addImpression: Router.addImpression,
+          blockMessageById: Router.blockMessageById,
+        }
+      );
+
+      assert.calledWithExactly(FakeToolbarPanelHub.init, {
+        getMessages: Router.handleMessageRequest,
+      });
+
+      assert.calledWithExactly(
+        FakeBookmarkPanelHub.init,
+        Router.handleMessageRequest,
+        Router.addImpression,
+        Router.dispatch
+      );
     });
     it("should set state.messageImpressions to the messageImpressions object in persistent storage", async () => {
       // Note that messageImpressions are only kept if a message exists in router and has a .frequency property,
