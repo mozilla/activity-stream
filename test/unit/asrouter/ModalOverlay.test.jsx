@@ -11,6 +11,9 @@ describe("ModalOverlayWrapper", () => {
       addEventListener: sandbox.stub(),
       removeEventListener: sandbox.stub(),
       body: { classList: { add: sandbox.stub(), remove: sandbox.stub() } },
+      getElementById() {
+        return { classList: { add: sandbox.stub(), remove: sandbox.stub() } };
+      },
     };
   });
   afterEach(() => {
