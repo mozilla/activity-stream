@@ -2,6 +2,9 @@ const { FilterExpressions } = ChromeUtils.import(
   "resource://gre/modules/components-utils/FilterExpressions.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 ChromeUtils.defineModuleGetter(
   this,
@@ -42,6 +45,12 @@ ChromeUtils.defineModuleGetter(
   this,
   "AttributionCode",
   "resource:///modules/AttributionCode.jsm"
+);
+XPCOMUtils.defineLazyServiceGetter(
+  this,
+  "UpdateManager",
+  "@mozilla.org/updates/update-manager;1",
+  "nsIUpdateManager"
 );
 
 const FXA_USERNAME_PREF = "services.sync.username";
@@ -399,6 +408,16 @@ const TargetingGetters = {
       "browser.messaging-system.whatsNewPanel.enabled",
       false
     );
+  },
+  get earliestFirefoxVersion() {
+    if (UpdateManager.updateCount) {
+      const earliestFirefoxVersion = UpdateManager.getUpdateAt(
+        UpdateManager.updateCount - 1
+      ).previousAppVersion;
+      return parseInt(earliestFirefoxVersion.match(/\d+/), 10);
+    }
+
+    return null;
   },
 };
 
