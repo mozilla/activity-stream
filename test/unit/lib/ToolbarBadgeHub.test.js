@@ -139,14 +139,12 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "mousedown",
-        instance.removeAllNotifications,
-        { once: true }
+        instance.removeAllNotifications
       );
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "click",
-        instance.removeAllNotifications,
-        { once: true }
+        instance.removeAllNotifications
       );
     });
     it("should execute actions if they exist", () => {
@@ -239,10 +237,12 @@ describe("ToolbarBadgeHub", () => {
   });
   describe("removeAllNotifications", () => {
     let blockMessageByIdStub;
+    let fakeEvent;
     beforeEach(() => {
       blockMessageByIdStub = sandbox.stub();
       sandbox.stub(instance, "_blockMessageById").value(blockMessageByIdStub);
       instance.state = { notification: { id: fxaMessage.id } };
+      fakeEvent = { target: { removeEventListener: sandbox.stub() } };
     });
     it("should call to block the message", () => {
       instance.removeAllNotifications();
@@ -255,6 +255,57 @@ describe("ToolbarBadgeHub", () => {
 
       assert.calledOnce(everyWindowStub.unregisterCallback);
       assert.calledWithExactly(everyWindowStub.unregisterCallback, instance.id);
+    });
+    it("should ignore right mouse button (mousedown event)", () => {
+      fakeEvent.type = "mousedown";
+      fakeEvent.button = 1; // not left click
+
+      instance.removeAllNotifications(fakeEvent);
+
+      assert.notCalled(fakeEvent.target.removeEventListener);
+      assert.notCalled(everyWindowStub.unregisterCallback);
+    });
+    it("should ignore right mouse button (click event)", () => {
+      fakeEvent.type = "click";
+      fakeEvent.button = 1; // not left click
+
+      instance.removeAllNotifications(fakeEvent);
+
+      assert.notCalled(fakeEvent.target.removeEventListener);
+      assert.notCalled(everyWindowStub.unregisterCallback);
+    });
+    it("should ignore keypresses that are not meant to focus the target", () => {
+      fakeEvent.type = "keypress";
+      fakeEvent.key = "\t"; // not enter
+
+      instance.removeAllNotifications(fakeEvent);
+
+      assert.notCalled(fakeEvent.target.removeEventListener);
+      assert.notCalled(everyWindowStub.unregisterCallback);
+    });
+    it("should remove the event listeners after succesfully focusing the element", () => {
+      fakeEvent.type = "click";
+      fakeEvent.button = 0;
+
+      instance.removeAllNotifications(fakeEvent);
+
+      assert.calledTwice(fakeEvent.target.removeEventListener);
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "mousedown"
+      );
+    });
+    it("should remove the event listeners after succesfully focusing the element", () => {
+      fakeEvent.type = "keypress";
+      fakeEvent.key = "Enter";
+
+      instance.removeAllNotifications(fakeEvent);
+
+      assert.calledTwice(fakeEvent.target.removeEventListener);
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "mousedown"
+      );
     });
   });
   describe("message with delay", () => {

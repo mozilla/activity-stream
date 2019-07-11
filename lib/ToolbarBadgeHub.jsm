@@ -68,7 +68,27 @@ class _ToolbarBadgeHub {
     }
   }
 
-  removeAllNotifications() {
+  removeAllNotifications(event) {
+    if (event) {
+      // ignore right clicks
+      if (
+        (event.type === "mousedown" || event.type === "click") &&
+        event.button !== 0
+      ) {
+        return;
+      }
+      // ignore keyboard access that is not one of the usual accessor keys
+      if (
+        event.type === "keypress" &&
+        event.key !== " " &&
+        event.key !== "Enter"
+      ) {
+        return;
+      }
+
+      event.target.removeEventListener("mousedown");
+      event.target.removeEventListener("click");
+    }
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
     if (this.state.notification) {
@@ -99,13 +119,9 @@ class _ToolbarBadgeHub {
 
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
-      toolbarbutton.addEventListener("mousedown", this.removeAllNotifications, {
-        once: true,
-      });
+      toolbarbutton.addEventListener("mousedown", this.removeAllNotifications);
       // `click` event required for keyboard accessibility
-      toolbarbutton.addEventListener("click", this.removeAllNotifications, {
-        once: true,
-      });
+      toolbarbutton.addEventListener("click", this.removeAllNotifications);
       this.state = { notification: { id: message.id } };
 
       return toolbarbutton;
