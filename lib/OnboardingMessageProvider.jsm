@@ -480,6 +480,8 @@ const ONBOARDING_MESSAGES = async () => [
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
     template: "toolbar_badge",
     content: {
+      // delay: 5 * 3600 * 1000,
+      delay: 5000,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
     },

@@ -8,6 +8,16 @@ ChromeUtils.defineModuleGetter(
   "EveryWindow",
   "resource:///modules/EveryWindow.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "setTimeout",
+  "resource://gre/modules/Timer.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "clearTimeout",
+  "resource://gre/modules/Timer.jsm"
+);
 
 const notificationsByWindow = new WeakMap();
 
@@ -19,6 +29,7 @@ class _ToolbarBadgeHub {
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
     this.addToolbarNotification = this.addToolbarNotification.bind(this);
+    this.registerBadgeToAllWindows = this.registerBadgeToAllWindows.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
@@ -32,6 +43,7 @@ class _ToolbarBadgeHub {
     this._handleMessageRequest = handleMessageRequest;
     this._blockMessageById = blockMessageById;
     this._addImpression = addImpression;
+    this.state = {};
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
     this.messageRequest("toolbarBadgeUpdate");
@@ -44,11 +56,43 @@ class _ToolbarBadgeHub {
     }
   }
 
-  removeAllNotifications() {
+  _clearBadgeTimeout() {
+    if (this.state.showBadgeTimeoutId) {
+      clearTimeout(this.state.showBadgeTimeoutId);
+    }
+  }
+
+  removeAllNotifications(event) {
+    if (event) {
+      // ignore right clicks
+      if (
+        (event.type === "mousedown" || event.type === "click") &&
+        event.button !== 0
+      ) {
+        return;
+      }
+      // ignore keyboard access that is not one of the usual accessor keys
+      if (
+        event.type === "keypress" &&
+        event.key !== " " &&
+        event.key !== "Enter"
+      ) {
+        return;
+      }
+
+      event.target.removeEventListener(
+        "mousedown",
+        this.removeAllNotifications
+      );
+      event.target.removeEventListener("click", this.removeAllNotifications);
+    }
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
-    this._blockMessageById(this.state.notification.id);
-    this.state = null;
+    if (this.state.notification) {
+      this._blockMessageById(this.state.notification.id);
+    }
+    this._clearBadgeTimeout();
+    this.state = {};
   }
 
   removeToolbarNotification(toolbarButton) {
@@ -70,9 +114,11 @@ class _ToolbarBadgeHub {
         .querySelector(".toolbarbutton-badge")
         .setAttribute("value", "x");
 
-      toolbarbutton.addEventListener("click", this.removeAllNotifications, {
-        once: true,
-      });
+      // `mousedown` event required because of the `onmousedown` defined on
+      // the button that prevents `click` events from firing
+      toolbarbutton.addEventListener("mousedown", this.removeAllNotifications);
+      // `click` event required for keyboard accessibility
+      toolbarbutton.addEventListener("click", this.removeAllNotifications);
       this.state = { notification: { id: message.id } };
 
       return toolbarbutton;
@@ -81,14 +127,9 @@ class _ToolbarBadgeHub {
     return null;
   }
 
-  registerBadgeNotificationListener(message, options = {}) {
+  registerBadgeToAllWindows(message) {
+    // Impression should be added when the badge becomes visible
     this._addImpression(message);
-
-    // We need to clear any existing notifications and only show
-    // the one set by devtools
-    if (options.force) {
-      EveryWindow.unregisterCallback(this.id);
-    }
 
     EveryWindow.registerCallback(
       this.id,
@@ -108,6 +149,22 @@ class _ToolbarBadgeHub {
     );
   }
 
+  registerBadgeNotificationListener(message, options = {}) {
+    // We need to clear any existing notifications and only show
+    // the one set by devtools
+    if (options.force) {
+      this.removeAllNotifications();
+    }
+
+    if (message.content.delay) {
+      this.state.showBadgeTimeoutId = setTimeout(() => {
+        this.registerBadgeToAllWindows(message);
+      }, message.content.delay);
+    } else {
+      this.registerBadgeToAllWindows(message);
+    }
+  }
+
   async messageRequest(triggerId) {
     const message = await this._handleMessageRequest({
       triggerId,
@@ -116,6 +173,11 @@ class _ToolbarBadgeHub {
     if (message) {
       this.registerBadgeNotificationListener(message);
     }
+  }
+
+  uninit() {
+    this._clearBadgeTimeout();
+    this.state = null;
   }
 }
 
