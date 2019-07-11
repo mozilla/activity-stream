@@ -1,6 +1,6 @@
 import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
-import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
+import { PanelTestProvider } from "lib/PanelTestProvider.jsm";
 
 describe("ToolbarPanelHub", () => {
   let globals;
@@ -107,7 +107,7 @@ describe("ToolbarPanelHub", () => {
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
   });
   it("should render messages to the panel on renderMessages()", async () => {
-    const messages = (await OnboardingMessageProvider.getMessages()).filter(
+    const messages = (await PanelTestProvider.getMessages()).filter(
       m => m.template === "whatsnew_panel_message"
     );
     messages[0].content.link_text = { string_id: "link_text_id" };
@@ -135,7 +135,7 @@ describe("ToolbarPanelHub", () => {
   });
   it("should only render unique dates (no duplicates)", async () => {
     instance._createDateElement = sandbox.stub();
-    const messages = (await OnboardingMessageProvider.getMessages()).filter(
+    const messages = (await PanelTestProvider.getMessages()).filter(
       m => m.template === "whatsnew_panel_message"
     );
     const uniqueDates = [
