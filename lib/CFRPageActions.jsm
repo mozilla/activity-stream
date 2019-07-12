@@ -92,18 +92,23 @@ class PageAction {
    * Note that it still uses the packaged Fluent file as a fallback.
    */
   _createDOML10n() {
-    async function* generateBundles(locales, resources) {
-      const locale = Services.locale.appLocaleAsLangTag;
-      const fs = new FileSource("cfr", [locale], `file://${L10N_FLUENT_DIR}/`);
+    async function* generateBundles(resourceIds) {
+      const appLocale = Services.locale.appLocaleAsBCP47;
+      const appLocales = Services.locale.appLocalesAsBCP47;
+      const fs = new FileSource(
+        "cfr",
+        appLocales,
+        `file://${L10N_FLUENT_DIR}/`
+      );
       // In the case that the Fluent file has not been downloaded from Remote Settings,
       // `fetchFile` will return `false` and fall back to the packaged Fluent file.
-      const resource = await fs.fetchFile(locale, "asrouter.json");
+      const resource = await fs.fetchFile(appLocale, "asrouter.json");
       if (resource) {
-        const bundle = new FluentBundle([locale]);
+        const bundle = new FluentBundle(appLocales);
         bundle.addResource(resource);
         yield bundle;
       }
-      yield* L10nRegistry.generateBundles(locales, resources);
+      yield* L10nRegistry.generateBundles(appLocales, resourceIds);
     }
 
     return new DOMLocalization(
