@@ -728,6 +728,7 @@ class _ASRouter {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
+      dispatch: this.dispatch,
     });
     ToolbarPanelHub.init({
       getMessages: this.handleMessageRequest,
@@ -1889,6 +1890,7 @@ class _ASRouter {
         await this.addImpression(action.data);
         break;
       case "DOORHANGER_TELEMETRY":
+      case "TOOLBAR_BADGE_TELEMETRY":
         if (this.dispatchToAS) {
           this.dispatchToAS(ac.ASRouterUserEvent(action.data));
         }
