@@ -98,7 +98,10 @@ class _ToolbarBadgeHub {
   removeToolbarNotification(toolbarButton) {
     toolbarButton
       .querySelector(".toolbarbutton-badge")
-      .removeAttribute("value");
+      .classList.remove("feature-callout");
+    toolbarButton
+      .querySelector(".toolbarbutton-icon")
+      .classList.add("feature-callout");
     toolbarButton.removeAttribute("badged");
   }
 
@@ -112,7 +115,10 @@ class _ToolbarBadgeHub {
       toolbarbutton.setAttribute("badged", true);
       toolbarbutton
         .querySelector(".toolbarbutton-badge")
-        .setAttribute("value", "x");
+        .classList.add("feature-callout");
+      toolbarbutton
+        .querySelector(".toolbarbutton-icon")
+        .classList.add("feature-callout");
 
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
