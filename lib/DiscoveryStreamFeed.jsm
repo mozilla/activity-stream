@@ -1246,11 +1246,6 @@ defaultLayoutResp = {
           },
           properties: {},
         },
-      ],
-    },
-    {
-      width: 12,
-      components: [
         {
           type: "Message",
           header: {
@@ -1266,11 +1261,145 @@ defaultLayoutResp = {
             ".ds-message": "margin-bottom: -20px",
           },
         },
-      ],
-    },
-    {
-      width: 12,
-      components: [
+        {
+          type: "Message",
+          header: {
+            title: "One Small Step To Remember",
+            subtitle: "",
+            link_text: "Sponsored by The Wall Street Journal",
+            link_url: "https://www.wsj.com/",
+            icon: "https://online.wsj.com/favicon.ico",
+          },
+          properties: {},
+          styles: {
+            ".ds-message":
+              "margin: -20px 0; background-color: var(--newtab-background-color); position: relative;",
+          },
+        },
+        {
+          type: "CardGrid",
+          properties: {
+            items: 3,
+          },
+          header: {
+            title: "",
+          },
+          feed: {
+            embed_reference: null,
+            url: `data:application/json,${encodeURI(
+              JSON.stringify({
+                status: 1,
+                settings: {
+                  spocsPerNewTabs: 0.5,
+                  domainAffinityParameterSets: {
+                    default: {
+                      recencyFactor: 0.5,
+                      frequencyFactor: 0.5,
+                      combinedDomainFactor: 0.5,
+                      perfectFrequencyVisits: 10,
+                      perfectCombinedDomainScore: 2,
+                      multiDomainBoost: 0,
+                      itemScoreFactor: 1,
+                    },
+                    "fully-personalized": {
+                      recencyFactor: 0.5,
+                      frequencyFactor: 0.5,
+                      combinedDomainFactor: 0.5,
+                      perfectFrequencyVisits: 10,
+                      perfectCombinedDomainScore: 2,
+                      itemScoreFactor: 0.01,
+                      multiDomainBoost: 0,
+                    },
+                  },
+                  timeSegments: [
+                    {
+                      id: "week",
+                      startTime: 604800,
+                      endTime: 0,
+                      weightPosition: 1,
+                    },
+                    {
+                      id: "month",
+                      startTime: 2592000,
+                      endTime: 604800,
+                      weightPosition: 0.5,
+                    },
+                  ],
+                  recsExpireTime: 5400,
+                  version: "2c2aa06dac65ddb647d8902aaa60263c8e119ff2",
+                },
+                spocs: [],
+                recommendations: [
+                  {
+                    id: 41986,
+                    url:
+                      "https://www.wsj.com/articles/fifty-years-after-apollo-11-the-moon-is-more-important-than-ever-11553697009?utm_source=pocket-newtab",
+                    domain: "wsj.com",
+                    title:
+                      "Fifty Years After Apollo 11, the Moon Is More Important Than Ever",
+                    excerpt:
+                      "The moon offers a source of valuable precious metals and a launching pad for future space exploration, writes former investigative reporter Basil Hero ",
+                    image_src: "https://images.wsj.net/im-62342/social",
+                    published_timestamp: "-62169962400",
+                    parameter_set: "default",
+                    item_score: 1,
+                    raw_image_src: "https://images.wsj.net/im-62342/social",
+                  },
+                  {
+                    id: 41947,
+                    url:
+                      "https://www.wsj.com/articles/our-quest-for-meaning-in-the-heavens-11561733749?utm_source=pocket-newtab",
+                    domain: "wsj.com",
+                    title: "Our Quest for Meaning in the Heavens",
+                    excerpt:
+                      "Fifty years after the first moon landing, outer space remains a mirror of humanity’s hopes and fears",
+                    image_src:
+                      "https://si.wsj.net/public/resources/images/OG-CV878_201906_SOC_20190627162438.gif",
+                    published_timestamp: "1562666400",
+                    parameter_set: "default",
+                    item_score: 0.83333333333333,
+                    raw_image_src:
+                      "https://si.wsj.net/public/resources/images/OG-CV878_201906_SOC_20190627162438.gif",
+                  },
+                  {
+                    id: 41967,
+                    url:
+                      "https://www.wsj.com/articles/apollo-11-review-houston-weve-got-a-classic-11551384513?utm_source=pocket-newtab",
+                    domain: "wsj.com",
+                    title: "‘Apollo 11’ Review: Houston, We’ve Got a Classic",
+                    excerpt:
+                      "A documentary, best seen in IMAX, forgoes hype and conjures the lunar adventure with spectacular, previously unseen footage.",
+                    image_src:
+                      "https://si.wsj.net/public/resources/images/B3-DH199_FILMAP_SOC_20190227175131.jpg",
+                    published_timestamp: "1562648400",
+                    parameter_set: "default",
+                    item_score: 0.66666666666667,
+                    raw_image_src:
+                      "https://si.wsj.net/public/resources/images/B3-DH199_FILMAP_SOC_20190227175131.jpg",
+                  },
+                ],
+              })
+            )}`,
+          },
+          styles: {
+            ".ds-header": "margin-bottom: -20px",
+          },
+        },
+        {
+          type: "Message",
+          header: {
+            title: "Recommended by Pocket",
+            subtitle: "",
+            link_text: "How it works",
+            link_url: "https://getpocket.com/firefox/new_tab_learn_more",
+            icon:
+              "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
         {
           type: "CardGrid",
           properties: {
