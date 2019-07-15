@@ -229,6 +229,7 @@ describe("ToolbarBadgeHub", () => {
 
       assert.calledOnce(fakeElement.removeAttribute);
       assert.calledWithExactly(fakeElement.removeAttribute, "badged");
+      assert.calledTwice(fakeElement.classList.remove);
       assert.calledWithExactly(fakeElement.classList.remove, "feature-callout");
     });
   });
