@@ -19,21 +19,26 @@ export class ModalOverlayWrapper extends React.PureComponent {
   componentWillMount() {
     this.props.document.addEventListener("keydown", this.onKeyDown);
     this.props.document.body.classList.add("modal-open");
+    this.header = this.props.document.getElementById(
+      "header-asrouter-container"
+    );
 
-    this.props.document
-      .getElementById("header-asrouter-container")
-      .classList.add("modal-scroll");
-    this.props.document.getElementById("root").classList.add("modal-height");
+    if (this.header) {
+      this.header.classList.add("modal-scroll");
+      this.props.document.getElementById("root").classList.add("modal-height");
+    }
   }
 
   componentWillUnmount() {
     this.props.document.removeEventListener("keydown", this.onKeyDown);
     this.props.document.body.classList.remove("modal-open");
 
-    this.props.document
-      .getElementById("header-asrouter-container")
-      .classList.remove("modal-scroll");
-    this.props.document.getElementById("root").classList.remove("modal-height");
+    if (this.header) {
+      this.header.classList.remove("modal-scroll");
+      this.props.document
+        .getElementById("root")
+        .classList.remove("modal-height");
+    }
   }
 
   render() {
