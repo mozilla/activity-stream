@@ -164,17 +164,6 @@ describe("<SectionMenu>", () => {
   });
   describe(".onClick", () => {
     const dispatch = sinon.stub();
-    const propOptions = [
-      "Separator",
-      "MoveUp",
-      "MoveDown",
-      "RemoveSection",
-      "CollapseSection",
-      "ExpandSection",
-      "ManageSection",
-      "AddTopSite",
-      "PrivacyNotice",
-    ];
     const expectedActionData = {
       "newtab-section-menu-move-up": { id: "sectionId", direction: -1 },
       "newtab-section-menu-move-down": { id: "sectionId", direction: +1 },
@@ -197,11 +186,7 @@ describe("<SectionMenu>", () => {
       },
     };
     const { options } = shallow(
-      <SectionMenu
-        {...DEFAULT_PROPS}
-        dispatch={dispatch}
-        options={propOptions}
-      />
+      <SectionMenu {...DEFAULT_PROPS} dispatch={dispatch} />
     )
       .find(ContextMenu)
       .props();
@@ -235,6 +220,42 @@ describe("<SectionMenu>", () => {
             assert.isUserEventAction(action);
             assert.propertyVal(action.data, "source", DEFAULT_PROPS.source);
           }
+        });
+      });
+  });
+  describe("dispatch expand section if section is collapsed and adding top site", () => {
+    const dispatch = sinon.stub();
+    const expectedExpandData = {
+      id: DEFAULT_PROPS.id,
+      value: { collapsed: false },
+    };
+    const { options } = shallow(
+      <SectionMenu
+        {...DEFAULT_PROPS}
+        collapsed={true}
+        dispatch={dispatch}
+        extraOptions={["AddTopSite"]}
+      />
+    )
+      .find(ContextMenu)
+      .props();
+    afterEach(() => dispatch.reset());
+
+    assert.equal(options[0].id, "newtab-section-menu-add-topsite");
+    options
+      .filter(o => o.id === "newtab-section-menu-add-topsite")
+      .forEach(option => {
+        it(`should dispatch an action to expand the seciton`, () => {
+          option.onClick();
+
+          const [expandCallArgs] = dispatch.firstCall.args;
+          const { type, data } = expandCallArgs;
+          assert.ok(type === "UPDATE_SECTION_PREFS");
+          assert.deepEqual(data, expectedExpandData);
+        });
+        it(`should dispatch the add topsite action after`, () => {
+          option.onClick();
+          assert.ok(dispatch.thirdCall.calledWith(option.action));
         });
       });
   });
