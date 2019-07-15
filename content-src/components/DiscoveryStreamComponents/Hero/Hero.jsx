@@ -83,7 +83,7 @@ export class Hero extends React.PureComponent {
       heroCard = <PlaceholderDSCard />;
     } else {
       heroCard = (
-        <div className="ds-hero-item">
+        <div className="ds-hero-item" key={`dscard-${heroRec.id}`}>
           <SafeAnchor
             className="wrapper"
             dispatch={this.props.dispatch}
