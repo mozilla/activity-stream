@@ -69,114 +69,159 @@ export const helpers = {
   },
 };
 
-const { useEffect, useState } = React;
-export const FirstRun = props => {
-  const {
-    message,
-    sendUserActionTelemetry,
-    fxaEndpoint,
-    dispatch,
-    executeAction,
-    document,
-  } = props;
+export class FirstRun extends React.PureComponent {
+  constructor(props) {
+    super(props);
 
-  const {
-    hasTriplets,
-    hasInterrupt,
-    interrupt,
-    triplets,
-    UTMTerm,
-  } = helpers.selectInterruptAndTriplets(message);
+    this.didLoadFlowParams = false;
 
-  const [addedFluent, setAddedFluent] = useState(false);
-  useEffect(() => {
-    helpers.addFluent(document);
-    // We need to remove hide-main since we should show it underneath everything that has rendered
-    props.document.body.classList.remove("hide-main");
-    setAddedFluent(true);
-  }, []);
+    this.state = {
+      prevMessage: undefined,
 
-  const [state, setState] = useState({
-    isInterruptVisible: false,
-    isTripletsContainerVisible: false,
-    isTripletsContentVisible: false,
-  });
+      hasInterrupt: false,
+      hasTriplets: false,
 
-  useEffect(() => {
-    setState({
-      isInterruptVisible: hasInterrupt,
-      isTripletsContainerVisible: hasTriplets,
+      interrupt: undefined,
+      triplets: undefined,
+
+      isInterruptVisible: false,
+      isTripletsContainerVisible: false,
       isTripletsContentVisible: false,
-    });
-    if (!hasInterrupt) {
-      props.document.body.classList.remove("welcome");
-    }
-  }, [interrupt, triplets, hasInterrupt, hasTriplets]);
 
-  const [flowParams, setFlowParams] = useState();
-  useEffect(() => {
-    if (fxaEndpoint && UTMTerm) {
+      UTMTerm: "",
+
+      flowParams: undefined,
+    };
+
+    this.closeInterrupt = this.closeInterrupt.bind(this);
+    this.closeTriplets = this.closeTriplets.bind(this);
+
+    helpers.addFluent(this.props.document);
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const { message } = props;
+    if (message && message.id !== state.prevMessageId) {
+      const {
+        hasTriplets,
+        hasInterrupt,
+        interrupt,
+        triplets,
+        UTMTerm,
+      } = helpers.selectInterruptAndTriplets(message);
+
+      return {
+        prevMessageId: message.id,
+
+        hasInterrupt,
+        hasTriplets,
+
+        interrupt,
+        triplets,
+
+        isInterruptVisible: hasInterrupt,
+        isTripletsContainerVisible: hasTriplets,
+        isTripletsContentVisible: !(hasInterrupt || !hasTriplets),
+
+        UTMTerm,
+      };
+    }
+    return null;
+  }
+
+  fetchFlowParams() {
+    const { fxaEndpoint, dispatch } = this.props;
+    const { UTMTerm } = this.state;
+    if (fxaEndpoint && UTMTerm && !this.didLoadFlowParams) {
+      this.didLoadFlowParams = true;
       helpers.fetchFlowParams({
         fxaEndpoint,
         UTMTerm,
         dispatch,
-        setFlowParams,
+        setFlowParams: flowParams => this.setState({ flowParams }),
       });
     }
-  }, [fxaEndpoint, UTMTerm, dispatch]);
+  }
 
-  const {
-    isInterruptVisible,
-    isTripletsContainerVisible,
-    isTripletsContentVisible,
-  } = state;
+  removeHideMain() {
+    if (!this.state.hasInterrupt) {
+      // We need to remove hide-main since we should show it underneath everything that has rendered
+      this.props.document.body.classList.remove("hide-main", "welcome");
+    }
+  }
 
-  const closeInterrupt = () => {
-    setState(prevState => ({
+  componentDidMount() {
+    this.fetchFlowParams();
+    this.removeHideMain();
+  }
+
+  componentDidUpdate() {
+    // In case we didn't have FXA info immediately, try again when we receive it.
+    this.fetchFlowParams();
+    this.removeHideMain();
+  }
+
+  closeInterrupt() {
+    this.setState(prevState => ({
       isInterruptVisible: false,
       isTripletsContainerVisible: prevState.hasTriplets,
       isTripletsContentVisible: prevState.hasTriplets,
     }));
-  };
+  }
 
-  const closeTriplets = () => setState({ isTripletsContainerVisible: false });
+  closeTriplets() {
+    this.setState({ isTripletsContainerVisible: false });
+  }
 
-  const dismissAndGoNext = () => {
-    // onDismiss();
-    closeInterrupt();
-  };
+  render() {
+    const { props } = this;
+    const {
+      sendUserActionTelemetry,
+      fxaEndpoint,
+      dispatch,
+      executeAction,
+    } = props;
 
-  // Don't render before we add strings;
-  if (!addedFluent) return null;
+    const {
+      interrupt,
+      triplets,
+      isInterruptVisible,
+      isTripletsContainerVisible,
+      isTripletsContentVisible,
+      hasTriplets,
+      UTMTerm,
+      flowParams,
+    } = this.state;
 
-  return (
-    <>
-      {isInterruptVisible ? (
-        <Interrupt
-          document={props.document}
-          message={interrupt}
-          onNextScene={closeInterrupt}
-          UTMTerm={UTMTerm}
-          sendUserActionTelemetry={sendUserActionTelemetry}
-          dispatch={dispatch}
-          flowParams={flowParams}
-          onDismiss={dismissAndGoNext}
-          fxaEndpoint={fxaEndpoint}
-        />
-      ) : null}
-      {hasTriplets ? (
-        <Triplets
-          document={props.document}
-          cards={triplets}
-          showCardPanel={isTripletsContainerVisible}
-          showContent={isTripletsContentVisible}
-          hideContainer={closeTriplets}
-          sendUserActionTelemetry={sendUserActionTelemetry}
-          UTMTerm={`${UTMTerm}-card`}
-          flowParams={flowParams}
-          onAction={executeAction}
-        />
-      ) : null}
-    </>
-  );
-};
+    return (
+      <>
+        {isInterruptVisible ? (
+          <Interrupt
+            document={props.document}
+            message={interrupt}
+            onNextScene={this.closeInterrupt}
+            UTMTerm={UTMTerm}
+            sendUserActionTelemetry={sendUserActionTelemetry}
+            dispatch={dispatch}
+            flowParams={flowParams}
+            onDismiss={this.closeInterrupt}
+            fxaEndpoint={fxaEndpoint}
+          />
+        ) : null}
+        {hasTriplets ? (
+          <Triplets
+            document={props.document}
+            cards={triplets}
+            showCardPanel={isTripletsContainerVisible}
+            showContent={isTripletsContentVisible}
+            hideContainer={this.closeTriplets}
+            sendUserActionTelemetry={sendUserActionTelemetry}
+            UTMTerm={`${UTMTerm}-card`}
+            flowParams={flowParams}
+            onAction={executeAction}
+          />
+        ) : null}
+      </>
+    );
+  }
+}
