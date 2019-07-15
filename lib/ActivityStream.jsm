@@ -451,13 +451,9 @@ const PREFS_CONFIG = new Map([
           CA: ["en-CA", "en-GB", "en-US", "en-ZA"],
         }[geo];
 
-        // Enable for US/en-US in all channels.
         // Enable for specific geos and locales for Nightly.
         const isEnabled =
-          (geo === `US` && locale === `en-US`) ||
-          (IS_NIGHTLY_OR_UNBRANDED_BUILD &&
-            locales &&
-            locales.includes(locale));
+          IS_NIGHTLY_OR_UNBRANDED_BUILD && locales && locales.includes(locale);
 
         return JSON.stringify({
           api_key_pref: "extensions.pocket.oAuthConsumerKey",
