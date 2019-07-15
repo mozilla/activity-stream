@@ -1071,7 +1071,7 @@ This reports an enrollment ping when a user gets enrolled in a Trailhead experim
 
 ## Feature Callouts interaction pings
 
-This reports when a user has seen a badge/notification in the browser toolbar in a non-PBM window
+This reports when a user has seen or clicked a badge/notification in the browser toolbar in a non-PBM window
 
 ```
 {
