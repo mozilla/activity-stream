@@ -149,13 +149,14 @@ newtab-empty-section-highlights = Start browsing, and we’ll show some of the g
 newtab-empty-section-topstories = You’ve caught up. Check back later for more top stories from { $provider }. Can’t wait? Select a popular topic to find more great stories from around the web.
 
 
-## Empty Section (Content Discovery Experience). These show when there are no more pocket stories or when some stories fail to load.
+## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
 newtab-discovery-empty-section-topstories-header = You are caught up!
 newtab-discovery-empty-section-topstories-content = Check back later for more stories.
 newtab-discovery-empty-section-topstories-try-again-button = Try Again
-newtab-discovery-empty-section-topstories-loading = Loading...
-newtab-discovery-empty-section-topstories-unfinished = Oops! We almost loaded this section, but not quite.
+newtab-discovery-empty-section-topstories-loading = Loading....
+# Displays when a layout in a section took too long to fetch articles.
+newtab-discovery-empty-section-topstories-timed-out = Oops! We almost loaded this section, but not quite.
 
 ## Pocket Content Section.
 

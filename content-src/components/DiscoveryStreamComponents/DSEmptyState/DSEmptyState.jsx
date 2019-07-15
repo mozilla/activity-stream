@@ -73,7 +73,7 @@ export class DSEmptyState extends React.PureComponent {
     if (this.props.status === "waiting" || this.props.status === "failed") {
       return (
         <React.Fragment>
-          <h2 data-l10n-id="newtab-discovery-empty-section-topstories-unfinished" />
+          <h2 data-l10n-id="newtab-discovery-empty-section-topstories-timed-out" />
           {this.renderButton()}
         </React.Fragment>
       );
