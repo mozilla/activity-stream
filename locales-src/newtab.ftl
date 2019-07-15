@@ -154,7 +154,7 @@ newtab-empty-section-topstories = You’ve caught up. Check back later for more 
 newtab-discovery-empty-section-topstories-header = You are caught up!
 newtab-discovery-empty-section-topstories-content = Check back later for more stories.
 newtab-discovery-empty-section-topstories-try-again-button = Try Again
-newtab-discovery-empty-section-topstories-loading = Loading....
+newtab-discovery-empty-section-topstories-loading = Loading…
 # Displays when a layout in a section took too long to fetch articles.
 newtab-discovery-empty-section-topstories-timed-out = Oops! We almost loaded this section, but not quite.
 
