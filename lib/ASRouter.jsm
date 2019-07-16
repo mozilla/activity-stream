@@ -732,6 +732,7 @@ class _ASRouter {
     });
     ToolbarPanelHub.init(this.waitForInitialized, {
       getMessages: this.handleMessageRequest,
+      dispatch: this.dispatch,
     });
 
     this._loadLocalProviders();
@@ -1891,6 +1892,7 @@ class _ASRouter {
         break;
       case "DOORHANGER_TELEMETRY":
       case "TOOLBAR_BADGE_TELEMETRY":
+      case "TOOLBAR_PANEL_TELEMETRY":
         if (this.dispatchToAS) {
           this.dispatchToAS(ac.ASRouterUserEvent(action.data));
         }

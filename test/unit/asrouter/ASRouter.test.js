@@ -215,6 +215,7 @@ describe("ASRouter", () => {
         Router.waitForInitialized,
         {
           getMessages: Router.handleMessageRequest,
+          dispatch: Router.dispatch,
         }
       );
 

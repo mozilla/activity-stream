@@ -16,6 +16,8 @@ describe("ToolbarPanelHub", () => {
   let removeObserverStub;
   let getBoolPrefStub;
   let waitForInitializedStub;
+  let isBrowserPrivateStub;
+  let fakeDispatch;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -28,6 +30,7 @@ describe("ToolbarPanelHub", () => {
       querySelector: sandbox.stub().returns(null),
       appendChild: sandbox.stub(),
       addEventListener: sandbox.stub(),
+      hasAttribute: sandbox.stub(),
     };
     fakeDocument = {
       l10n: {
@@ -58,6 +61,10 @@ describe("ToolbarPanelHub", () => {
       MozXULElement: { insertFTLIfNeeded: sandbox.stub() },
       ownerGlobal: {
         openLinkIn: sandbox.stub(),
+        gBrowser: "gBrowser",
+      },
+      PanelUI: {
+        whatsNewPanel: fakeElementById,
       },
     };
     everyWindowStub = {
@@ -67,6 +74,8 @@ describe("ToolbarPanelHub", () => {
     addObserverStub = sandbox.stub();
     removeObserverStub = sandbox.stub();
     getBoolPrefStub = sandbox.stub();
+    fakeDispatch = sandbox.stub();
+    isBrowserPrivateStub = sandbox.stub();
     globals.set("EveryWindow", everyWindowStub);
     globals.set("Services", {
       ...Services,
@@ -75,6 +84,9 @@ describe("ToolbarPanelHub", () => {
         removeObserver: removeObserverStub,
         getBoolPref: getBoolPrefStub,
       },
+    });
+    globals.set("PrivateBrowsingUtils", {
+      isBrowserPrivate: isBrowserPrivateStub,
     });
   });
   afterEach(() => {
@@ -215,85 +227,169 @@ describe("ToolbarPanelHub", () => {
     instance._hideToolbarButton(fakeWindow);
     assert.calledWith(fakeElementById.setAttribute, "hidden", true);
   });
-  it("should render messages to the panel on renderMessages()", async () => {
-    const messages = (await PanelTestProvider.getMessages()).filter(
-      m => m.template === "whatsnew_panel_message"
-    );
-    messages[0].content.link_text = { string_id: "link_text_id" };
-    instance.init(waitForInitializedStub, {
-      getMessages: sandbox
-        .stub()
-        .returns([messages[0], messages[2], messages[1]]),
+  describe("#renderMessages", () => {
+    let getMessagesStub;
+    beforeEach(() => {
+      getMessagesStub = sandbox.stub();
+      instance.init(waitForInitializedStub, {
+        getMessages: getMessagesStub,
+        dispatch: fakeDispatch,
+      });
     });
-    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
-    for (let message of messages) {
-      assert.ok(
-        createdElements.find(
-          el => el.tagName === "h2" && el.textContent === message.content.title
-        )
+    it("should render messages to the panel on renderMessages()", async () => {
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m => m.template === "whatsnew_panel_message"
       );
-      assert.ok(
-        createdElements.find(
-          el => el.tagName === "p" && el.textContent === message.content.body
-        )
-      );
-    }
-    // Call the click handler to make coverage happy.
-    eventListeners.click();
-    assert.calledOnce(fakeWindow.ownerGlobal.openLinkIn);
-  });
-  it("should only render unique dates (no duplicates)", async () => {
-    instance._createDateElement = sandbox.stub();
-    const messages = (await PanelTestProvider.getMessages()).filter(
-      m => m.template === "whatsnew_panel_message"
-    );
-    const uniqueDates = [
-      ...new Set(messages.map(m => m.content.published_date)),
-    ];
-    instance.init(waitForInitializedStub, {
-      getMessages: sandbox.stub().returns(messages),
-    });
-    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
-    assert.callCount(instance._createDateElement, uniqueDates.length);
-  });
-  it("should listen for panelhidden and remove the toolbar button", async () => {
-    instance.init(waitForInitializedStub, {
-      getMessages: sandbox.stub().returns([]),
-    });
-    fakeDocument.getElementById
-      .withArgs("customizationui-widget-panel")
-      .returns(null);
+      messages[0].content.link_text = { string_id: "link_text_id" };
 
-    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+      getMessagesStub.returns([messages[0], messages[2], messages[1]]);
 
-    assert.notCalled(fakeElementById.addEventListener);
-  });
-  it("should listen for panelhidden and remove the toolbar button", async () => {
-    instance.init(waitForInitializedStub, {
-      getMessages: sandbox.stub().returns([]),
-    });
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
-    await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
-
-    assert.calledOnce(fakeElementById.addEventListener);
-    assert.calledWithExactly(
-      fakeElementById.addEventListener,
-      "popuphidden",
-      sinon.match.func,
-      {
-        once: true,
+      for (let message of messages) {
+        assert.ok(
+          createdElements.find(
+            el =>
+              el.tagName === "h2" && el.textContent === message.content.title
+          )
+        );
+        assert.ok(
+          createdElements.find(
+            el => el.tagName === "p" && el.textContent === message.content.body
+          )
+        );
       }
-    );
-    const [, cb] = fakeElementById.addEventListener.firstCall.args;
+      // Call the click handler to make coverage happy.
+      eventListeners.click();
+      assert.calledOnce(fakeWindow.ownerGlobal.openLinkIn);
+    });
+    it("should only render unique dates (no duplicates)", async () => {
+      instance._createDateElement = sandbox.stub();
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m => m.template === "whatsnew_panel_message"
+      );
+      const uniqueDates = [
+        ...new Set(messages.map(m => m.content.published_date)),
+      ];
+      getMessagesStub.returns(messages);
 
-    assert.notCalled(everyWindowStub.unregisterCallback);
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
-    cb();
+      assert.callCount(instance._createDateElement, uniqueDates.length);
+    });
+    it("should listen for panelhidden and remove the toolbar button", async () => {
+      getMessagesStub.returns([]);
+      fakeDocument.getElementById
+        .withArgs("customizationui-widget-panel")
+        .returns(null);
 
-    assert.calledOnce(everyWindowStub.unregisterCallback);
-    assert.calledWithExactly(
-      everyWindowStub.unregisterCallback,
-      "whats-new-menu-button"
-    );
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      assert.notCalled(fakeElementById.addEventListener);
+    });
+    it("should listen for panelhidden and remove the toolbar button", async () => {
+      getMessagesStub.returns([]);
+
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      assert.calledOnce(fakeElementById.addEventListener);
+      assert.calledWithExactly(
+        fakeElementById.addEventListener,
+        "popuphidden",
+        sinon.match.func,
+        {
+          once: true,
+        }
+      );
+      const [, cb] = fakeElementById.addEventListener.firstCall.args;
+
+      assert.notCalled(everyWindowStub.unregisterCallback);
+
+      cb();
+
+      assert.calledOnce(everyWindowStub.unregisterCallback);
+      assert.calledWithExactly(
+        everyWindowStub.unregisterCallback,
+        "whats-new-menu-button"
+      );
+    });
+    describe("#IMPRESSION", () => {
+      it("should dispatch a IMPRESSION with toolbar_dropdown", async () => {
+        // means panel is triggered from the toolbar button
+        fakeElementById.hasAttribute.returns(true);
+        getMessagesStub.returns([]);
+        const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+
+        await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+        assert.calledOnce(spy);
+        assert.calledWithExactly(
+          spy,
+          fakeWindow,
+          "IMPRESSION",
+          {
+            id: instance.triggerId,
+          },
+          {
+            value: {
+              view: "toolbar_dropdown",
+            },
+          }
+        );
+        assert.calledOnce(fakeDispatch);
+        const {
+          args: [dispatchPayload],
+        } = fakeDispatch.firstCall;
+        assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
+        assert.propertyVal(
+          dispatchPayload.data,
+          "message_id",
+          instance.triggerId
+        );
+        assert.propertyVal(
+          dispatchPayload.data.value,
+          "view",
+          "toolbar_dropdown"
+        );
+      });
+      it("should dispatch a IMPRESSION with application_menu", async () => {
+        // means panel is triggered as a subview in the application menu
+        fakeElementById.hasAttribute.returns(false);
+        getMessagesStub.returns([]);
+        const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+
+        await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+        assert.calledOnce(spy);
+        assert.calledWithExactly(
+          spy,
+          fakeWindow,
+          "IMPRESSION",
+          {
+            id: instance.triggerId,
+          },
+          {
+            value: {
+              view: "application_menu",
+            },
+          }
+        );
+        assert.calledOnce(fakeDispatch);
+        const {
+          args: [dispatchPayload],
+        } = fakeDispatch.firstCall;
+        assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
+        assert.propertyVal(
+          dispatchPayload.data,
+          "message_id",
+          instance.triggerId
+        );
+        assert.propertyVal(
+          dispatchPayload.data.value,
+          "view",
+          "application_menu"
+        );
+      });
+    });
   });
 });
