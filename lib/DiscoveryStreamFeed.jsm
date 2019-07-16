@@ -1255,7 +1255,6 @@ defaultLayoutResp = {
           type: "Message",
           header: {
             title: "Recommended by Pocket",
-            subtitle: "",
             link_text: "How it works",
             link_url: "https://getpocket.com/firefox/new_tab_learn_more",
             icon:
