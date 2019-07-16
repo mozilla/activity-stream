@@ -981,6 +981,21 @@ describe("Reducers", () => {
       });
       assert.deepEqual(state.spocs, INITIAL_STATE.DiscoveryStream.spocs);
     });
+    it("should add blocked spocs to blocked array with DISCOVERY_STREAM_SPOC_BLOCKED", () => {
+      const firstState = DiscoveryStream(undefined, {
+        type: at.DISCOVERY_STREAM_SPOC_BLOCKED,
+        data: { url: "https://foo.com" },
+      });
+      const secondState = DiscoveryStream(firstState, {
+        type: at.DISCOVERY_STREAM_SPOC_BLOCKED,
+        data: { url: "https://bar.com" },
+      });
+      assert.deepEqual(firstState.spocs.blocked, ["https://foo.com"]);
+      assert.deepEqual(secondState.spocs.blocked, [
+        "https://foo.com",
+        "https://bar.com",
+      ]);
+    });
     it("should not update state for empty action.data on DISCOVERY_STREAM_LINK_BLOCKED", () => {
       const newState = DiscoveryStream(undefined, {
         type: at.DISCOVERY_STREAM_LINK_BLOCKED,
