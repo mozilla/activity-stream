@@ -314,6 +314,49 @@ describe("ToolbarPanelHub", () => {
       );
     });
     describe("#IMPRESSION", () => {
+      it("should dispatch a IMPRESSION for messages", async () => {
+        // means panel is triggered from the toolbar button
+        fakeElementById.hasAttribute.returns(true);
+        const messages = (await PanelTestProvider.getMessages()).filter(
+          m => m.template === "whatsnew_panel_message"
+        );
+        getMessagesStub.returns(messages);
+        const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+
+        await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+        // Messages + panel impression
+        assert.equal(spy.callCount, messages.length + 1);
+        assert.equal(fakeDispatch.callCount, messages.length + 1);
+        for (let message of messages) {
+          assert.calledWithExactly(spy, fakeWindow, "IMPRESSION", message);
+        }
+      });
+      it("should dispatch a CLICK for clicking a message", async () => {
+        // means panel is triggered from the toolbar button
+        fakeElementById.hasAttribute.returns(true);
+        // Force to render the message
+        fakeElementById.querySelector.returns(null);
+        const messages = (await PanelTestProvider.getMessages()).filter(
+          m => m.template === "whatsnew_panel_message"
+        );
+        getMessagesStub.returns([messages[0]]);
+        const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+
+        await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+        // Messages + panel impression
+        assert.calledTwice(spy);
+        assert.calledTwice(fakeDispatch);
+
+        spy.resetHistory();
+
+        // Message click event listener cb
+        eventListeners.click();
+
+        assert.calledOnce(spy);
+        assert.calledWithExactly(spy, fakeWindow, "CLICK", messages[0]);
+      });
       it("should dispatch a IMPRESSION with toolbar_dropdown", async () => {
         // means panel is triggered from the toolbar button
         fakeElementById.hasAttribute.returns(true);
@@ -339,7 +382,7 @@ describe("ToolbarPanelHub", () => {
         assert.calledOnce(fakeDispatch);
         const {
           args: [dispatchPayload],
-        } = fakeDispatch.firstCall;
+        } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
         assert.propertyVal(
           dispatchPayload.data,
@@ -377,7 +420,7 @@ describe("ToolbarPanelHub", () => {
         assert.calledOnce(fakeDispatch);
         const {
           args: [dispatchPayload],
-        } = fakeDispatch.firstCall;
+        } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
         assert.propertyVal(
           dispatchPayload.data,

@@ -144,6 +144,7 @@ class _ToolbarPanelHub {
           this._createMessageElements(win, doc, message, previousDate)
         );
         previousDate = message.content.published_date;
+        this.sendUserEventTelemetry(win, "IMPRESSION", message);
       }
     }
 
