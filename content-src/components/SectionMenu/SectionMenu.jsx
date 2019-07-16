@@ -75,7 +75,11 @@ export class _SectionMenu extends React.PureComponent {
 
   render() {
     return (
-      <ContextMenu onUpdate={this.props.onUpdate} options={this.getOptions()} />
+      <ContextMenu
+        onUpdate={this.props.onUpdate}
+        options={this.getOptions()}
+        keyboardAccess={this.props.keyboardAccess}
+      />
     );
   }
 }
