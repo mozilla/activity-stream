@@ -618,11 +618,8 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
         ...prevState,
         spocs: {
           ...prevState.spocs,
-          blocked: [
-            ...prevState.spocs.blocked,
-            action.data.url,
-          ],
-        }
+          blocked: [...prevState.spocs.blocked, action.data.url],
+        },
       };
     case at.DISCOVERY_STREAM_LINK_BLOCKED:
       return isNotReady()
