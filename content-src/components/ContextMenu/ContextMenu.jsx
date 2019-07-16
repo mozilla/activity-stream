@@ -84,7 +84,6 @@ export class ContextMenuItem extends React.PureComponent {
   // Focus the first menu item if the menu was accessed via the keyboard.
   focusFirst(button) {
     if (this.props.keyboardAccess && button) {
-      console.log("hi!");
       button.focus();
     }
   }
