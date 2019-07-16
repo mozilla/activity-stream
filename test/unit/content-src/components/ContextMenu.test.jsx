@@ -26,7 +26,7 @@ const FakeMenu = props => {
   return <div>{props.children}</div>;
 };
 
-describe("<ContextMenuButton>", () => {
+describe.only("<ContextMenuButton>", () => {
   let sandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -81,6 +81,17 @@ describe("<ContextMenuButton>", () => {
     );
     wrapper.setState({ showContextMenu: true, contextMenuKeyboard: true });
     assert.equal(wrapper.find(ContextMenu).prop("keyboardAccess"), true);
+  });
+  it.only("should call focusFirst when keyboardAccess is true", () => {
+    const wrapper = mount(
+      <ContextMenuButton>
+        <ContextMenu options={DEFAULT_MENU_OPTIONS} />
+      </ContextMenuButton>
+    );
+    const focusFirst = sandbox.spy(ContextMenuItem.prototype, "focusFirst");
+    wrapper.setState({ showContextMenu: true, contextMenuKeyboard: true });
+    assert.lengthOf(wrapper.find(ContextMenuItem), 7);
+    // assert.calledOnce(focusFirst);
   });
 });
 
