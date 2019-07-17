@@ -58,6 +58,7 @@ class _BookmarkPanelHub {
     this._addImpression = addImpression;
     this._dispatch = dispatch;
     this._initialized = true;
+    this._state = {};
   }
 
   uninit() {
@@ -82,19 +83,14 @@ class _BookmarkPanelHub {
       return false;
     }
 
-    if (
-      this._response &&
-      this._response.win === win &&
-      this._response.url === target.url &&
-      this._response.content
-    ) {
-      this.showMessage(this._response.content, target, win);
+    if (this._state.url === target.url && this._state.message) {
+      this.showMessage(target, win, this._state.message.content);
       return true;
     }
 
     // If we didn't match on a previously cached request then make sure
     // the container is empty
-    this._removeContainer(target);
+    this._removeContainer(target, win);
     const response = await this._handleMessageRequest({
       triggerId: this._trigger.id,
     });
@@ -125,7 +121,7 @@ class _BookmarkPanelHub {
       this.sendImpression();
       this.sendUserEventTelemetry("IMPRESSION", win);
     } else {
-      this.removeMessage(target);
+      this.removeMessage(target, win);
     }
 
     target.infoButton.disabled = !response;
@@ -206,7 +202,7 @@ class _BookmarkPanelHub {
       target.container.appendChild(recommendation);
     }
 
-    this.toggleRecommendation(true);
+    this.toggleRecommendation(target, true);
     this._adjustPanelHeight(win, recommendation);
   }
 
@@ -244,12 +240,7 @@ class _BookmarkPanelHub {
     document.getElementById("editBookmarkPanelImage").style.height = "";
   }
 
-  toggleRecommendation(visible) {
-    if (!this._response) {
-      return;
-    }
-
-    const { target } = this._response;
+  toggleRecommendation(target, visible) {
     if (visible === undefined) {
       // When called from the info button of the bookmark panel
       target.infoButton.checked = !target.infoButton.checked;
@@ -270,18 +261,18 @@ class _BookmarkPanelHub {
     this.toggleRecommendation(target, false);
   }
 
-  _removeContainer(target) {
+  _removeContainer(target, win) {
     const container = target.document.getElementById(
       MARKUP_IDENTIFIERS.messageContainer
     );
     if (container) {
-      this._restorePanelHeight(this._response.win);
+      this._restorePanelHeight(win);
       container.remove();
     }
   }
 
-  removeMessage(target) {
-    this._removeContainer(target);
+  removeMessage(target, win) {
+    this._removeContainer(target, win);
     this.toggleRecommendation(target, false);
     this._state = null;
   }
@@ -290,8 +281,8 @@ class _BookmarkPanelHub {
     const doc = target.browser.ownerGlobal.gBrowser.ownerDocument;
     const win = target.browser.ownerGlobal.window;
     const panelTarget = {
-      container: doc.getElementById(`${MARKUP_IDENTIFIERS.panelAnchor}`),
-      infoButton: doc.getElementById(`${MARKUP_IDENTIFIERS.infoButton}`),
+      container: doc.getElementById(MARKUP_IDENTIFIERS.panelAnchor),
+      infoButton: doc.getElementById(MARKUP_IDENTIFIERS.infoButton),
       document: doc,
     };
     panelTarget.close = e => {
@@ -299,7 +290,7 @@ class _BookmarkPanelHub {
       this.toggleRecommendation(panelTarget, false);
     };
     // Remove any existing message
-    this.removeMessage(panelTarget);
+    this.removeMessage(panelTarget, win);
 
     // Reset the reference to the panel elements
     this._state = { message, collapsed: false };

@@ -135,7 +135,7 @@ describe("BookmarkPanelHub", () => {
     it("should call handleMessageRequest", async () => {
       fakeHandleMessageRequest.resolves(fakeMessage);
 
-      await instance.messageRequest(fakeTarget, {});
+      await instance.messageRequest(fakeTarget, fakeWindow);
 
       assert.calledOnce(fakeHandleMessageRequest);
       assert.calledWithExactly(fakeHandleMessageRequest, {
@@ -145,14 +145,14 @@ describe("BookmarkPanelHub", () => {
     it("should call onResponse", async () => {
       fakeHandleMessageRequest.resolves(fakeMessage);
 
-      await instance.messageRequest(fakeTarget, {});
+      await instance.messageRequest(fakeTarget, fakeWindow);
 
       assert.calledOnce(instance.onResponse);
       assert.calledWithExactly(
         instance.onResponse,
-        fakeMessage,
         fakeTarget,
-        {}
+        fakeWindow,
+        fakeMessage
       );
     });
   });
@@ -161,23 +161,6 @@ describe("BookmarkPanelHub", () => {
       instance.init(fakeHandleMessageRequest, fakeAddImpression, fakeDispatch);
       sandbox.stub(instance, "showMessage");
       sandbox.stub(instance, "sendImpression");
-      sandbox.stub(instance, "hideMessage");
-      fakeTarget = { infoButton: { disabled: true } };
-    });
-    it("should show a message when called with a response", () => {
-      instance.onResponse({ content: "content" }, fakeTarget, fakeWindow);
-
-      assert.calledOnce(instance.showMessage);
-      assert.calledWithExactly(
-        instance.showMessage,
-        "content",
-        fakeTarget,
-        fakeWindow
-      );
-      assert.calledOnce(instance.sendImpression);
-    });
-    it("should insert the appropriate ftl files with translations", () => {
-      instance.onResponse({ content: "content" }, fakeTarget, fakeWindow);
       sandbox.stub(instance, "removeMessage");
       fakeTarget = { infoButton: { disabled: true } };
     });
@@ -242,7 +225,7 @@ describe("BookmarkPanelHub", () => {
       instance.onResponse(fakeTarget, fakeWindow, null);
 
       assert.calledOnce(instance.removeMessage);
-      assert.calledWithExactly(instance.removeMessage, fakeTarget);
+      assert.calledWithExactly(instance.removeMessage, fakeTarget, fakeWindow);
     });
   });
   describe("#showMessage.collapsed=false", () => {
@@ -376,9 +359,8 @@ describe("BookmarkPanelHub", () => {
   });
   describe("#showMessage.collapsed=true", () => {
     beforeEach(() => {
-      sandbox
-        .stub(instance, "_response")
-        .value({ collapsed: true, target: fakeTarget });
+      instance.init({});
+      instance._state.collapsed = true;
       sandbox.stub(instance, "toggleRecommendation");
     });
     it("should return early if the message is collapsed", () => {
@@ -397,12 +379,12 @@ describe("BookmarkPanelHub", () => {
       sandbox.stub(instance, "toggleRecommendation");
     });
     it("should remove the message", () => {
-      instance.removeMessage(fakeTarget);
+      instance.removeMessage(fakeTarget, fakeWindow);
 
       assert.calledOnce(fakeContainer.remove);
     });
     it("should call toggleRecommendation `false`", () => {
-      instance.removeMessage(fakeTarget);
+      instance.removeMessage(fakeTarget, fakeWindow);
 
       assert.calledOnce(instance.toggleRecommendation);
       assert.calledWithExactly(
@@ -457,12 +439,12 @@ describe("BookmarkPanelHub", () => {
       instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
       assert.calledOnce(instance.showMessage);
-      assert.calledOnce(instance.hideMessage);
+      assert.calledOnce(instance.removeMessage);
       assert.calledWithExactly(
         instance.showMessage,
-        fakeMessage,
         sinon.match.object,
-        fakeWindow
+        fakeWindow,
+        fakeMessage
       );
     });
     it("should insert required fluent files", () => {
