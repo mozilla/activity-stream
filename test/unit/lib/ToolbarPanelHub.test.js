@@ -83,11 +83,24 @@ describe("ToolbarPanelHub", () => {
   it("should create an instance", () => {
     assert.ok(instance);
   });
+  it("should not enableAppmenuButton() on init() if pref is not enabled", () => {
+    getBoolPrefStub.returns(false);
+    instance.enableAppmenuButton = sandbox.stub();
+    instance.init({ getMessages: () => {} });
+    assert.notCalled(instance.enableAppmenuButton);
+  });
+  it("should enableAppmenuButton() on init() if pref is enabled", () => {
+    getBoolPrefStub.returns(true);
+    instance.enableAppmenuButton = sandbox.stub();
+    instance.init({ getMessages: () => {} });
+    assert.calledOnce(instance.enableAppmenuButton);
+  });
   it("should unregisterCallback on uninit()", () => {
     instance.uninit();
     assert.calledTwice(everyWindowStub.unregisterCallback);
   });
-  it("should observe pref changes on init", () => {
+  it("should observe pref changes on init if enabled by pref", () => {
+    getBoolPrefStub.returns(true);
     instance.init({});
 
     assert.calledOnce(addObserverStub);
@@ -96,6 +109,12 @@ describe("ToolbarPanelHub", () => {
       "browser.messaging-system.whatsNewPanel.enabled",
       instance
     );
+  });
+  it("should not add a pref listener on init if disabled by pref", () => {
+    getBoolPrefStub.returns(false);
+    instance.init({});
+
+    assert.notCalled(addObserverStub);
   });
   it("should remove the observer on uninit", () => {
     instance.uninit();

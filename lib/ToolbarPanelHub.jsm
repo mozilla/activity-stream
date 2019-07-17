@@ -32,8 +32,11 @@ class _ToolbarPanelHub {
 
   init({ getMessages }) {
     this._getMessages = getMessages;
-    // Listen for pref changes that could turn off the feature
-    Services.prefs.addObserver(WHATSNEW_ENABLED_PREF, this);
+    if (this.whatsNewPanelEnabled) {
+      this.enableAppmenuButton();
+      // Listen for pref changes that could turn off the feature
+      Services.prefs.addObserver(WHATSNEW_ENABLED_PREF, this);
+    }
   }
 
   uninit() {
