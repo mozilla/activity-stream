@@ -74,12 +74,14 @@ class _ToolbarPanelHub {
   }
 
   // Turns on the Appmenu (hamburger menu) button for all open windows and future windows.
-  enableAppmenuButton() {
-    EveryWindow.registerCallback(
-      APPMENU_BUTTON_ID,
-      this._showAppmenuButton,
-      this._hideAppmenuButton
-    );
+  async enableAppmenuButton() {
+    if ((await this.messages).length) {
+      EveryWindow.registerCallback(
+        APPMENU_BUTTON_ID,
+        this._showAppmenuButton,
+        this._hideAppmenuButton
+      );
+    }
   }
 
   // Turns on the Toolbar button for all open windows and future windows.
