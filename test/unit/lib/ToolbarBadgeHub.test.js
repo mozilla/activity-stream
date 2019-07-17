@@ -16,6 +16,8 @@ describe("ToolbarBadgeHub", () => {
   let everyWindowStub;
   let clearTimeoutStub;
   let setTimeoutStub;
+  let addObserverStub;
+  let removeObserverStub;
   beforeEach(async () => {
     globals = new GlobalOverrider();
     sandbox = sinon.createSandbox();
@@ -44,12 +46,6 @@ describe("ToolbarBadgeHub", () => {
     };
     clearTimeoutStub = sandbox.stub();
     setTimeoutStub = sandbox.stub();
-    globals.set("EveryWindow", everyWindowStub);
-    globals.set("setTimeout", setTimeoutStub);
-    globals.set("clearTimeout", clearTimeoutStub);
-    globals.set("PrivateBrowsingUtils", {
-      isBrowserPrivate: isBrowserPrivateStub,
-    });
     const fakeWindow = {
       ownerGlobal: {
         gBrowser: {
@@ -57,9 +53,21 @@ describe("ToolbarBadgeHub", () => {
         },
       },
     };
-    globals.set("Services", {
-      wm: {
-        getMostRecentWindow: () => fakeWindow,
+    addObserverStub = sandbox.stub();
+    removeObserverStub = sandbox.stub();
+    globals.set({
+      EveryWindow: everyWindowStub,
+      PrivateBrowsingUtils: { isBrowserPrivate: isBrowserPrivateStub },
+      setTimeout: setTimeoutStub,
+      clearTimeout: clearTimeoutStub,
+      Services: {
+        wm: {
+          getMostRecentWindow: () => fakeWindow,
+        },
+        prefs: {
+          addObserver: addObserverStub,
+          removeObserver: removeObserverStub,
+        },
       },
     });
   });
@@ -79,8 +87,21 @@ describe("ToolbarBadgeHub", () => {
       assert.calledOnce(instance.messageRequest);
       assert.calledWithExactly(instance.messageRequest, "toolbarBadgeUpdate");
     });
+    it("should add a pref observer", async () => {
+      await instance.init(sandbox.stub().resolves(), {});
+
+      assert.calledOnce(addObserverStub);
+      assert.calledWithExactly(
+        addObserverStub,
+        instance.prefs.WHATSNEW_TOOLBAR_PANEL,
+        instance
+      );
+    });
   });
   describe("#uninit", () => {
+    beforeEach(async () => {
+      instance.init(sandbox.stub().resolves(), {});
+    });
     it("should clear any setTimeout cbs", () => {
       instance.init(sandbox.stub().resolves(), {});
 
@@ -90,6 +111,16 @@ describe("ToolbarBadgeHub", () => {
 
       assert.calledOnce(clearTimeoutStub);
       assert.calledWithExactly(clearTimeoutStub, 2);
+    });
+    it("should remove the pref observer", () => {
+      instance.uninit();
+
+      assert.calledOnce(removeObserverStub);
+      assert.calledWithExactly(
+        removeObserverStub,
+        instance.prefs.WHATSNEW_TOOLBAR_PANEL,
+        instance
+      );
     });
   });
   describe("messageRequest", () => {
@@ -432,6 +463,23 @@ describe("ToolbarBadgeHub", () => {
       const [ping] = instance._dispatch.firstCall.args;
       assert.propertyVal(ping, "type", "TOOLBAR_BADGE_TELEMETRY");
       assert.propertyVal(ping.data, "event", "CLICK");
+    });
+  });
+  describe("#observe", () => {
+    it("should make a message request when the whats new pref is changed", () => {
+      sandbox.stub(instance, "messageRequest");
+
+      instance.observe("", "", instance.prefs.WHATSNEW_TOOLBAR_PANEL);
+
+      assert.calledOnce(instance.messageRequest);
+      assert.calledWithExactly(instance.messageRequest, "toolbarBadgeUpdate");
+    });
+    it("should not react to other pref changes", () => {
+      sandbox.stub(instance, "messageRequest");
+
+      instance.observe("", "", "foo");
+
+      assert.notCalled(instance.messageRequest);
     });
   });
 });
