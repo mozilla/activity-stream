@@ -210,9 +210,13 @@ describe("ASRouter", () => {
         }
       );
 
-      assert.calledWithExactly(FakeToolbarPanelHub.init, {
-        getMessages: Router.handleMessageRequest,
-      });
+      assert.calledWithExactly(
+        FakeToolbarPanelHub.init,
+        Router.waitForInitialized,
+        {
+          getMessages: Router.handleMessageRequest,
+        }
+      );
 
       assert.calledWithExactly(
         FakeBookmarkPanelHub.init,

@@ -30,8 +30,11 @@ class _ToolbarPanelHub {
     this._hideToolbarButton = this._hideToolbarButton.bind(this);
   }
 
-  init({ getMessages }) {
+  async init(waitForInitialized, { getMessages }) {
     this._getMessages = getMessages;
+    // Wait for ASRouter messages to become available in order to know
+    // if we can show the What's New panel
+    await waitForInitialized;
     if (this.whatsNewPanelEnabled) {
       // Enable the application menu button so that the user can access
       // the panel outside of the toolbar button

@@ -730,7 +730,7 @@ class _ASRouter {
       blockMessageById: this.blockMessageById,
       dispatch: this.dispatch,
     });
-    ToolbarPanelHub.init({
+    ToolbarPanelHub.init(this.waitForInitialized, {
       getMessages: this.handleMessageRequest,
     });
 
