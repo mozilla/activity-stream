@@ -102,7 +102,7 @@ class PageAction {
       );
       // In the case that the Fluent file has not been downloaded from Remote Settings,
       // `fetchFile` will return `false` and fall back to the packaged Fluent file.
-      const resource = await fs.fetchFile(appLocale, "asrouter.json");
+      const resource = await fs.fetchFile(appLocale, "asrouter.ftl");
       if (resource) {
         const bundle = new FluentBundle(appLocales);
         bundle.addResource(resource);
