@@ -57,6 +57,14 @@ class _ToolbarPanelHub {
     }
   }
 
+  get messages() {
+    return this._getMessages({
+      template: "whatsnew_panel_message",
+      triggerId: "whatsNewPanelOpened",
+      returnAll: true,
+    });
+  }
+
   get whatsNewPanelEnabled() {
     return Services.prefs.getBoolPref(WHATSNEW_ENABLED_PREF, false);
   }
@@ -75,12 +83,14 @@ class _ToolbarPanelHub {
   }
 
   // Turns on the Toolbar button for all open windows and future windows.
-  enableToolbarButton() {
-    EveryWindow.registerCallback(
-      TOOLBAR_BUTTON_ID,
-      this._showToolbarButton,
-      this._hideToolbarButton
-    );
+  async enableToolbarButton() {
+    if ((await this.messages).length) {
+      EveryWindow.registerCallback(
+        TOOLBAR_BUTTON_ID,
+        this._showToolbarButton,
+        this._hideToolbarButton
+      );
+    }
   }
 
   // When the panel is hidden we want to run some cleanup
@@ -103,11 +113,7 @@ class _ToolbarPanelHub {
 
   // Render what's new messages into the panel.
   async renderMessages(win, doc, containerId) {
-    const messages = (await this._getMessages({
-      template: "whatsnew_panel_message",
-      triggerId: "whatsNewPanelOpened",
-      returnAll: true,
-    })).sort((m1, m2) => {
+    const messages = (await this.messages).sort((m1, m2) => {
       // Sort by published_date in descending order.
       if (m1.content.published_date === m2.content.published_date) {
         return 0;

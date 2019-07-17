@@ -149,9 +149,21 @@ describe("ToolbarPanelHub", () => {
     instance.enableAppmenuButton();
     assert.calledOnce(everyWindowStub.registerCallback);
   });
-  it("should registerCallback on enableToolbarButton()", () => {
-    instance.enableToolbarButton();
-    assert.calledOnce(everyWindowStub.registerCallback);
+  describe("#enableToolbarButton", () => {
+    it("should registerCallback on enableToolbarButton if messages.length", async () => {
+      instance.init({ getMessages: sandbox.stub().resolves([{}, {}]) });
+
+      await instance.enableToolbarButton();
+
+      assert.calledOnce(everyWindowStub.registerCallback);
+    });
+    it("should not registerCallback on enableToolbarButton if no messages", async () => {
+      instance.init({ getMessages: sandbox.stub().resolves([]) });
+
+      await instance.enableToolbarButton();
+
+      assert.notCalled(everyWindowStub.registerCallback);
+    });
   });
   it("should unhide appmenu button on _showAppmenuButton()", () => {
     instance._showAppmenuButton(fakeWindow);
