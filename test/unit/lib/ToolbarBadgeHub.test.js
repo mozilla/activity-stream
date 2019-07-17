@@ -293,6 +293,16 @@ describe("ToolbarBadgeHub", () => {
 
       assert.calledOnce(stub);
     });
+    it("should call ToolbarPanelHub.enableAppmenuButton", () => {
+      const stub = sandbox.stub(
+        _ToolbarPanelHub.prototype,
+        "enableAppmenuButton"
+      );
+
+      instance.executeAction({ id: "show-whatsnew-button" });
+
+      assert.calledOnce(stub);
+    });
   });
   describe("removeToolbarNotification", () => {
     it("should remove the notification", () => {
