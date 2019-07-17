@@ -32,14 +32,24 @@ class _ToolbarPanelHub {
 
   init({ getMessages }) {
     this._getMessages = getMessages;
-    if (this.whatsNewPanelEnabled) {
-      this.enableAppmenuButton();
-    }
+    // Listen for pref changes that could turn off the feature
+    Services.prefs.addObserver(WHATSNEW_ENABLED_PREF, this);
   }
 
   uninit() {
     EveryWindow.unregisterCallback(TOOLBAR_BUTTON_ID);
     EveryWindow.unregisterCallback(APPMENU_BUTTON_ID);
+    Services.prefs.removeObserver(WHATSNEW_ENABLED_PREF, this);
+  }
+
+  observe(aSubject, aTopic, aPrefName) {
+    switch (aPrefName) {
+      case WHATSNEW_ENABLED_PREF:
+        if (!this.whatsNewPanelEnabled) {
+          this.uninit();
+        }
+        break;
+    }
   }
 
   get whatsNewPanelEnabled() {

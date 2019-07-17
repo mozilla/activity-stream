@@ -90,6 +90,7 @@ class _ToolbarBadgeHub {
     switch (id) {
       case "show-whatsnew-button":
         ToolbarPanelHub.enableToolbarButton();
+        ToolbarPanelHub.enableAppmenuButton();
         break;
     }
   }
