@@ -26,6 +26,19 @@ const WEBEXT_SECTION_MENU_OPTIONS = [
 ];
 
 export class _SectionMenu extends React.PureComponent {
+  handleAddWhileCollapsed() {
+    const { action, userEvent } = SectionMenuOptions.ExpandSection(this.props);
+    this.props.dispatch(action);
+    if (userEvent) {
+      this.props.dispatch(
+        ac.UserEvent({
+          event: userEvent,
+          source: this.props.source,
+        })
+      );
+    }
+  }
+
   getOptions() {
     const { props } = this;
 
@@ -51,6 +64,14 @@ export class _SectionMenu extends React.PureComponent {
         const { action, id, type, userEvent } = option;
         if (!type && id) {
           option.onClick = () => {
+            const hasAddEvent =
+              userEvent === "MENU_ADD_TOPSITE" ||
+              userEvent === "MENU_ADD_SEARCH";
+
+            if (props.collapsed && hasAddEvent) {
+              this.handleAddWhileCollapsed();
+            }
+
             props.dispatch(action);
             if (userEvent) {
               props.dispatch(
