@@ -119,6 +119,7 @@ export class CollapsibleSection extends React.PureComponent {
 
   onKeyPress(event) {
     if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
       this.onHeaderClick();
     }
   }
