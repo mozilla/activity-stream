@@ -229,6 +229,7 @@ describe("<SectionMenu>", () => {
       id: DEFAULT_PROPS.id,
       value: { collapsed: false },
     };
+    const expectedAddData = { index: -1 };
     const { options } = shallow(
       <SectionMenu
         {...DEFAULT_PROPS}
@@ -245,17 +246,30 @@ describe("<SectionMenu>", () => {
     options
       .filter(o => o.id === "newtab-section-menu-add-topsite")
       .forEach(option => {
-        it(`should dispatch an action to expand the seciton`, () => {
+        it(`should dispatch an action to expand the section and to add a topsite after expanding`, () => {
           option.onClick();
 
-          const [expandCallArgs] = dispatch.firstCall.args;
-          const { type, data } = expandCallArgs;
-          assert.ok(type === "UPDATE_SECTION_PREFS");
-          assert.deepEqual(data, expectedExpandData);
+          const [expandAction] = dispatch.firstCall.args;
+          assert.deepEqual(expandAction.data, expectedExpandData);
+
+          const [addAction] = dispatch.thirdCall.args;
+          assert.deepEqual(addAction.data, expectedAddData);
         });
-        it(`should dispatch the add topsite action after`, () => {
+        it(`should dispatch the expand userEvent and add topsite userEvent after expanding`, () => {
           option.onClick();
           assert.ok(dispatch.thirdCall.calledWith(option.action));
+
+          const [expandUserEvent] = dispatch.secondCall.args;
+          assert.isUserEventAction(expandUserEvent);
+          assert.propertyVal(
+            expandUserEvent.data,
+            "source",
+            DEFAULT_PROPS.source
+          );
+
+          const [addUserEvent] = dispatch.lastCall.args;
+          assert.isUserEventAction(addUserEvent);
+          assert.propertyVal(addUserEvent.data, "source", DEFAULT_PROPS.source);
         });
       });
   });
