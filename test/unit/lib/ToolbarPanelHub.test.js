@@ -330,7 +330,10 @@ describe("ToolbarPanelHub", () => {
         assert.propertyVal(
           spy.firstCall.args[2],
           "id",
-          messages.map(({ id }) => id).join(",")
+          messages
+            .map(({ id }) => id)
+            .sort()
+            .join(",")
         );
       });
       it("should dispatch a CLICK for clicking a message", async () => {
@@ -365,7 +368,10 @@ describe("ToolbarPanelHub", () => {
         );
         getMessagesStub.resolves(messages);
         const spy = sandbox.spy(instance, "sendUserEventTelemetry");
-        const panelPingId = messages.map(({ id }) => id).join(",");
+        const panelPingId = messages
+          .map(({ id }) => id)
+          .sort()
+          .join(",");
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
@@ -403,7 +409,10 @@ describe("ToolbarPanelHub", () => {
         );
         getMessagesStub.resolves(messages);
         const spy = sandbox.spy(instance, "sendUserEventTelemetry");
-        const panelPingId = messages.map(({ id }) => id).join(",");
+        const panelPingId = messages
+          .map(({ id }) => id)
+          .sort()
+          .join(",");
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 

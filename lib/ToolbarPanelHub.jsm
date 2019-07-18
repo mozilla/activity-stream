@@ -152,7 +152,12 @@ class _ToolbarPanelHub {
     // Panel impressions are not associated with one particular message
     // but with a set of messages. We concatenate message ids and send them
     // back for every impression.
-    const eventId = { id: messages.map(({ id }) => id).join(",") };
+    const eventId = {
+      id: messages
+        .map(({ id }) => id)
+        .sort()
+        .join(","),
+    };
     // Check `mainview` attribute to determine if the panel is shown as a
     // subview (inside the application menu) or as a toolbar dropdown.
     // https://searchfox.org/mozilla-central/rev/07f7390618692fa4f2a674a96b9b677df3a13450/browser/components/customizableui/PanelMultiView.jsm#1268
