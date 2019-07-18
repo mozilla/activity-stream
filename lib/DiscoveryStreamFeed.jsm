@@ -1269,7 +1269,7 @@ defaultLayoutResp = {
         {
           type: "Message",
           header: {
-            title: "Recommended by Pocket",
+            title: "Initial Recommended by Pocket",
             subtitle: "",
             link_text: "How it works",
             link_url: "https://getpocket.com/firefox/new_tab_learn_more",
@@ -1281,15 +1281,10 @@ defaultLayoutResp = {
             ".ds-message": "margin-bottom: -20px",
           },
         },
-      ],
-    },
-    {
-      width: 12,
-      components: [
         {
           type: "CardGrid",
           properties: {
-            items: 21,
+            items: 6,
           },
           header: {
             title: "",
@@ -1308,11 +1303,91 @@ defaultLayoutResp = {
               {
                 index: 4,
               },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      width: 12,
+      components: [
+        {
+          type: "Message",
+          header: {
+            title: "More Recommendations by Pocket",
+            subtitle: "",
+            link_text: "",
+            link_url: "https://getpocket.com/firefox/new_tab_learn_more",
+            icon:
+              "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+        {
+          type: "Message",
+          header: {
+            title: "Sub-section Title items 7-9",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+        {
+          type: "CardGrid",
+          properties: {
+            items: 3,
+            offset: 6,
+          },
+          header: {
+            title: "",
+          },
+          feed: {
+            embed_reference: null,
+            url:
+              "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&count=30",
+          },
+          spocs: {
+            probability: 1,
+            positions: [
               {
-                index: 11,
+                index: 2,
               },
+            ],
+          },
+        },
+        {
+          type: "Message",
+          header: {
+            title: "Sub-section Title items 10-12",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+        {
+          type: "CardGrid",
+          properties: {
+            items: 3,
+            offset: 9,
+          },
+          header: {
+            title: "",
+          },
+          feed: {
+            embed_reference: null,
+            url:
+              "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&count=30",
+          },
+          spocs: {
+            probability: 1,
+            positions: [
               {
-                index: 20,
+                index: 2,
               },
             ],
           },

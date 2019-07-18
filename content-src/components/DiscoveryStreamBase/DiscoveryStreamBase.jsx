@@ -256,6 +256,20 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       },
     };
 
+    // Quick hack: steal highlights' collapsed state and assume 2nd message is
+    // the 2nd collapsible header
+    const highlights = this.props.Sections.find(s => s.id === "highlights");
+    const message2 = extractComponent("Message") || {
+      header: {
+        link_text: topStories.learnMore.link.message,
+        link_url: topStories.learnMore.link.href,
+        title: topStories.title,
+      },
+    };
+    // TODO: have actual storage of state by collection
+    // TODO: remove extractComponent and just promote the first child of width:
+    // 12 from Message to CollapsibleSection
+
     // Render a DS-style TopSites then the rest if any in a collapsible section
     return (
       <React.Fragment>
@@ -284,7 +298,28 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             showPrefName={topStories.pref.feed}
             title={message.header.title}
           >
-            {this.renderLayout(layoutRender)}
+            {this.renderLayout([layoutRender[0]])}
+          </CollapsibleSection>
+        )}
+        {layoutRender.length > 1 && (
+          <CollapsibleSection
+            className="ds-layout"
+            collapsed={highlights.pref.collapsed}
+            dispatch={this.props.dispatch}
+            icon={topStories.icon}
+            id={"highlights"}
+            isFixed={true}
+            learnMore={{
+              link: {
+                href: message2.header.link_url,
+                message: message2.header.link_text,
+              },
+            }}
+            privacyNoticeURL={topStories.privacyNoticeURL}
+            showPrefName={topStories.pref.feed}
+            title={message2.header.title}
+          >
+            {this.renderLayout([layoutRender[1]])}
           </CollapsibleSection>
         )}
         {this.renderLayout([
