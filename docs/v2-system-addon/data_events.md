@@ -1090,6 +1090,7 @@ This reports when a user has seen or clicked a badge/notification in the browser
 ## Panel interaction pings
 
 This reports when a user opens the panel, views messages and clicks on a message.
+For message impressions we concatenate the ids of all messages in the panel.
 
 ```
 {

@@ -97,10 +97,10 @@ describe("ToolbarPanelHub", () => {
   it("should create an instance", () => {
     assert.ok(instance);
   });
-  it("should not enableAppmenuButton() on init() if pref is not enabled", () => {
+  it("should not enableAppmenuButton() on init() if pref is not enabled", async () => {
     getBoolPrefStub.returns(false);
     instance.enableAppmenuButton = sandbox.stub();
-    instance.init(waitForInitializedStub, { getMessages: () => {} });
+    await instance.init(waitForInitializedStub, { getMessages: () => {} });
     assert.notCalled(instance.enableAppmenuButton);
   });
   it("should enableAppmenuButton() on init() if pref is enabled", async () => {
@@ -325,12 +325,13 @@ describe("ToolbarPanelHub", () => {
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
-        // Messages + panel impression
-        assert.equal(spy.callCount, messages.length + 1);
-        assert.equal(fakeDispatch.callCount, messages.length + 1);
-        for (let message of messages) {
-          assert.calledWithExactly(spy, fakeWindow, "IMPRESSION", message);
-        }
+        assert.calledOnce(spy);
+        assert.calledOnce(fakeDispatch);
+        assert.propertyVal(
+          spy.firstCall.args[2],
+          "id",
+          messages.map(({ id }) => id).join(",")
+        );
       });
       it("should dispatch a CLICK for clicking a message", async () => {
         // means panel is triggered from the toolbar button
@@ -345,9 +346,8 @@ describe("ToolbarPanelHub", () => {
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
-        // Messages + panel impression
-        assert.calledTwice(spy);
-        assert.calledTwice(fakeDispatch);
+        assert.calledOnce(spy);
+        assert.calledOnce(fakeDispatch);
 
         spy.resetHistory();
 
@@ -360,8 +360,12 @@ describe("ToolbarPanelHub", () => {
       it("should dispatch a IMPRESSION with toolbar_dropdown", async () => {
         // means panel is triggered from the toolbar button
         fakeElementById.hasAttribute.returns(true);
-        getMessagesStub.returns([]);
+        const messages = (await PanelTestProvider.getMessages()).filter(
+          m => m.template === "whatsnew_panel_message"
+        );
+        getMessagesStub.resolves(messages);
         const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+        const panelPingId = messages.map(({ id }) => id).join(",");
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
@@ -371,7 +375,7 @@ describe("ToolbarPanelHub", () => {
           fakeWindow,
           "IMPRESSION",
           {
-            id: instance.triggerId,
+            id: panelPingId,
           },
           {
             value: {
@@ -384,11 +388,7 @@ describe("ToolbarPanelHub", () => {
           args: [dispatchPayload],
         } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
-        assert.propertyVal(
-          dispatchPayload.data,
-          "message_id",
-          instance.triggerId
-        );
+        assert.propertyVal(dispatchPayload.data, "message_id", panelPingId);
         assert.propertyVal(
           dispatchPayload.data.value,
           "view",
@@ -398,8 +398,12 @@ describe("ToolbarPanelHub", () => {
       it("should dispatch a IMPRESSION with application_menu", async () => {
         // means panel is triggered as a subview in the application menu
         fakeElementById.hasAttribute.returns(false);
-        getMessagesStub.returns([]);
+        const messages = (await PanelTestProvider.getMessages()).filter(
+          m => m.template === "whatsnew_panel_message"
+        );
+        getMessagesStub.resolves(messages);
         const spy = sandbox.spy(instance, "sendUserEventTelemetry");
+        const panelPingId = messages.map(({ id }) => id).join(",");
 
         await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
@@ -409,7 +413,7 @@ describe("ToolbarPanelHub", () => {
           fakeWindow,
           "IMPRESSION",
           {
-            id: instance.triggerId,
+            id: panelPingId,
           },
           {
             value: {
@@ -422,11 +426,7 @@ describe("ToolbarPanelHub", () => {
           args: [dispatchPayload],
         } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
-        assert.propertyVal(
-          dispatchPayload.data,
-          "message_id",
-          instance.triggerId
-        );
+        assert.propertyVal(dispatchPayload.data, "message_id", panelPingId);
         assert.propertyVal(
           dispatchPayload.data.value,
           "view",

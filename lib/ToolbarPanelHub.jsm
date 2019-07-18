@@ -144,15 +144,15 @@ class _ToolbarPanelHub {
           this._createMessageElements(win, doc, message, previousDate)
         );
         previousDate = message.content.published_date;
-        this.sendUserEventTelemetry(win, "IMPRESSION", message);
       }
     }
 
     this._onPanelHidden(win);
 
-    // Panel impressions are not connected to any particular message.
-    // It can be triggered by a feature callout or from the application menu.
-    const eventId = { id: this.triggerId };
+    // Panel impressions are not associated with one particular message
+    // but with a set of messages. We concatenate message ids and send them
+    // back for every impression.
+    const eventId = { id: messages.map(({ id }) => id).join(",") };
     // Check `mainview` attribute to determine if the panel is shown as a
     // subview (inside the application menu) or as a toolbar dropdown.
     // https://searchfox.org/mozilla-central/rev/07f7390618692fa4f2a674a96b9b677df3a13450/browser/components/customizableui/PanelMultiView.jsm#1268
