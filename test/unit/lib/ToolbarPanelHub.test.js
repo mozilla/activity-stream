@@ -12,6 +12,9 @@ describe("ToolbarPanelHub", () => {
   let fakeElementById;
   let createdElements = [];
   let eventListeners = {};
+  let addObserverStub;
+  let removeObserverStub;
+  let getBoolPrefStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -59,23 +62,35 @@ describe("ToolbarPanelHub", () => {
       registerCallback: sandbox.stub(),
       unregisterCallback: sandbox.stub(),
     };
+    addObserverStub = sandbox.stub();
+    removeObserverStub = sandbox.stub();
+    getBoolPrefStub = sandbox.stub();
     globals.set("EveryWindow", everyWindowStub);
+    globals.set("Services", {
+      ...Services,
+      prefs: {
+        addObserver: addObserverStub,
+        removeObserver: removeObserverStub,
+        getBoolPref: getBoolPrefStub,
+      },
+    });
   });
   afterEach(() => {
     instance.uninit();
     sandbox.restore();
+    globals.restore();
   });
   it("should create an instance", () => {
     assert.ok(instance);
   });
   it("should not enableAppmenuButton() on init() if pref is not enabled", () => {
-    sandbox.stub(global.Services.prefs, "getBoolPref").returns(false);
+    getBoolPrefStub.returns(false);
     instance.enableAppmenuButton = sandbox.stub();
     instance.init({ getMessages: () => {} });
     assert.notCalled(instance.enableAppmenuButton);
   });
   it("should enableAppmenuButton() on init() if pref is enabled", () => {
-    sandbox.stub(global.Services.prefs, "getBoolPref").returns(true);
+    getBoolPrefStub.returns(true);
     instance.enableAppmenuButton = sandbox.stub();
     instance.init({ getMessages: () => {} });
     assert.calledOnce(instance.enableAppmenuButton);
@@ -83,6 +98,52 @@ describe("ToolbarPanelHub", () => {
   it("should unregisterCallback on uninit()", () => {
     instance.uninit();
     assert.calledTwice(everyWindowStub.unregisterCallback);
+  });
+  it("should observe pref changes on init", () => {
+    instance.init({});
+
+    assert.calledOnce(addObserverStub);
+    assert.calledWithExactly(
+      addObserverStub,
+      "browser.messaging-system.whatsNewPanel.enabled",
+      instance
+    );
+  });
+  it("should remove the observer on uninit", () => {
+    instance.uninit();
+
+    assert.calledOnce(removeObserverStub);
+    assert.calledWithExactly(
+      removeObserverStub,
+      "browser.messaging-system.whatsNewPanel.enabled",
+      instance
+    );
+  });
+  describe("#observe", () => {
+    it("should uninit if the pref is turned off", () => {
+      sandbox.stub(instance, "uninit");
+      getBoolPrefStub.returns(false);
+
+      instance.observe(
+        "",
+        "",
+        "browser.messaging-system.whatsNewPanel.enabled"
+      );
+
+      assert.calledOnce(instance.uninit);
+    });
+    it("shouldn't do anything if the pref is true", () => {
+      sandbox.stub(instance, "uninit");
+      getBoolPrefStub.returns(true);
+
+      instance.observe(
+        "",
+        "",
+        "browser.messaging-system.whatsNewPanel.enabled"
+      );
+
+      assert.notCalled(instance.uninit);
+    });
   });
   it("should registerCallback on enableAppmenuButton()", () => {
     instance.enableAppmenuButton();
