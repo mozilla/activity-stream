@@ -99,8 +99,7 @@ describe("ToolbarPanelHub", () => {
     instance.uninit();
     assert.calledTwice(everyWindowStub.unregisterCallback);
   });
-  it("should observe pref changes on init if enabled by pref", () => {
-    getBoolPrefStub.returns(true);
+  it("should observe pref changes on init", () => {
     instance.init({});
 
     assert.calledOnce(addObserverStub);
@@ -109,12 +108,6 @@ describe("ToolbarPanelHub", () => {
       "browser.messaging-system.whatsNewPanel.enabled",
       instance
     );
-  });
-  it("should not add a pref listener on init if disabled by pref", () => {
-    getBoolPrefStub.returns(false);
-    instance.init({});
-
-    assert.notCalled(addObserverStub);
   });
   it("should remove the observer on uninit", () => {
     instance.uninit();

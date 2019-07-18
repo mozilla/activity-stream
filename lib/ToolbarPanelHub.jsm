@@ -33,10 +33,12 @@ class _ToolbarPanelHub {
   init({ getMessages }) {
     this._getMessages = getMessages;
     if (this.whatsNewPanelEnabled) {
+      // Enable the application menu button so that the user can access
+      // the panel outside of the toolbar button
       this.enableAppmenuButton();
-      // Listen for pref changes that could turn off the feature
-      Services.prefs.addObserver(WHATSNEW_ENABLED_PREF, this);
     }
+    // Listen for pref changes that could turn off the feature
+    Services.prefs.addObserver(WHATSNEW_ENABLED_PREF, this);
   }
 
   uninit() {
