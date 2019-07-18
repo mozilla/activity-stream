@@ -23,6 +23,16 @@ ChromeUtils.defineModuleGetter(
   "clearTimeout",
   "resource://gre/modules/Timer.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "Services",
+  "resource://gre/modules/Services.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
 
 const notificationsByWindow = new WeakMap();
 
@@ -35,19 +45,23 @@ class _ToolbarBadgeHub {
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
     this.addToolbarNotification = this.addToolbarNotification.bind(this);
     this.registerBadgeToAllWindows = this.registerBadgeToAllWindows.bind(this);
+    this._sendTelemetry = this._sendTelemetry.bind(this);
+    this.sendUserEventTelemetry = this.sendUserEventTelemetry.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
     this._blockMessageById = null;
+    this._dispatch = null;
   }
 
   async init(
     waitForInitialized,
-    { handleMessageRequest, addImpression, blockMessageById }
+    { handleMessageRequest, addImpression, blockMessageById, dispatch }
   ) {
     this._handleMessageRequest = handleMessageRequest;
     this._blockMessageById = blockMessageById;
     this._addImpression = addImpression;
+    this._dispatch = dispatch;
     this.state = {};
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
@@ -91,6 +105,11 @@ class _ToolbarBadgeHub {
         this.removeAllNotifications
       );
       event.target.removeEventListener("click", this.removeAllNotifications);
+      // If we have an event it means the user interacted with the badge
+      // we should send telemetry
+      if (this.state.notification) {
+        this.sendUserEventTelemetry("CLICK", this.state.notification);
+      }
     }
     // Will call uninit on every window
     EveryWindow.unregisterCallback(this.id);
@@ -146,6 +165,8 @@ class _ToolbarBadgeHub {
   registerBadgeToAllWindows(message) {
     // Impression should be added when the badge becomes visible
     this._addImpression(message);
+    // Send a telemetry ping when adding the notification badge
+    this.sendUserEventTelemetry("IMPRESSION", message);
 
     EveryWindow.registerCallback(
       this.id,
@@ -188,6 +209,30 @@ class _ToolbarBadgeHub {
     });
     if (message) {
       this.registerBadgeNotificationListener(message);
+    }
+  }
+
+  _sendTelemetry(ping) {
+    this._dispatch({
+      type: "TOOLBAR_BADGE_TELEMETRY",
+      data: { action: "cfr_user_event", source: "CFR", ...ping },
+    });
+  }
+
+  sendUserEventTelemetry(event, message) {
+    const win = Services.wm.getMostRecentWindow("navigator:browser");
+    // Only send pings for non private browsing windows
+    if (
+      win &&
+      !PrivateBrowsingUtils.isBrowserPrivate(
+        win.ownerGlobal.gBrowser.selectedBrowser
+      )
+    ) {
+      this._sendTelemetry({
+        message_id: message.id,
+        bucket_id: message.id,
+        event,
+      });
     }
   }
 
