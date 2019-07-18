@@ -217,20 +217,13 @@ export class CollapsibleSection extends React.PureComponent {
               <span
                 className="click-target"
                 role="button"
+                label={collapsed ? "Expand Section" : "Collapse Section"}
                 tabIndex="0"
                 onKeyPress={this.onKeyPress}
                 onClick={this.onHeaderClick}
               >
                 {this.renderIcon()}
                 <FluentOrText message={title} />
-              </span>
-              <span
-                className="click-target"
-                role="button"
-                tabIndex="0"
-                onKeyPress={this.onKeyPress}
-                onClick={this.onHeaderClick}
-              >
                 {isCollapsible && (
                   <span
                     className={`collapsible-arrow icon ${
