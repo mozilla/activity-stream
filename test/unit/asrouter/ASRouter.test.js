@@ -199,6 +199,7 @@ describe("ASRouter", () => {
           handleMessageRequest: Router.handleMessageRequest,
           addImpression: Router.addImpression,
           blockMessageById: Router.blockMessageById,
+          dispatch: Router.dispatch,
         }
       );
 

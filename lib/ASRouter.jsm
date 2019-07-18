@@ -727,6 +727,7 @@ class _ASRouter {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
+      dispatch: this.dispatch,
     });
 
     this._loadLocalProviders();
@@ -1865,6 +1866,7 @@ class _ASRouter {
         await this.addImpression(action.data);
         break;
       case "DOORHANGER_TELEMETRY":
+      case "TOOLBAR_BADGE_TELEMETRY":
         if (this.dispatchToAS) {
           this.dispatchToAS(ac.ASRouterUserEvent(action.data));
         }
