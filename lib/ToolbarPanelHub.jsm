@@ -30,8 +30,11 @@ class _ToolbarPanelHub {
     this._hideToolbarButton = this._hideToolbarButton.bind(this);
   }
 
-  init({ getMessages }) {
+  async init(waitForInitialized, { getMessages }) {
     this._getMessages = getMessages;
+    // Wait for ASRouter messages to become available in order to know
+    // if we can show the What's New panel
+    await waitForInitialized;
     if (this.whatsNewPanelEnabled) {
       // Enable the application menu button so that the user can access
       // the panel outside of the toolbar button
@@ -57,6 +60,14 @@ class _ToolbarPanelHub {
     }
   }
 
+  get messages() {
+    return this._getMessages({
+      template: "whatsnew_panel_message",
+      triggerId: "whatsNewPanelOpened",
+      returnAll: true,
+    });
+  }
+
   get whatsNewPanelEnabled() {
     return Services.prefs.getBoolPref(WHATSNEW_ENABLED_PREF, false);
   }
@@ -66,21 +77,25 @@ class _ToolbarPanelHub {
   }
 
   // Turns on the Appmenu (hamburger menu) button for all open windows and future windows.
-  enableAppmenuButton() {
-    EveryWindow.registerCallback(
-      APPMENU_BUTTON_ID,
-      this._showAppmenuButton,
-      this._hideAppmenuButton
-    );
+  async enableAppmenuButton() {
+    if ((await this.messages).length) {
+      EveryWindow.registerCallback(
+        APPMENU_BUTTON_ID,
+        this._showAppmenuButton,
+        this._hideAppmenuButton
+      );
+    }
   }
 
   // Turns on the Toolbar button for all open windows and future windows.
-  enableToolbarButton() {
-    EveryWindow.registerCallback(
-      TOOLBAR_BUTTON_ID,
-      this._showToolbarButton,
-      this._hideToolbarButton
-    );
+  async enableToolbarButton() {
+    if ((await this.messages).length) {
+      EveryWindow.registerCallback(
+        TOOLBAR_BUTTON_ID,
+        this._showToolbarButton,
+        this._hideToolbarButton
+      );
+    }
   }
 
   // When the panel is hidden we want to run some cleanup
@@ -103,11 +118,7 @@ class _ToolbarPanelHub {
 
   // Render what's new messages into the panel.
   async renderMessages(win, doc, containerId) {
-    const messages = (await this._getMessages({
-      template: "whatsnew_panel_message",
-      triggerId: "whatsNewPanelOpened",
-      returnAll: true,
-    })).sort((m1, m2) => {
+    const messages = (await this.messages).sort((m1, m2) => {
       // Sort by published_date in descending order.
       if (m1.content.published_date === m2.content.published_date) {
         return 0;
