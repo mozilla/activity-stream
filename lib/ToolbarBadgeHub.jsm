@@ -36,6 +36,9 @@ class _ToolbarBadgeHub {
     this.id = "toolbar-badge-hub";
     this.template = "toolbar_badge";
     this.state = null;
+    this.prefs = {
+      WHATSNEW_TOOLBAR_PANEL: "browser.messaging-system.whatsNewPanel.enabled",
+    };
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
     this.addToolbarNotification = this.addToolbarNotification.bind(this);
@@ -61,6 +64,16 @@ class _ToolbarBadgeHub {
     // Need to wait for ASRouter to initialize before trying to fetch messages
     await waitForInitialized;
     this.messageRequest("toolbarBadgeUpdate");
+    // Listen for pref changes that could trigger new badges
+    Services.prefs.addObserver(this.prefs.WHATSNEW_TOOLBAR_PANEL, this);
+  }
+
+  observe(aSubject, aTopic, aPrefName) {
+    switch (aPrefName) {
+      case this.prefs.WHATSNEW_TOOLBAR_PANEL:
+        this.messageRequest("toolbarBadgeUpdate");
+        break;
+    }
   }
 
   executeAction({ id }) {
@@ -233,6 +246,7 @@ class _ToolbarBadgeHub {
   uninit() {
     this._clearBadgeTimeout();
     this.state = null;
+    Services.prefs.removeObserver(this.prefs.WHATSNEW_TOOLBAR_PANEL, this);
   }
 }
 
