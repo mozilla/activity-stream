@@ -200,7 +200,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       this.props.Prefs.values,
       rickRollCache
     );
-    const { config, spocs, feeds } = this.props.DiscoveryStream;
+    const { spocs, feeds } = this.props.DiscoveryStream;
 
     // Send SPOCS Fill if any. Note that it should not send it again if the same
     // page gets re-rendered by state changes.
@@ -216,114 +216,83 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       this._spocsFillSent = true;
     }
 
-    // Allow rendering without extracting special components
-    if (!config.collapsible) {
-      return this.renderLayout(layoutRender);
-    }
-
-    // Find the first component of a type and remove it from layout
-    const extractComponent = type => {
-      for (const [rowIndex, row] of Object.entries(layoutRender)) {
-        for (const [index, component] of Object.entries(row.components)) {
-          if (component.type === type) {
-            // Remove the row if it was the only component or the single item
-            if (row.components.length === 1) {
-              layoutRender.splice(rowIndex, 1);
-            } else {
-              row.components.splice(index, 1);
-            }
-            return component;
-          }
-        }
-      }
-      return null;
-    };
-
-    // Get "topstories" Section state for default values
-    const topStories = this.props.Sections.find(s => s.id === "topstories");
-
-    if (!topStories) {
-      return null;
-    }
-
-    // Extract TopSites to render before the rest and Message to use for header
-    const topSites = extractComponent("TopSites");
-    const message = extractComponent("Message") || {
-      header: {
-        link_text: topStories.learnMore.link.message,
-        link_url: topStories.learnMore.link.href,
-        title: topStories.title,
-      },
-    };
-
-    // Render a DS-style TopSites then the rest if any in a collapsible section
-    return (
-      <React.Fragment>
-        {topSites &&
-          this.renderLayout([
-            {
-              width: 12,
-              components: [topSites],
-            },
-          ])}
-        {layoutRender.length > 0 && (
-          <CollapsibleSection
-            className="ds-layout"
-            collapsed={topStories.pref.collapsed}
-            dispatch={this.props.dispatch}
-            icon={topStories.icon}
-            id={topStories.id}
-            isFixed={true}
-            learnMore={{
-              link: {
-                href: message.header.link_url,
-                message: message.header.link_text,
-              },
-            }}
-            privacyNoticeURL={topStories.privacyNoticeURL}
-            showPrefName={topStories.pref.feed}
-            title={message.header.title}
-          >
-            {this.renderLayout(layoutRender)}
-          </CollapsibleSection>
-        )}
-        {this.renderLayout([
-          {
-            width: 12,
-            components: [{ type: "Highlights" }],
-          },
-        ])}
-      </React.Fragment>
-    );
+    return this.renderLayout(layoutRender);
   }
 
   renderLayout(layoutRender) {
+
+    const { collapsible } = this.props.DiscoveryStream.config;
     const styles = [];
     return (
       <div className="discovery-stream ds-layout">
-        {layoutRender.map((row, rowIndex) => (
-          <div
-            key={`row-${rowIndex}`}
-            className={`ds-column ds-column-${row.width}`}
-          >
-            <div className="ds-column-grid">
-              {row.components.map((component, componentIndex) => {
-                if (!component) {
-                  return null;
-                }
-                styles[rowIndex] = [
-                  ...(styles[rowIndex] || []),
-                  component.styles,
-                ];
-                return (
-                  <div key={`component-${componentIndex}`}>
-                    {this.renderComponent(component, row.width)}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+        {layoutRender.map((row, rowIndex) => {
+          if (!collapsible) {
+            return (
+              <div
+                key={`row-${rowIndex}`}
+                className={`ds-column ds-column-${row.width}`}
+              >
+                <div className="ds-column-grid">
+                  {row.components.map((component, componentIndex) => {
+                    if (!component) {
+                      return null;
+                    }
+                    styles[rowIndex] = [
+                      ...(styles[rowIndex] || []),
+                      component.styles,
+                    ];
+                    return (
+                      <div key={`component-${componentIndex}`}>
+                        {this.renderComponent(component, row.width)}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          } else {
+            // Need to ensure there is a key here.
+            // All these stubbed values being passed to CollapibleSection need to be pulled from first message component
+            //  collapsed={"topStories.pref.collapsed"}
+            return (
+              <CollapsibleSection
+                key={`row-${rowIndex}`}
+                className={`ds-column ds-column-${row.width}`}
+                collapsed={false}
+                dispatch={this.props.dispatch}
+                icon={"topStories.icon"}
+                id={"topstories"}
+                isFixed={true}
+                learnMore={{
+                  link: {
+                    href: "message.header.link_url",
+                    message: "message.header.link_text",
+                  },
+                }}
+                privacyNoticeURL={"topStories.privacyNoticeURL"}
+                showPrefName={"topStories.pref.feed"}
+                title={"message.header.title"}
+              >
+                <div className="ds-column-grid">
+                  {row.components.map((component, componentIndex) => {
+                    if (!component) {
+                      return null;
+                    }
+                    styles[rowIndex] = [
+                      ...(styles[rowIndex] || []),
+                      component.styles,
+                    ];
+                    return (
+                      <div key={`component-${componentIndex}`}>
+                        {this.renderComponent(component, row.width)}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CollapsibleSection>
+            );
+          }
+        })}
         {this.renderStyles(styles)}
       </div>
     );

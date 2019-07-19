@@ -1255,6 +1255,18 @@ defaultLayoutResp = {
       width: 12,
       components: [
         {
+          type: "Message",
+          header: {
+            title: "Top Sites",
+            icon:
+              "resource://activity-stream/data/content/assets/glyph-topsites-16.svg",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+        {
           type: "TopSites",
           header: {
             title: "Top Sites",
@@ -1281,11 +1293,6 @@ defaultLayoutResp = {
             ".ds-message": "margin-bottom: -20px",
           },
         },
-      ],
-    },
-    {
-      width: 12,
-      components: [
         {
           type: "CardGrid",
           properties: {
@@ -1355,6 +1362,27 @@ defaultLayoutResp = {
           styles: {
             ".ds-navigation": "margin-top: -10px;",
           },
+        },
+      ],
+    },
+    {
+      width: 12,
+      components: [
+        {
+          type: "Message",
+          header: {
+            title: "Highlights",
+            icon:
+              "resource://activity-stream/data/content/assets/glyph-highlights-16.svg",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+        {
+          type: "Highlights",
+          properties: {},
         },
       ],
     },
