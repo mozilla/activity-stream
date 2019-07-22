@@ -155,6 +155,21 @@ const MessageLoaderUtils = {
   REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
   _errors: [],
 
+  /**
+   * This array is used to avoid the duplicate Remote Settings attachment downloads
+   * for `loadMessagesFromAllProviders`. For each download request, it records the
+   * `record ID` of the corresponding attachment, so the subsequent downloads for
+   * the same record can be simply skipped.
+   *
+   * Once all the providers complete the message load, one should reset this array
+   * via `this.resetRemoteAttachmentFetched()`.
+   */
+  _remoteAttachmentFetched: [],
+
+  resetRemoteAttachmentFetched() {
+    this._remoteAttachmentFetched = [];
+  },
+
   reportError(e) {
     Cu.reportError(e);
     this._errors.push({
@@ -317,6 +332,12 @@ const MessageLoaderUtils = {
 
           const locale = Services.locale.appLocaleAsLangTag;
           const recordId = `cfr-${RS_FLUENT_VERSION}-${locale}`;
+
+          // Skip the downloaded if it's already fetched.
+          if (MessageLoaderUtils._remoteAttachmentFetched.includes(recordId)) {
+            return messages;
+          }
+
           const kinto = new KintoHttpClient(
             Services.prefs.getStringPref(RS_SERVER_PREF)
           );
@@ -331,6 +352,10 @@ const MessageLoaderUtils = {
             );
             // Await here in order to capture the exceptions for reporting.
             await downloader.download(record.data, { retries: 2 });
+            // Record this download so that the subsequent requests for the same
+            // remote attchment could be ignored. For example, "cfr" and "cfr-fxa"
+            // collections share the same l10n Fluent file for the same locale.
+            MessageLoaderUtils._remoteAttachmentFetched.push(recordId);
           }
         }
       } catch (e) {
@@ -715,6 +740,11 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
+
+      // Always reset the remote attachment fetched array after all the providers
+      // load, as it is desirable to check the freshness of the attachment in the
+      // next load cycle.
+      MessageLoaderUtils.resetRemoteAttachmentFetched();
 
       for (const message of newState.messages) {
         this.normalizeItemFrequency(message);

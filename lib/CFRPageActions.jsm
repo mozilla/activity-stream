@@ -7,12 +7,6 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { L10nRegistry, FileSource } = ChromeUtils.import(
-  "resource://gre/modules/L10nRegistry.jsm"
-);
-const { FluentBundle } = ChromeUtils.import(
-  "resource://gre/modules/Fluent.jsm"
-);
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 
@@ -20,6 +14,21 @@ ChromeUtils.defineModuleGetter(
   this,
   "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "L10nRegistry",
+  "resource://gre/modules/L10nRegistry.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FileSource",
+  "resource://gre/modules/L10nRegistry.jsm"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "FluentBundle",
+  "resource://gre/modules/Fluent.jsm"
 );
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
@@ -37,12 +46,6 @@ const CATEGORY_ICONS = {
   cfrAddons: "webextensions-icon",
   cfrFeatures: "recommendations-icon",
 };
-const L10N_FLUENT_DIR = OS.Path.join(
-  OS.Constants.Path.localProfileDir,
-  "settings",
-  "main",
-  "ms-language-packs"
-);
 
 /**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
@@ -95,11 +98,15 @@ class PageAction {
     async function* generateBundles(resourceIds) {
       const appLocale = Services.locale.appLocaleAsBCP47;
       const appLocales = Services.locale.appLocalesAsBCP47;
-      const fs = new FileSource(
-        "cfr",
-        appLocales,
-        `file://${L10N_FLUENT_DIR}/`
+      // The downloaded Fluent file is located in
+      // `/${OS.Constants.Path.localProfileDir}/settings/main/ms-language-packs/`
+      const l10nFluentDir = OS.Path.join(
+        OS.Constants.Path.localProfileDir,
+        "settings",
+        "main",
+        "ms-language-packs"
       );
+      const fs = new FileSource("cfr", appLocales, `file://${l10nFluentDir}/`);
       // In the case that the Fluent file has not been downloaded from Remote Settings,
       // `fetchFile` will return `false` and fall back to the packaged Fluent file.
       const resource = await fs.fetchFile(appLocale, "asrouter.ftl");
