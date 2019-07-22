@@ -260,7 +260,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             // Weird collapse transition
             // Ensure disable works.
             // Fix context menus
-            // Ensure backwards comp
+            // Ensure backwards comp for old layout topsites stuff
+            // Tests, lint, polish, dry it out
             const message = extractComponent("Message", row.components);
             const firstComponent = row.components[0];
             let id = "topstories";
