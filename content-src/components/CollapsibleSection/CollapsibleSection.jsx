@@ -143,7 +143,7 @@ export class CollapsibleSection extends React.PureComponent {
 
   renderIcon() {
     const { icon } = this.props;
-    if (icon && icon.startsWith("moz-extension://")) {
+    if (icon && (icon.startsWith("moz-extension://") || icon.startsWith("resource://"))) {
       return (
         <span
           className="icon icon-small-spacer"

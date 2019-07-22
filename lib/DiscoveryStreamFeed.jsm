@@ -1258,8 +1258,7 @@ defaultLayoutResp = {
           type: "Message",
           header: {
             title: "Top Sites",
-            icon:
-              "resource://activity-stream/data/content/assets/glyph-topsites-16.svg",
+            icon: "topsites",
           },
           properties: {},
           styles: {
@@ -1285,8 +1284,7 @@ defaultLayoutResp = {
             subtitle: "",
             link_text: "How it works",
             link_url: "https://getpocket.com/firefox/new_tab_learn_more",
-            icon:
-              "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
+            icon: "pocket",
           },
           properties: {},
           styles: {
@@ -1372,8 +1370,7 @@ defaultLayoutResp = {
           type: "Message",
           header: {
             title: "Highlights",
-            icon:
-              "resource://activity-stream/data/content/assets/glyph-highlights-16.svg",
+            icon: "highlights",
           },
           properties: {},
           styles: {

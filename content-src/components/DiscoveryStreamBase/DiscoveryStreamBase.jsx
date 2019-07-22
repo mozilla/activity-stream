@@ -221,77 +221,93 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
   renderLayout(layoutRender) {
 
-    const { collapsible } = this.props.DiscoveryStream.config;
+    const { TopSites, DiscoveryStream } = this.props;
+    const { collapsible } = DiscoveryStream.config;
     const styles = [];
+
+    // Find the first component of a type and remove it from layout
+    const extractComponent = (type, components) => {
+      for (const [index, component] of Object.entries(components)) {
+        if (component.type === type) {
+          components.splice(index, 1);
+          return component;
+        }
+      }
+      return null;
+    };
+
+    const renderComponents = (row, rowIndex) => {
+      return row.components.map((component, componentIndex) => {
+        if (!component) {
+          return null;
+        }
+        styles[rowIndex] = [
+          ...(styles[rowIndex] || []),
+          component.styles,
+        ];
+        return (
+          <div key={`component-${componentIndex}`}>
+            {this.renderComponent(component, row.width)}
+          </div>
+        );
+      });
+    };
+
     return (
       <div className="discovery-stream ds-layout">
         {layoutRender.map((row, rowIndex) => {
-          if (!collapsible) {
-            return (
-              <div
-                key={`row-${rowIndex}`}
-                className={`ds-column ds-column-${row.width}`}
-              >
-                <div className="ds-column-grid">
-                  {row.components.map((component, componentIndex) => {
-                    if (!component) {
-                      return null;
-                    }
-                    styles[rowIndex] = [
-                      ...(styles[rowIndex] || []),
-                      component.styles,
-                    ];
-                    return (
-                      <div key={`component-${componentIndex}`}>
-                        {this.renderComponent(component, row.width)}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          } else {
-            // Need to ensure there is a key here.
-            // All these stubbed values being passed to CollapibleSection need to be pulled from first message component
-            //  collapsed={"topStories.pref.collapsed"}
+          if (collapsible) {
+            // Weird collapse transition
+            // Ensure disable works.
+            // Fix context menus
+            // Ensure backwards comp
+            const message = extractComponent("Message", row.components);
+            const firstComponent = row.components[0];
+            let id = "topstories";
+            if (firstComponent && firstComponent.type && ['TopSites', 'Highlights'].indexOf(firstComponent.type) >= 0) {
+              id = firstComponent.type.toLocaleLowerCase();
+            }
+            let section = this.props.Sections.find(s => s.id === id);
+            // TopSites is a special case
+            if (id === "topsites") {
+              section = TopSites;
+            }
+            console.log(section, id, this.props.Sections, TopSites);
             return (
               <CollapsibleSection
                 key={`row-${rowIndex}`}
-                className={`ds-column ds-column-${row.width}`}
-                collapsed={false}
+                className={`ds-column ds-layout ds-column-${row.width}`}
+                collapsed={section.pref.collapsed}
                 dispatch={this.props.dispatch}
-                icon={"topStories.icon"}
-                id={"topstories"}
+                icon={message.header.icon}
+                id={id}
                 isFixed={true}
                 learnMore={{
                   link: {
-                    href: "message.header.link_url",
-                    message: "message.header.link_text",
+                    href: message.header.link_url,
+                    message: message.header.link_text,
                   },
                 }}
-                privacyNoticeURL={"topStories.privacyNoticeURL"}
-                showPrefName={"topStories.pref.feed"}
-                title={"message.header.title"}
+                privacyNoticeURL={section.privacyNoticeURL}
+                showPrefName={section.pref.feed}
+                title={message.header.title}
               >
                 <div className="ds-column-grid">
-                  {row.components.map((component, componentIndex) => {
-                    if (!component) {
-                      return null;
-                    }
-                    styles[rowIndex] = [
-                      ...(styles[rowIndex] || []),
-                      component.styles,
-                    ];
-                    return (
-                      <div key={`component-${componentIndex}`}>
-                        {this.renderComponent(component, row.width)}
-                      </div>
-                    );
-                  })}
+                  {renderComponents(row, rowIndex)}
                 </div>
               </CollapsibleSection>
             );
           }
+          return (
+            <div
+              key={`row-${rowIndex}`}
+              className={`ds-column ds-column-${row.width}`}
+            >
+              <div className="ds-column-grid">
+                {renderComponents(row, rowIndex)}
+              </div>
+            </div>
+          );
         })}
         {this.renderStyles(styles)}
       </div>
@@ -303,4 +319,5 @@ export const DiscoveryStreamBase = connect(state => ({
   DiscoveryStream: state.DiscoveryStream,
   Prefs: state.Prefs,
   Sections: state.Sections,
+  TopSites: state.TopSites,
 }))(_DiscoveryStreamBase);
