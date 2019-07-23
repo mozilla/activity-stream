@@ -135,7 +135,10 @@ const STARTPAGE_VERSION = "6";
 const RS_SERVER_PREF = "services.settings.server";
 const RS_MAIN_BUCKET = "main";
 const RS_COLLECTION_L10N = "ms-language-packs"; // "ms" stands for Messaging System
+const RS_PROVIDERS_WITH_L10N = ["cfr", "cfr-fxa"];
 const RS_FLUENT_VERSION = "v1";
+const RS_FLUENT_RECORD_PREFIX = `cfr-${RS_FLUENT_VERSION}`;
+const RS_DOWNLOAD_MAX_RETRIES = 2;
 
 /**
  * chooseBranch<T> -  Choose an item from a list of "branches" pseudorandomly using a seed / ratio configuration
@@ -154,21 +157,6 @@ const MessageLoaderUtils = {
   STARTPAGE_VERSION,
   REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
   _errors: [],
-
-  /**
-   * This array is used to avoid the duplicate Remote Settings attachment downloads
-   * for `loadMessagesFromAllProviders`. For each download request, it records the
-   * `record ID` of the corresponding attachment, so the subsequent downloads for
-   * the same record can be simply skipped.
-   *
-   * Once all the providers complete the message load, one should reset this array
-   * via `this.resetRemoteAttachmentFetched()`.
-   */
-  _remoteAttachmentFetched: [],
-
-  resetRemoteAttachmentFetched() {
-    this._remoteAttachmentFetched = [];
-  },
 
   reportError(e) {
     Cu.reportError(e);
@@ -306,6 +294,17 @@ const MessageLoaderUtils = {
   /**
    * _remoteSettingsLoader - Loads messages for a RemoteSettings provider
    *
+   * Note:
+   * 1). Both "cfr" and "cfr-fxa" require the Fluent file for l10n, so there is
+   * another file downloading phase for those two providers after their messages
+   * are successfully fetched from Remote Settings. Currently, they share the same
+   * attachment of the record "${RS_FLUENT_RECORD_PREFIX}-${locale}" in the
+   * "ms-language-packs" collection. E.g. for "en-US" with version "v1",
+   * the Fluent file is attched to the record with ID "cfr-v1-en-US".
+   *
+   * 2). The Remote Settings downloader is able to detect the duplicate download
+   * requests for the same attachment and ignore the redundent requests automatically.
+   *
    * @param {obj} provider An AS router provider
    * @param {string} provider.id The id of the provider
    * @param {string} provider.bucket The name of the Remote Settings bucket
@@ -325,19 +324,9 @@ const MessageLoaderUtils = {
             provider.id,
             options.dispatchToAS
           );
-        } else if (["cfr", "cfr-fxa"].includes(provider.id)) {
-          // Both "cfr" and "cfr-fxa" require the Fluent file for l10n, currently
-          // they share the same attachment of the record "cfr-${version}-${locale}",
-          // e.g. for "en-US" with version "v1", the record ID is "cfr-v1-en-US".
-
+        } else if (RS_PROVIDERS_WITH_L10N.includes(provider.id)) {
           const locale = Services.locale.appLocaleAsLangTag;
-          const recordId = `cfr-${RS_FLUENT_VERSION}-${locale}`;
-
-          // Skip the downloaded if it's already fetched.
-          if (MessageLoaderUtils._remoteAttachmentFetched.includes(recordId)) {
-            return messages;
-          }
-
+          const recordId = `${RS_FLUENT_RECORD_PREFIX}-${locale}`;
           const kinto = new KintoHttpClient(
             Services.prefs.getStringPref(RS_SERVER_PREF)
           );
@@ -351,11 +340,15 @@ const MessageLoaderUtils = {
               RS_COLLECTION_L10N
             );
             // Await here in order to capture the exceptions for reporting.
-            await downloader.download(record.data, { retries: 2 });
-            // Record this download so that the subsequent requests for the same
-            // remote attchment could be ignored. For example, "cfr" and "cfr-fxa"
-            // collections share the same l10n Fluent file for the same locale.
-            MessageLoaderUtils._remoteAttachmentFetched.push(recordId);
+            await downloader.download(record.data, {
+              retries: RS_DOWNLOAD_MAX_RETRIES,
+            });
+          } else {
+            MessageLoaderUtils._handleRemoteSettingsUndesiredEvent(
+              "ASR_RS_NO_MESSAGES",
+              RS_COLLECTION_L10N,
+              options.dispatchToAS
+            );
           }
         }
       } catch (e) {
@@ -740,11 +733,6 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
-
-      // Always reset the remote attachment fetched array after all the providers
-      // load, as it is desirable to check the freshness of the attachment in the
-      // next load cycle.
-      MessageLoaderUtils.resetRemoteAttachmentFetched();
 
       for (const message of newState.messages) {
         this.normalizeItemFrequency(message);

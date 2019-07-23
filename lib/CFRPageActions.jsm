@@ -48,6 +48,12 @@ const CATEGORY_ICONS = {
 };
 
 /**
+ * The downloaded Fluent file is located in this sub-directory of the local
+ * profile directory.
+ */
+const RS_DOWNLOADED_FILE_SUBDIR = "settings/main/ms-language-packs";
+
+/**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
  * defined in the ExtensionDoorhanger.schema.json.
  *
@@ -98,13 +104,9 @@ class PageAction {
     async function* generateBundles(resourceIds) {
       const appLocale = Services.locale.appLocaleAsBCP47;
       const appLocales = Services.locale.appLocalesAsBCP47;
-      // The downloaded Fluent file is located in
-      // `/${OS.Constants.Path.localProfileDir}/settings/main/ms-language-packs/`
       const l10nFluentDir = OS.Path.join(
         OS.Constants.Path.localProfileDir,
-        "settings",
-        "main",
-        "ms-language-packs"
+        RS_DOWNLOADED_FILE_SUBDIR
       );
       const fs = new FileSource("cfr", appLocales, `file://${l10nFluentDir}/`);
       // In the case that the Fluent file has not been downloaded from Remote Settings,

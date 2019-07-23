@@ -721,30 +721,34 @@ describe("ASRouter", () => {
 
       assert.calledOnce(spy);
     });
-    it("should not download the attachment if it's already downloaded", async () => {
+    it("should dispatch undesired event if the ms-language-packs returns no messages", async () => {
       sandbox
         .stub(global.Services.locale, "appLocaleAsLangTag")
         .get(() => "en-US");
       sandbox
         .stub(MessageLoaderUtils, "_getRemoteSettingsMessages")
         .resolves([{ id: "message_1" }]);
-      const spy = sandbox.spy();
-      global.Downloader.prototype.download = spy;
+      sandbox
+        .stub(global.KintoHttpClient.prototype, "getRecord")
+        .resolves(null);
       const provider = {
         id: "cfr",
         enabled: true,
         type: "remote-settings",
         bucket: "cfr",
       };
-      const cfrFxaProvider = {
-        id: "cfr-fxa",
-        enabled: true,
-        type: "remote-settings",
-        bucket: "cfr",
-      };
-      await createRouterAndInit([provider, cfrFxaProvider]);
+      await createRouterAndInit([provider]);
 
-      assert.calledOnce(spy);
+      assert.calledWith(Router.dispatchToAS, {
+        data: {
+          action: "asrouter_undesired_event",
+          event: "ASR_RS_NO_MESSAGES",
+          value: "ms-language-packs",
+          message_id: "n/a",
+        },
+        meta: { from: "ActivityStream:Content", to: "ActivityStream:Main" },
+        type: "AS_ROUTER_TELEMETRY_USER_EVENT",
+      });
     });
   });
 
