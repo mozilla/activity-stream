@@ -63,6 +63,7 @@ const INITIAL_STATE = {
     spocs: {
       spocs_endpoint: "",
       lastUpdated: null,
+      showSpocs: false,
       data: {}, // {spocs: []}
       loaded: false,
       frequency_caps: [],
@@ -606,6 +607,7 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
           ...prevState,
           spocs: {
             ...prevState.spocs,
+            showSpocs: action.data.showSpocs,
             lastUpdated: action.data.lastUpdated,
             data: action.data.spocs,
             loaded: true,
