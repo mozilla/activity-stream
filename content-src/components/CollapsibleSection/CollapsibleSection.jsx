@@ -218,7 +218,11 @@ export class CollapsibleSection extends React.PureComponent {
               <span
                 className="click-target"
                 role="button"
-                label={collapsed ? "Expand Section" : "Collapse Section"}
+                data-l10n-id={
+                  collapsed
+                    ? "newtab-section-expand-section-label"
+                    : "newtab-section-collapse-section-label"
+                }
                 tabIndex="0"
                 onKeyPress={this.onKeyPress}
                 onClick={this.onHeaderClick}
