@@ -108,15 +108,17 @@ class PageAction {
         OS.Constants.Path.localProfileDir,
         RS_DOWNLOADED_FILE_SUBDIR
       );
-      const fs = new FileSource("cfr", appLocales, `file://${l10nFluentDir}/`);
+      const fs = new FileSource("cfr", [appLocale], `file://${l10nFluentDir}/`);
       // In the case that the Fluent file has not been downloaded from Remote Settings,
       // `fetchFile` will return `false` and fall back to the packaged Fluent file.
       const resource = await fs.fetchFile(appLocale, "asrouter.ftl");
       if (resource) {
-        const bundle = new FluentBundle(appLocales);
+        // Use a single locale array for the bundle from Remote Settings.
+        const bundle = new FluentBundle(appLocale);
         bundle.addResource(resource);
         yield bundle;
       }
+      // Use the system locale array for all other local bundles.
       yield* L10nRegistry.generateBundles(appLocales, resourceIds);
     }
 
