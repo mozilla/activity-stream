@@ -79,7 +79,7 @@ const MESSAGES = () => [
     // Never saw this message or saw it in the past 4 days or more recent
     targeting: `isWhatsNewPanelEnabled &&
       (earliestFirefoxVersion && firefoxVersion > earliestFirefoxVersion) &&
-        (messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'] ||
+        (!messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'] ||
       (messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length >= 1 &&
         currentDate|date - messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'][0] <= 4 * 24 * 3600 * 1000))`,
   },
