@@ -61,7 +61,6 @@ export class ContextMenu extends React.PureComponent {
                   option={option}
                   hideContext={this.hideContext}
                   keyboardAccess={this.props.keyboardAccess}
-                  tabIndex="0"
                 />
               )
             )
@@ -130,7 +129,7 @@ export class ContextMenuItem extends React.PureComponent {
         this.focusSibling(event.target, event.key);
         break;
       case "Enter":
-      case "Space":
+      case " ":
         event.preventDefault();
         this.props.hideContext();
         option.onClick();
@@ -141,6 +140,8 @@ export class ContextMenuItem extends React.PureComponent {
     }
   }
 
+  // Prevents the default behavior of spacebar
+  // scrolling the page & auto-triggering buttons.
   onKeyUp(event) {
     if (event.key === " ") {
       event.preventDefault();

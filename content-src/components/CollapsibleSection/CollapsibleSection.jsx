@@ -218,11 +218,6 @@ export class CollapsibleSection extends React.PureComponent {
               <span
                 className="click-target"
                 role="button"
-                data-l10n-id={
-                  collapsed
-                    ? "newtab-section-expand-section-label"
-                    : "newtab-section-collapse-section-label"
-                }
                 tabIndex="0"
                 onKeyPress={this.onKeyPress}
                 onClick={this.onHeaderClick}
@@ -231,6 +226,11 @@ export class CollapsibleSection extends React.PureComponent {
                 <FluentOrText message={title} />
                 {isCollapsible && (
                   <span
+                    data-l10n-id={
+                      collapsed
+                        ? "newtab-section-expand-section-label"
+                        : "newtab-section-collapse-section-label"
+                    }
                     className={`collapsible-arrow icon ${
                       collapsed
                         ? "icon-arrowhead-forward-small"

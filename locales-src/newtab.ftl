@@ -135,10 +135,8 @@ newtab-section-menu-privacy-notice = Privacy Notice
 
 newtab-section-collapse-section-label =
     .aria-label = Collapse Section
-    .title = Collapse Section
 newtab-section-expand-section-label =
     .aria-label = Expand Section
-    .title = Expand Section
 
 ## Section Headers.
 
