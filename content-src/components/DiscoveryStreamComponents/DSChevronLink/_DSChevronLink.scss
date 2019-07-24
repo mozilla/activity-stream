@@ -1,0 +1,23 @@
+.ds-chevron-link {
+  color: $blue-60;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: $blue-70;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px $white, 0 0 0 5px $blue-50-50;
+    border-radius: 2px;
+  }
+
+  &::after {
+    content: '›';
+    margin: 0 0 0 4px;
+    text-decoration: none;
+    display: inline-block;
+  }
+}
