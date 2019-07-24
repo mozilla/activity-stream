@@ -312,6 +312,16 @@ describe("ASRouter", () => {
         })
       );
     });
+    it("should add observer for `intl:app-locales-changed`", async () => {
+      sandbox.spy(global.Services.obs, "addObserver");
+      await createRouterAndInit();
+
+      assert.calledOnce(global.Services.obs.addObserver);
+      assert.equal(
+        global.Services.obs.addObserver.args[0][1],
+        "intl:app-locales-changed"
+      );
+    });
     describe("lazily loading local test providers", () => {
       afterEach(() => {
         Router.uninit();
@@ -1061,6 +1071,16 @@ describe("ASRouter", () => {
         Router._storage.set,
         "previousSessionEnd",
         sinon.match.number
+      );
+    });
+    it("should remove the observer for `intl:app-locales-changed`", () => {
+      sandbox.spy(global.Services.obs, "removeObserver");
+      Router.uninit();
+
+      assert.calledOnce(global.Services.obs.removeObserver);
+      assert.equal(
+        global.Services.obs.removeObserver.args[0][1],
+        "intl:app-locales-changed"
       );
     });
   });
@@ -3110,6 +3130,70 @@ describe("ASRouter", () => {
 
       assert.calledWith(global.Sampling.ratioSample, "bleep", [1, 1]);
       assert.equal(result, "bar");
+    });
+  });
+
+  describe("#_onLocaleChanged", () => {
+    it("should call _maybeUpdateL10nAttachment in the handler", async () => {
+      await createRouterAndInit();
+      sandbox.stub(Router, "_maybeUpdateL10nAttachment").resolves(null);
+      await Router._onLocaleChanged();
+
+      assert.calledOnce(Router._maybeUpdateL10nAttachment);
+    });
+  });
+
+  describe("#_maybeUpdateL10nAttachment", () => {
+    it("should update the l10n attachment if the locale was changed", async () => {
+      const getter = sandbox.stub();
+      getter.onFirstCall().returns("en-US");
+      getter.onSecondCall().returns("fr");
+      sandbox.stub(global.Services.locale, "appLocaleAsLangTag").get(getter);
+      const provider = {
+        id: "cfr",
+        enabled: true,
+        type: "remote-settings",
+        bucket: "cfr",
+      };
+      await createRouterAndInit([provider]);
+      sandbox.spy(Router, "setState");
+      sandbox.stub(Router, "loadMessagesFromAllProviders").resolves(null);
+
+      await Router._maybeUpdateL10nAttachment();
+
+      assert.calledWith(Router.setState, {
+        localeInUse: "fr",
+        providers: [
+          {
+            id: "cfr",
+            enabled: true,
+            type: "remote-settings",
+            bucket: "cfr",
+            lastUpdated: undefined,
+            errors: [],
+          },
+        ],
+      });
+      assert.calledOnce(Router.loadMessagesFromAllProviders);
+    });
+    it("should not update the l10n attachment if the provider doesn't need l10n attachment", async () => {
+      const getter = sandbox.stub();
+      getter.onFirstCall().returns("en-US");
+      getter.onSecondCall().returns("fr");
+      sandbox.stub(global.Services.locale, "appLocaleAsLangTag").get(getter);
+      const provider = {
+        id: "localProvider",
+        enabled: true,
+        type: "local",
+      };
+      await createRouterAndInit([provider]);
+      sandbox.spy(Router, "setState");
+      sandbox.spy(Router, "loadMessagesFromAllProviders");
+
+      await Router._maybeUpdateL10nAttachment();
+
+      assert.notCalled(Router.setState);
+      assert.notCalled(Router.loadMessagesFromAllProviders);
     });
   });
 });

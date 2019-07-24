@@ -140,6 +140,9 @@ const RS_FLUENT_VERSION = "v1";
 const RS_FLUENT_RECORD_PREFIX = `cfr-${RS_FLUENT_VERSION}`;
 const RS_DOWNLOAD_MAX_RETRIES = 2;
 
+// To observe the app locale change notification.
+const TOPIC_INTL_LOCALE_CHANGED = "intl:app-locales-changed";
+
 /**
  * chooseBranch<T> -  Choose an item from a list of "branches" pseudorandomly using a seed / ratio configuration
  * @param seed {string} A unique seed for the randomizer
@@ -553,6 +556,7 @@ class _ASRouter {
       errors: [],
       extendedTripletsInitialized: false,
       showExtendedTriplets: true,
+      localeInUse: Services.locale.appLocaleAsLangTag,
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
@@ -564,6 +568,7 @@ class _ASRouter {
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
     this.dispatch = this.dispatch.bind(this);
+    this._onLocaleChanged = this._onLocaleChanged.bind(this);
   }
 
   async onPrefChange(prefName) {
@@ -762,6 +767,33 @@ class _ASRouter {
     }
   }
 
+  async _maybeUpdateL10nAttachment() {
+    const { localeInUse } = this.state.localeInUse;
+    const newLocale = Services.locale.appLocaleAsLangTag;
+    if (newLocale !== localeInUse) {
+      const providers = [...this.state.providers];
+      let needsUpdate = false;
+      providers.forEach(provider => {
+        if (RS_PROVIDERS_WITH_L10N.includes(provider.id)) {
+          // Force to refresh the messages as well as the attachment.
+          provider.lastUpdated = undefined;
+          needsUpdate = true;
+        }
+      });
+      if (needsUpdate) {
+        await this.setState({
+          localeInUse: newLocale,
+          providers,
+        });
+        await this.loadMessagesFromAllProviders();
+      }
+    }
+  }
+
+  async _onLocaleChanged(subject, topic, data) {
+    await this._maybeUpdateL10nAttachment();
+  }
+
   /**
    * init - Initializes the MessageRouter.
    * It is ready when it has been connected to a RemotePageManager instance.
@@ -835,6 +867,7 @@ class _ASRouter {
       })
     );
 
+    Services.obs.addObserver(this._onLocaleChanged, TOPIC_INTL_LOCALE_CHANGED);
     // sets .initialized to true and resolves .waitForInitialized promise
     this._finishInitializing();
   }
@@ -862,6 +895,10 @@ class _ASRouter {
     for (const listener of ASRouterTriggerListeners.values()) {
       listener.uninit();
     }
+    Services.obs.removeObserver(
+      this._onLocaleChanged,
+      TOPIC_INTL_LOCALE_CHANGED
+    );
     // If we added any CFR recommendations, they need to be removed
     CFRPageActions.clearRecommendations();
     this._resetInitialization();
