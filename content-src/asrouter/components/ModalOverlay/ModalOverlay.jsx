@@ -20,9 +20,6 @@ export class ModalOverlayWrapper extends React.PureComponent {
     this.props.document.addEventListener("keydown", this.onKeyDown);
     this.props.document.body.classList.add("modal-open");
     // Hide the page content from screen readers while the modal is open
-    this.props.document
-      .getElementById("root")
-      .setAttribute("aria-hidden", "true");
     this.header = this.props.document.getElementById(
       "header-asrouter-container"
     );
@@ -36,10 +33,6 @@ export class ModalOverlayWrapper extends React.PureComponent {
   componentWillUnmount() {
     this.props.document.removeEventListener("keydown", this.onKeyDown);
     this.props.document.body.classList.remove("modal-open");
-    // Re-enable the document for screen readers
-    this.props.document
-      .getElementById("root")
-      .setAttribute("aria-hidden", "false");
 
     if (this.header) {
       this.header.classList.remove("modal-scroll");
