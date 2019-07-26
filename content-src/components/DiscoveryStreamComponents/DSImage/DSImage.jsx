@@ -12,6 +12,8 @@ export class DSImage extends React.PureComponent {
     this.onOptimizedImageError = this.onOptimizedImageError.bind(this);
     this.onNonOptimizedImageError = this.onNonOptimizedImageError.bind(this);
 
+    this.pictureElementRef = React.createRef();
+
     this.state = {
       isSeen: false,
       optimizedImageFailed: false,
@@ -25,8 +27,8 @@ export class DSImage extends React.PureComponent {
           // Run DOM measurement when the browser is idle for better main thread perf
           requestIdleCallback(() => {
             this.setState({
-              containerWidth: ReactDOM.findDOMNode(this).clientWidth,
-              containerHeight: ReactDOM.findDOMNode(this).clientHeight,
+              containerWidth: this.pictureElementRef.current.clientWidth,
+              containerHeight: this.pictureElementRef.current.clientHeight,
             });
           });
         }
@@ -36,7 +38,7 @@ export class DSImage extends React.PureComponent {
         });
 
         // Stop observing since element has been seen
-        this.observer.unobserve(ReactDOM.findDOMNode(this));
+        this.observer.unobserve(this.pictureElementRef.current);
       }
     }
   }
@@ -58,13 +60,13 @@ export class DSImage extends React.PureComponent {
       rootMargin: `540px`,
     });
 
-    this.observer.observe(ReactDOM.findDOMNode(this));
+    this.observer.observe(this.pictureElementRef.current);
   }
 
   componentWillUnmount() {
     // Remove observer on unmount
     if (this.observer) {
-      this.observer.unobserve(ReactDOM.findDOMNode(this));
+      this.observer.unobserve(this.pictureElementRef.current);
     }
   }
 
@@ -124,7 +126,7 @@ export class DSImage extends React.PureComponent {
       }
     }
 
-    return <picture className={classNames}>{img}</picture>;
+    return <picture ref={this.pictureElementRef} className={classNames}>{img}</picture>;
   }
 
   onOptimizedImageError() {
