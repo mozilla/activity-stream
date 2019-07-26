@@ -3,7 +3,6 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
   constructor(props) {
@@ -126,7 +125,11 @@ export class DSImage extends React.PureComponent {
       }
     }
 
-    return <picture ref={this.pictureElementRef} className={classNames}>{img}</picture>;
+    return (
+      <picture ref={this.pictureElementRef} className={classNames}>
+        {img}
+      </picture>
+    );
   }
 
   onOptimizedImageError() {
