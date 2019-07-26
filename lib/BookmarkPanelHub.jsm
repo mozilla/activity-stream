@@ -274,7 +274,7 @@ class _BookmarkPanelHub {
   removeMessage(target, win) {
     this._removeContainer(target, win);
     this.toggleRecommendation(target, false);
-    this._state = null;
+    this._state = {};
   }
 
   async _forceShowMessage(target, message) {
