@@ -19,7 +19,6 @@ export class ModalOverlayWrapper extends React.PureComponent {
   componentWillMount() {
     this.props.document.addEventListener("keydown", this.onKeyDown);
     this.props.document.body.classList.add("modal-open");
-    // Hide the page content from screen readers while the modal is open
     this.header = this.props.document.getElementById(
       "header-asrouter-container"
     );

@@ -147,10 +147,6 @@ export class FirstRun extends React.PureComponent {
     if (!this.state.hasInterrupt) {
       // We need to remove hide-main since we should show it underneath everything that has rendered
       this.props.document.body.classList.remove("hide-main", "welcome");
-      // Re-enable the document for screen readers
-      this.props.document
-        .getElementById("root")
-        .setAttribute("aria-hidden", "false");
     }
   }
 

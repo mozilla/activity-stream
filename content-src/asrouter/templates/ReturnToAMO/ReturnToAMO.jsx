@@ -32,10 +32,6 @@ export class ReturnToAMO extends React.PureComponent {
 
   onClickAddExtension() {
     this.props.onAction(this.props.content.primary_button.action);
-    // Re-enable the document for screen readers
-    this.props.document
-      .getElementById("root")
-      .setAttribute("aria-hidden", "false");
     this.props.sendUserActionTelemetry({
       event: "INSTALL",
       id: this.props.UISurface,
@@ -45,14 +41,14 @@ export class ReturnToAMO extends React.PureComponent {
   onBlockButton() {
     this.props.onBlock();
     document.body.classList.remove("welcome", "hide-main", "amo");
-    // Re-enable the document for screen readers
-    this.props.document
-      .getElementById("root")
-      .setAttribute("aria-hidden", "false");
     this.props.sendUserActionTelemetry({
       event: "BLOCK",
       id: this.props.UISurface,
     });
+    // Re-enable the document for screen readers
+    this.props.document
+      .getElementById("root")
+      .setAttribute("aria-hidden", "false");
   }
 
   renderText() {
