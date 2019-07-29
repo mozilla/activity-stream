@@ -81,18 +81,19 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return impressionId;
   }
 
-  async kvstoreGet(...args) {
+  async kvstoreGet(key) {
     const kvstore = await this._kvstore;
-    return kvstore.get(...args);
+    const result = await kvstore.get(key);
+    return JSON.parse(result);
   }
-  async kvstoreSet(...args) {
+  async kvstoreSet(key, value) {
     const kvstore = await this._kvstore;
-    console.log(kvstore);
-    return kvstore.put(...args);
+    const data = JSON.stringify(value);
+    return kvstore.put(key, data);
   }
-  async kvstoreClear(...args) {
+  async kvstoreClear() {
     const kvstore = await this._kvstore;
-    return kvstore.clear(...args);
+    return kvstore.clear();
   }
 
   /**
@@ -299,6 +300,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async fetchLayout(isStartup) {
     let layout = await this.kvstoreGet("layout") || {};
+    const cacheAgeData = await this.kvstoreGet("cacheAge") || {};
     if (this.isExpired({data: {layout: layout}, key: "layout", isStartup})) {
       const start = perfService.absNow();
       const layoutResponse = await this.fetchFromEndpoint(
@@ -314,6 +316,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         };
 
         await this.kvstoreSet("layout", layout);
+        await this.kvstoreSet("cacheAge", {
+          ...cacheAgeData,
+          "layout": layout.lastUpdated,
+        });
       } else {
         Cu.reportError("No response for response.layout prop");
       }
@@ -352,7 +358,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    *                     the scope for isStartup and the promises object.
    *                     Combines feed results and promises for each component with a feed.
    */
-  buildFeedPromise({ newFeedsPromises, newFeeds }, isStartup, sendUpdate) {
+  buildFeedPromise({ newFeedsPromises, newFeeds, cacheAge }, isStartup, sendUpdate) {
     return component => {
       const { url } = component.feed;
 
@@ -360,11 +366,15 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // We initially stub this out so we don't fetch dupes,
         // we then fill in with the proper object inside the promise.
         newFeeds[url] = {};
+        cacheAge[url] = {};
         const feedPromise = this.getComponentFeed(url, isStartup);
 
         feedPromise
           .then(feed => {
             newFeeds[url] = this.filterRecommendations(feed);
+            cacheAge[url] = {
+              lastUpdated: newFeeds[url].lastUpdated,
+            };
             sendUpdate({
               type: at.DISCOVERY_STREAM_FEED_UPDATE,
               data: {
@@ -444,6 +454,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const initialData = {
       newFeedsPromises: [],
       newFeeds: {},
+      cacheAge: {},
     };
     return layout
       .filter(row => row && row.components)
@@ -452,6 +463,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async loadComponentFeeds(sendUpdate, isStartup) {
     const { DiscoveryStream } = this.store.getState();
+    const cacheAgeData = await this.kvstoreGet("cacheAge") || {};
 
     if (!DiscoveryStream || !DiscoveryStream.layout) {
       return;
@@ -461,7 +473,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     // was issued to fetch the component feed in `getComponentFeed()`.
     this.componentFeedFetched = false;
     const start = perfService.absNow();
-    const { newFeedsPromises, newFeeds } = this.buildFeedPromises(
+    const { newFeedsPromises, newFeeds, cacheAge } = this.buildFeedPromises(
       DiscoveryStream.layout,
       isStartup,
       sendUpdate
@@ -475,6 +487,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       this.componentFeedRequestTime = Math.round(perfService.absNow() - start);
     }
     await this.kvstoreSet("feeds", newFeeds);
+    await this.kvstoreSet("cacheAge", {
+      ...cacheAgeData,
+      "feeds": cacheAge,
+    });
     sendUpdate({
       type: at.DISCOVERY_STREAM_FEEDS_UPDATE,
     });
@@ -482,6 +498,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async loadSpocs(sendUpdate, isStartup) {
     let spocs = await this.kvstoreGet("spocs") || {};
+    const cacheAgeData = await this.kvstoreGet("cacheAge") || {};
 
     if (this.showSpocs) {
       if (this.isExpired({data: {spocs: spocs}, key: "spocs", isStartup})) {
@@ -513,6 +530,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
           this.cleanUpCampaignImpressionPref(spocs.data);
           await this.kvstoreSet("spocs", spocs);
+          await this.kvstoreSet("cacheAge", {
+            ...cacheAgeData,
+            "spocs": spocs.lastUpdated,
+          });
         } else {
           Cu.reportError("No response for spocs_endpoint prop");
         }
@@ -908,9 +929,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * Reports the cache age in second for Discovery Stream.
    */
   async reportCacheAge() {
-    const layout = await this.kvstoreGet("layout") || {};
-    const spocs = await this.kvstoreGet("spocs") || {};
-    const feeds = await this.kvstoreGet("feeds") || {};
+    const cacheAgeData = await this.kvstoreGet("cacheAge") || {};
+    const { layout, spocs, feeds } = cacheAgeData;
     let cacheAge = Date.now();
     let updated = false;
 
