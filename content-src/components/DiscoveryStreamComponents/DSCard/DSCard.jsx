@@ -10,6 +10,54 @@ import React from "react";
 import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 import { DSContextFooter } from "../DSContextFooter/DSContextFooter.jsx";
 
+const DefaultMeta = ({
+  source,
+  title,
+  excerpt,
+  context,
+  context_type,
+  cta,
+}) => (
+  <div className="meta">
+    <div className="info-wrap">
+      <p className="source clamp">{source}</p>
+      <header className="title clamp">{title}</header>
+      {excerpt && <p className="excerpt clamp">{excerpt}</p>}
+      {cta && (
+        <div role="link" className="cta-link icon icon-arrow" tabIndex="0">
+          {cta}
+        </div>
+      )}
+    </div>
+    <DSContextFooter context_type={context_type} context={context} />
+  </div>
+);
+
+const VariantMeta = ({
+  source,
+  title,
+  excerpt,
+  context,
+  context_type,
+  cta,
+  sponsor,
+}) => (
+  <div className="meta">
+    <div className="info-wrap">
+      <p className="source clamp">
+        {sponsor ? sponsor : source}
+        {context && <span className="spoc-label">&#8226; Sponsored</span>}
+      </p>
+      <header className="title clamp">{title}</header>
+      {excerpt && <p className="excerpt clamp">{excerpt}</p>}
+    </div>
+    {cta && <button className="button cta-button">{cta}</button>}
+    {!context && (
+      <DSContextFooter context_type={context_type} context={context} />
+    )}
+  </div>
+);
+
 export class DSCard extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -61,19 +109,27 @@ export class DSCard extends React.PureComponent {
               rawSource={this.props.raw_image_src}
             />
           </div>
-          <div className="meta">
-            <div className="info-wrap">
-              <p className="source clamp">{this.props.source}</p>
-              <header className="title clamp">{this.props.title}</header>
-              {this.props.excerpt && (
-                <p className="excerpt clamp">{this.props.excerpt}</p>
-              )}
-            </div>
-            <DSContextFooter
-              context_type={this.props.context_type}
+          {this.props.cta_variant && (
+            <VariantMeta
+              source={this.props.source}
+              title={this.props.title}
+              excerpt={this.props.excerpt}
               context={this.props.context}
+              context_type={this.props.context_type}
+              cta={this.props.cta}
+              sponsor={this.props.sponsor}
             />
-          </div>
+          )}
+          {!this.props.cta_variant && (
+            <DefaultMeta
+              source={this.props.source}
+              title={this.props.title}
+              excerpt={this.props.excerpt}
+              context={this.props.context}
+              context_type={this.props.context_type}
+              cta={this.props.cta}
+            />
+          )}
           <ImpressionStats
             campaignId={this.props.campaignId}
             rows={[
