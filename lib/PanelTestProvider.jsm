@@ -61,6 +61,22 @@ const MESSAGES = () => [
     trigger: { id: "toolbarBadgeUpdate" },
   },
   {
+    id: "WNP_PROFILE_AGE",
+    template: "toolbar_badge",
+    content: {
+      action: {
+        id: "moments-wnp",
+        data: {
+          url: "foo.com",
+          expire: 0,
+        },
+      },
+    },
+    // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
+    targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
+    trigger: { id: "toolbarBadgeUpdate" },
+  },
+  {
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
     template: "toolbar_badge",
     content: {
