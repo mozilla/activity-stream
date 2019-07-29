@@ -3,6 +3,7 @@
   border: 0;
   box-shadow: none;
   position: relative;
+  line-height: 40px;
   z-index: auto;
 
   .innerWrapper {
@@ -35,6 +36,37 @@
     }
   }
 
+  &.withButton {
+    line-height: 20px;
+    &:hover {
+      background-color: var(--newtab-element-hover-color);
+    }
+
+    .textContainer {
+      margin-top: 10px;
+    }
+
+    .title {
+      font-size: inherit;
+      margin: 0;
+    }
+
+    .title-inline {
+      display: inline;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      margin-inline-end: 12px;
+      flex-shrink: 0;
+    }
+
+    .buttonContainer {
+      margin-top: 10px;
+    }
+  }
+
   &.active {
     .innerWrapper {
       background-color: var(--newtab-element-hover-color);
@@ -43,18 +75,9 @@
 
   .blockButton {
     display: block;
-    inset-inline-end: 15px;
+    inset-inline-end: -40px;
     opacity: 1;
     top: 24px;
-  }
-
-  .title {
-    font-size: inherit;
-    margin: 0;
-  }
-
-  .title-inline {
-    display: inline;
   }
 
   .icon {

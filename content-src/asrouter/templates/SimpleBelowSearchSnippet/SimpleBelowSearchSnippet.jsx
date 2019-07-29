@@ -93,6 +93,9 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
     if (props.className) {
       className += ` ${props.className}`;
     }
+    if (this._shouldRenderButton()) {
+      className += " withButton";
+    }
 
     return (
       <SnippetBase
@@ -113,11 +116,11 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
           className="icon icon-dark-theme"
           alt={props.content.icon_alt_text || ICON_ALT_TEXT}
         />
-        <div>
+        <div className="textContainer">
           {this.renderTitle()} <p className="body">{this.renderText()}</p>
           {this.props.extraContent}
         </div>
-        {<div>{this.renderButton()}</div>}
+        {<div className="buttonContainer">{this.renderButton()}</div>}
       </SnippetBase>
     );
   }
