@@ -235,6 +235,10 @@ $item-line-height: 20;
     margin-bottom: 4px;
   }
 
+  .ds-list-item-body {
+    flex: 1;
+  }
+
   .ds-list-item-text {
     display: flex;
     flex-direction: column;
