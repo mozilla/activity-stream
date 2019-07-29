@@ -3,6 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+import { Button } from "../../components/Button/Button";
 import { RichText } from "../../components/RichText/RichText";
 import { safeURI } from "../../template-utils";
 import { SnippetBase } from "../../components/SnippetBase/SnippetBase";
@@ -12,6 +13,11 @@ const DEFAULT_ICON_PATH = "chrome://branding/content/icon64.png";
 const ICON_ALT_TEXT = "";
 
 export class SimpleBelowSearchSnippet extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onButtonClick = this.onButtonClick.bind(this);
+  }
+
   renderText() {
     const { props } = this;
     return (
@@ -22,6 +28,61 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
         links={props.content.links}
         sendClick={props.sendClick}
       />
+    );
+  }
+
+  renderTitle() {
+    const { title } = this.props.content;
+    return title ? (
+      <h3
+        className={`title ${this._shouldRenderButton() ? "title-inline" : ""}`}
+      >
+        {title}
+      </h3>
+    ) : null;
+  }
+
+  onButtonClick() {
+    if (this.props.provider !== "preview") {
+      this.props.sendUserActionTelemetry({
+        event: "CLICK_BUTTON",
+        id: this.props.UISurface,
+      });
+    }
+    const { button_url } = this.props.content;
+    // If button_url is defined handle it as OPEN_URL action
+    const type = this.props.content.button_action || (button_url && "OPEN_URL");
+    this.props.onAction({
+      type,
+      data: { args: this.props.content.button_action_args || button_url },
+    });
+    if (!this.props.content.do_not_autoblock) {
+      this.props.onBlock();
+    }
+  }
+
+  _shouldRenderButton() {
+    return (
+      this.props.content.button_action ||
+      this.props.onButtonClick ||
+      this.props.content.button_url
+    );
+  }
+
+  renderButton() {
+    const { props } = this;
+    if (!this._shouldRenderButton()) {
+      return null;
+    }
+
+    return (
+      <Button
+        onClick={props.onButtonClick || this.onButtonClick}
+        color={props.content.button_color}
+        backgroundColor={props.content.button_background_color}
+      >
+        {props.content.button_label}
+      </Button>
     );
   }
 
@@ -53,9 +114,10 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
           alt={props.content.icon_alt_text || ICON_ALT_TEXT}
         />
         <div>
-          <p className="body">{this.renderText()}</p>
+          {this.renderTitle()} <p className="body">{this.renderText()}</p>
           {this.props.extraContent}
         </div>
+        {<div>{this.renderButton()}</div>}
       </SnippetBase>
     );
   }

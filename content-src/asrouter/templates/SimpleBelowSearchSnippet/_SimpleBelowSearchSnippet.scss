@@ -48,6 +48,15 @@
     top: 24px;
   }
 
+  .title {
+    font-size: inherit;
+    margin: 0;
+  }
+
+  .title-inline {
+    display: inline;
+  }
+
   .icon {
     height: 32px;
     margin-inline-start: 12px;
@@ -70,6 +79,7 @@
   }
 
   .body {
+    display: inline;
     margin: 8px 0 0;
 
     @media (min-width: $break-point-medium) {
