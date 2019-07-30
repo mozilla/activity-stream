@@ -51,7 +51,6 @@ ChromeUtils.defineModuleGetter(
 
 // Frequency at which to check for new messages
 const SYSTEM_TICK_INTERVAL = 5 * 60 * 1000;
-const HOMEPAGE_OVERRIDE_PREF = "browser.startup.homepage_override.once";
 const notificationsByWindow = new WeakMap();
 
 class _ToolbarBadgeHub {
@@ -61,6 +60,7 @@ class _ToolbarBadgeHub {
     this.state = null;
     this.prefs = {
       WHATSNEW_TOOLBAR_PANEL: "browser.messaging-system.whatsNewPanel.enabled",
+      HOMEPAGE_OVERRIDE_PREF: "browser.startup.homepage_override.once",
     };
     this.removeAllNotifications = this.removeAllNotifications.bind(this);
     this.removeToolbarNotification = this.removeToolbarNotification.bind(this);
@@ -68,6 +68,7 @@ class _ToolbarBadgeHub {
     this.registerBadgeToAllWindows = this.registerBadgeToAllWindows.bind(this);
     this._sendTelemetry = this._sendTelemetry.bind(this);
     this.sendUserEventTelemetry = this.sendUserEventTelemetry.bind(this);
+    this.checkHomepageOverridePref = this.checkHomepageOverridePref.bind(this);
 
     this._handleMessageRequest = null;
     this._addImpression = null;
@@ -77,10 +78,17 @@ class _ToolbarBadgeHub {
 
   async init(
     waitForInitialized,
-    { handleMessageRequest, addImpression, blockMessageById, dispatch }
+    {
+      handleMessageRequest,
+      addImpression,
+      blockMessageById,
+      unblockMessageById,
+      dispatch,
+    }
   ) {
     this._handleMessageRequest = handleMessageRequest;
     this._blockMessageById = blockMessageById;
+    this._unblockMessageBy = unblockMessageById;
     this._addImpression = addImpression;
     this._dispatch = dispatch;
     // Need to wait for ASRouter to initialize before trying to fetch messages
@@ -89,10 +97,37 @@ class _ToolbarBadgeHub {
     // Listen for pref changes that could trigger new badges
     Services.prefs.addObserver(this.prefs.WHATSNEW_TOOLBAR_PANEL, this);
     const _intervalId = setInterval(
-      () => this.messageRequest("toolbarBadgeUpdate"),
+      () => this.checkHomepageOverridePref(),
       SYSTEM_TICK_INTERVAL
     );
     this.state = { _intervalId };
+  }
+
+  /**
+   * Pref is set via Remote Settings message. We want to continously
+   * monitor new messages that come in to ensure the one with the
+   * highest priority is set.
+   */
+  checkHomepageOverridePref() {
+    const prefValue = Services.prefs.getStringPref(
+      this.prefs.HOMEPAGE_OVERRIDE_PREF,
+      ""
+    );
+    if (prefValue) {
+      // If the pref is set it means the user has not yet seen this message.
+      // We clear the pref value and re-evaluate all possible messages to ensure
+      // we don't have a higher priority message to show.
+      Services.prefs.clearUserPref(this.prefs.HOMEPAGE_OVERRIDE_PREF);
+      let message_id;
+      try {
+        message_id = JSON.parse(prefValue).message_id;
+      } catch (e) {}
+      if (message_id) {
+        this._unblockMessageById(message_id);
+      }
+    }
+
+    this.messageRequest("momentsUpdate");
   }
 
   observe(aSubject, aTopic, aPrefName) {
@@ -103,20 +138,35 @@ class _ToolbarBadgeHub {
     }
   }
 
-  executeAction({ id, data }) {
+  executeAction({ id, data, message_id }) {
     switch (id) {
       case "show-whatsnew-button":
         ToolbarPanelHub.enableToolbarButton();
         ToolbarPanelHub.enableAppmenuButton();
         break;
       case "moments-wnp":
-        const { url, expire } = data;
+        const { url, expireDelta } = data;
+        let { expire } = data;
+        if (!expire) {
+          expire = this.getExpirationDate(expireDelta);
+        }
         Services.prefs.setStringPref(
-          HOMEPAGE_OVERRIDE_PREF,
-          JSON.stringify({ url, expire })
+          this.prefs.HOMEPAGE_OVERRIDE_PREF,
+          JSON.stringify({ message_id, url, expire })
         );
         break;
     }
+  }
+
+  /**
+   * If we don't have `expire` defined with the message it could be because
+   * it depends on user dependent parameters. Since the message matched
+   * targeting we calculate `expire` based on the current timestamp and the
+   * `expireDelta` which defines for how long it should be available.
+   * @param expireDelta {number} - Offset in milliseconds from the current date
+   */
+  getExpirationDate(expireDelta) {
+    return Date.now() + expireDelta;
   }
 
   _clearBadgeTimeout() {
@@ -178,7 +228,7 @@ class _ToolbarBadgeHub {
   addToolbarNotification(win, message) {
     const document = win.browser.ownerDocument;
     if (message.content.action) {
-      this.executeAction(message.content.action);
+      this.executeAction({ ...message.content.action, message_id: message.id });
     }
     let toolbarbutton = document.getElementById(message.content.target);
     if (toolbarbutton) {

@@ -68,13 +68,13 @@ const MESSAGES = () => [
         id: "moments-wnp",
         data: {
           url: "foo.com",
-          expire: 0,
+          expire: 100,
         },
       },
     },
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
     targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
-    trigger: { id: "toolbarBadgeUpdate" },
+    trigger: { id: "momentsUpdate" },
   },
   {
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
