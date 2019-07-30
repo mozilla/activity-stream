@@ -26,7 +26,6 @@ add_task(async function test_fxa_message_shown() {
 
   const [msg] = PanelTestProvider.getMessages();
   const response = BookmarkPanelHub.onResponse(
-    msg,
     {
       container: document.getElementById("editBookmarkPanelRecommendation"),
       infoButton: document.getElementById("editBookmarkPanelInfoButton"),
@@ -36,7 +35,8 @@ add_task(async function test_fxa_message_shown() {
       url: testURL,
       document,
     },
-    window
+    window,
+    msg
   );
 
   Assert.ok(response, "We sent a valid message");

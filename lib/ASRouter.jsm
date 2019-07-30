@@ -1487,7 +1487,12 @@ class _ASRouter {
     } else {
       await this.setState({ lastMessageId: message ? message.id : null });
     }
-    await this._sendMessageToTarget(message, target, trigger);
+    await this._sendMessageToTarget(
+      message,
+      target,
+      trigger,
+      Boolean(previewMsgs.length)
+    );
   }
 
   handleMessageRequest({ triggerId, template, returnAll = false }) {
