@@ -21,7 +21,7 @@ Prerequisites
 
 You will need the following:
 
-- Node.js 8+ (On Mac, the best way to install Node.js is to use the [install link on the Node.js homepage](https://nodejs.org/en/))
+- Node.js 8+ (On Mac, the best way to install Node.js is to use the `install link on the Node.js homepage <https://nodejs.org/en/>`_).
 - npm (packaged with Node.js)
 
 To install dependencies, run the following from the root of the mozilla-central repository
