@@ -63,7 +63,7 @@ const MESSAGES = () => [
   },
   {
     id: "WNP_PROFILE_AGE",
-    template: "toolbar_badge",
+    template: "update_action",
     content: {
       action: {
         id: "moments-wnp",
@@ -74,8 +74,6 @@ const MESSAGES = () => [
         },
       },
     },
-    // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
-    targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
     trigger: { id: "momentsUpdate" },
   },
   {

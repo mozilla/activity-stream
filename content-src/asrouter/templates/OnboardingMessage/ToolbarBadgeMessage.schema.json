@@ -23,5 +23,6 @@
       "description": "Optional delay in ms after which to show the notification"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "required": ["target"]
 }

@@ -1296,6 +1296,7 @@ class _ASRouter {
         }
         break;
       case "toolbar_badge":
+      case "update_action":
         ToolbarBadgeHub.registerBadgeNotificationListener(message, { force });
         break;
       default:
