@@ -88,7 +88,7 @@ class _ToolbarBadgeHub {
   ) {
     this._handleMessageRequest = handleMessageRequest;
     this._blockMessageById = blockMessageById;
-    this._unblockMessageBy = unblockMessageById;
+    this._unblockMessageById = unblockMessageById;
     this._addImpression = addImpression;
     this._dispatch = dispatch;
     // Need to wait for ASRouter to initialize before trying to fetch messages
