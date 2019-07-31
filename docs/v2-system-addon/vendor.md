@@ -41,3 +41,4 @@
   - [ ] Add the library to the list of scripts in
         [`bin/render-activity-stream-html.js`](../../bin/render-activity-stream-html.js)
         so it gets loaded at runtime
+  - [ ] test and make sure that everything builds and works at runtime
