@@ -33,11 +33,11 @@
   - [ ] update [`bin/vendor.js`](../../bin/vendor.js) to copy any files
         needed at runtime as well as the license to the [`vendor/`
         directory](../../vendor/)
-  - [ ] execute `bin/vendor.js` to copy your files into place so they get committed
+  - [ ] execute `bin/vendor.js` to copy your files into place so they get
+        committed and referenced at runtime
   - [ ] Add the exported symbol for your library to the list of externals in
-        [`webpack.system-addon.config.js`](../../webpack.system-addon.config.js) so
-        that webpack knows where to link the symbol from
-
+        [`webpack.system-addon.config.js`](../../webpack.system-addon.config.js)
+        so that webpack knows where to link the symbol from
   - [ ] Add the library to the list of scripts in
-        [`bin/render-activity-stream-html.js`](../../bin/render-activity-stream.js)
+        [`bin/render-activity-stream-html.js`](../../bin/render-activity-stream-html.js)
         so it gets loaded at runtime
