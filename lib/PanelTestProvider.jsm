@@ -6,6 +6,7 @@
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const FIREFOX_VERSION = parseInt(Services.appinfo.version.match(/\d+/), 10);
+const TWO_DAYS = 2 * 24 * 3600 * 1000;
 
 const MESSAGES = () => [
   {
@@ -67,8 +68,9 @@ const MESSAGES = () => [
       action: {
         id: "moments-wnp",
         data: {
-          url: "foo.com",
-          expire: 100,
+          url:
+            "https://www.mozilla.org/en-US/firefox/80.0a1/whatsnew/?oldversion=50.0a2",
+          expire: Date.now() + TWO_DAYS,
         },
       },
     },

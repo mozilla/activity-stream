@@ -154,6 +154,8 @@ class _ToolbarBadgeHub {
           this.prefs.HOMEPAGE_OVERRIDE_PREF,
           JSON.stringify({ message_id, url, expire })
         );
+        // Block immediately after taking the action
+        this._blockMessageById(message_id);
         break;
     }
   }

@@ -313,6 +313,13 @@ describe("ToolbarBadgeHub", () => {
     });
   });
   describe("executeAction", () => {
+    let blockMessageByIdStub;
+    beforeEach(async () => {
+      blockMessageByIdStub = sandbox.stub();
+      await instance.init(sandbox.stub().resolves(), {
+        blockMessageById: blockMessageByIdStub,
+      });
+    });
     it("should call ToolbarPanelHub.enableToolbarButton", () => {
       const stub = sandbox.stub(
         _ToolbarPanelHub.prototype,
@@ -349,6 +356,19 @@ describe("ToolbarBadgeHub", () => {
         instance.prefs.HOMEPAGE_OVERRIDE_PREF,
         JSON.stringify({ message_id: "bar", url: "foo.com", expire: 1 })
       );
+    });
+    it("should block after taking the action", () => {
+      instance.executeAction({
+        id: "moments-wnp",
+        data: {
+          url: "foo.com",
+          expire: 1,
+        },
+        message_id: "bar",
+      });
+
+      assert.calledOnce(blockMessageByIdStub);
+      assert.calledWithExactly(blockMessageByIdStub, "bar");
     });
     it("should compute expire based on expireDelta", () => {
       sandbox.spy(instance, "getExpirationDate");
