@@ -1,10 +1,42 @@
+
+.below-search-snippet {
+  margin: 0 auto 16px;
+
+  &.withButton {
+    padding: 0 25px;
+    margin: auto;
+
+    // Add more padding if discovery stream is enabled.
+    .ds-outer-wrapper-breakpoint-override & {
+      padding: 0 50px;
+    }
+
+    .snippet-hover-wrapper {
+
+      &:hover {
+        background-color: var(--newtab-element-hover-color);
+
+        .blockButton {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
 .SimpleBelowSearchSnippet {
   background-color: inherit;
   border: 0;
   box-shadow: none;
   position: relative;
   line-height: 40px;
+  width: 736px;
+  margin: auto;
   z-index: auto;
+
+  &.active {
+    background-color: var(--newtab-element-hover-color);
+  }
 
   .innerWrapper {
     align-items: center;
@@ -22,8 +54,36 @@
       box-shadow: none;
       flex-direction: row;
       padding: 0;
-      padding-inline-end: 36px;
       text-align: inherit;
+    }
+
+    @media (min-width: $break-point-medium) {
+      @include full-width-styles;
+    }
+
+    // Disable breakpoints for now if discovery stream is enabled.
+    .ds-outer-wrapper-breakpoint-override & {
+      @include full-width-styles;
+    }
+  }
+
+  .blockButton {
+    display: block;
+    inset-inline-end: 20px;
+    opacity: 1;
+    top: 24px;
+  }
+
+  .icon {
+    height: 32px;
+    margin-inline-start: 12px;
+    margin-top: 15px;
+    width: 32px;
+
+    @mixin full-width-styles {
+      height: 24px;
+      margin-top: 10px;
+      width: 24px;
     }
 
     @media (min-width: $break-point-medium) {
@@ -38,12 +98,17 @@
 
   &.withButton {
     line-height: 20px;
-    &:hover {
-      background-color: var(--newtab-element-hover-color);
+    margin-bottom: 10px;
+
+    .blockButton {
+      display: none;
+      inset-inline-end: -80px;
+      opacity: 1;
+      margin: auto;
     }
 
     .textContainer {
-      margin-top: 10px;
+      margin: 10px;
     }
 
     .title {
@@ -63,41 +128,7 @@
     }
 
     .buttonContainer {
-      margin-top: 10px;
-    }
-  }
-
-  &.active {
-    .innerWrapper {
-      background-color: var(--newtab-element-hover-color);
-    }
-  }
-
-  .blockButton {
-    display: block;
-    inset-inline-end: -40px;
-    opacity: 1;
-    top: 24px;
-  }
-
-  .icon {
-    height: 32px;
-    margin-inline-start: 12px;
-    width: 32px;
-
-    @mixin full-width-styles {
-      height: 24px;
-      margin-top: 10px;
-      width: 24px;
-    }
-
-    @media (min-width: $break-point-medium) {
-      @include full-width-styles;
-    }
-
-    // Disable breakpoints for now if discovery stream is enabled.
-    .ds-outer-wrapper-breakpoint-override & {
-      @include full-width-styles;
+      margin: auto;
     }
   }
 

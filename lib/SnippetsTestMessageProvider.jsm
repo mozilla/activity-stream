@@ -395,8 +395,6 @@ const MESSAGES = () => [
     content: {
       icon: TEST_ICON,
       icon_dark_theme: TEST_ICON_BW,
-      button_color: "#0C0C0D",
-      button_background_color: "#0C0C0D1a",
       button_label: "Find Out Now",
       button_url: "https://www.mozilla.org/en-US/firefox/accounts",
       title: "See if you've been part of an online data breach.",

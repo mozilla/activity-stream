@@ -89,39 +89,45 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
   render() {
     const { props } = this;
     let className = "SimpleBelowSearchSnippet";
+    let containerName = "below-search-snippet";
 
     if (props.className) {
       className += ` ${props.className}`;
     }
     if (this._shouldRenderButton()) {
       className += " withButton";
+      containerName += " withButton";
     }
 
     return (
-      <SnippetBase
-        {...props}
-        className={className}
-        textStyle={this.props.textStyle}
-      >
-        <img
-          src={safeURI(props.content.icon) || DEFAULT_ICON_PATH}
-          className="icon icon-light-theme"
-          alt={props.content.icon_alt_text || ICON_ALT_TEXT}
-        />
-        <img
-          src={
-            safeURI(props.content.icon_dark_theme || props.content.icon) ||
-            DEFAULT_ICON_PATH
-          }
-          className="icon icon-dark-theme"
-          alt={props.content.icon_alt_text || ICON_ALT_TEXT}
-        />
-        <div className="textContainer">
-          {this.renderTitle()} <p className="body">{this.renderText()}</p>
-          {this.props.extraContent}
+      <div className={containerName}>
+        <div className="snippet-hover-wrapper">
+          <SnippetBase
+            {...props}
+            className={className}
+            textStyle={this.props.textStyle}
+          >
+            <img
+              src={safeURI(props.content.icon) || DEFAULT_ICON_PATH}
+              className="icon icon-light-theme"
+              alt={props.content.icon_alt_text || ICON_ALT_TEXT}
+            />
+            <img
+              src={
+                safeURI(props.content.icon_dark_theme || props.content.icon) ||
+                DEFAULT_ICON_PATH
+              }
+              className="icon icon-dark-theme"
+              alt={props.content.icon_alt_text || ICON_ALT_TEXT}
+            />
+            <div className="textContainer">
+              {this.renderTitle()} <p className="body">{this.renderText()}</p>
+              {this.props.extraContent}
+            </div>
+            {<div className="buttonContainer">{this.renderButton()}</div>}
+          </SnippetBase>
         </div>
-        {<div className="buttonContainer">{this.renderButton()}</div>}
-      </SnippetBase>
+      </div>
     );
   }
 }
