@@ -38,7 +38,7 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
     ) : null;
   }
 
-  onButtonClick() {
+  async onButtonClick() {
     if (this.props.provider !== "preview") {
       this.props.sendUserActionTelemetry({
         event: "CLICK_BUTTON",
@@ -48,7 +48,7 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
     const { button_url } = this.props.content;
     // If button_url is defined handle it as OPEN_URL action
     const type = this.props.content.button_action || (button_url && "OPEN_URL");
-    this.props.onAction({
+    await this.props.onAction({
       type,
       data: { args: this.props.content.button_action_args || button_url },
     });
