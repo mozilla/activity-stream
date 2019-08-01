@@ -91,6 +91,7 @@ const MESSAGES = () => [
       title: "Protection Is Our Focus",
       icon_url:
         "resource://activity-stream/data/content/assets/whatsnew-send-icon.png",
+      icon_alt: "Firefox Send Logo",
       body:
         "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
       cta_url: "https://blog.mozilla.org/",
