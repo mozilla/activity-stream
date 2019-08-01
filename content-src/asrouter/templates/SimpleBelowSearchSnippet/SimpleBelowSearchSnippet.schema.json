@@ -1,9 +1,13 @@
 {
   "title": "SimpleBelowSearchSnippet",
-  "description": "A simple template with just an icon and rich text. It gets inserted below the Activity Stream search box.",
+  "description": "A simple template with an icon, rich text and an optional button. It gets inserted below the Activity Stream search box.",
   "version": "1.2.0",
   "type": "object",
   "definitions": {
+    "plainText": {
+      "description": "Plain text (no HTML allowed)",
+      "type": "string"
+    },
     "richText": {
       "description": "Text with HTML subset allowed: i, b, u, strong, em, br",
       "type": "string"
@@ -98,5 +102,10 @@
   },
   "additionalProperties": false,
   "required": ["text"],
-  "dependencies": {}
+  "dependencies": {
+    "button_action": ["button_label"],
+    "button_url": ["button_label"],
+    "button_color": ["button_label"],
+    "button_background_color": ["button_label"]
+  }
 }
