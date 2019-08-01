@@ -62,7 +62,7 @@ const MESSAGES = () => [
     trigger: { id: "toolbarBadgeUpdate" },
   },
   {
-    id: "WNP_PROFILE_AGE",
+    id: "WNP_THANK_YOU",
     template: "update_action",
     content: {
       action: {
