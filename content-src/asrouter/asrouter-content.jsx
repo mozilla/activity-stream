@@ -393,7 +393,9 @@ export class ASRouterUISurface extends React.PureComponent {
 
     return shouldRenderBelowSearch ? (
       // Render special below search snippets in place;
-      <div className="below-search-snippet">{this.renderSnippets()}</div>
+      <div className="below-search-snippet-wrapper">
+        {this.renderSnippets()}
+      </div>
     ) : (
       // For onboarding, regular snippets etc. we should render
       // everything in our footer container.
