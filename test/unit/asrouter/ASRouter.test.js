@@ -204,6 +204,7 @@ describe("ASRouter", () => {
           addImpression: Router.addImpression,
           blockMessageById: Router.blockMessageById,
           dispatch: Router.dispatch,
+          unblockMessageById: Router.unblockMessageById,
         }
       );
 
