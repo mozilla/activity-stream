@@ -69,8 +69,8 @@ const MESSAGES = () => [
         id: "moments-wnp",
         data: {
           url:
-            "https://www.mozilla.org/en-US/firefox/80.0a1/whatsnew/?oldversion=50.0a2",
-          expire: Date.now() + TWO_DAYS,
+            "https://www.mozilla.org/%LOCALE%/etc/firefox/retention/thank-you-a/",
+          expireDelta: TWO_DAYS,
         },
       },
     },
