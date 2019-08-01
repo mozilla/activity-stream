@@ -727,6 +727,7 @@ class _ASRouter {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
+      unblockMessageById: this.unblockMessageById,
       dispatch: this.dispatch,
     });
 
@@ -1267,6 +1268,7 @@ class _ASRouter {
         }
         break;
       case "toolbar_badge":
+      case "update_action":
         ToolbarBadgeHub.registerBadgeNotificationListener(message, { force });
         break;
       default:
@@ -1504,6 +1506,17 @@ class _ASRouter {
       this._storage.set("messageBlockList", messageBlockList);
       this._storage.set("messageImpressions", messageImpressions);
       return { messageBlockList, messageImpressions };
+    });
+  }
+
+  unblockMessageById(id) {
+    return this.setState(state => {
+      const messageBlockList = [...state.messageBlockList];
+      const message = state.messages.find(m => m.id === id);
+      const idToUnblock = message && message.campaign ? message.campaign : id;
+      messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
+      this._storage.set("messageBlockList", messageBlockList);
+      return { messageBlockList };
     });
   }
 
@@ -1820,15 +1833,7 @@ class _ASRouter {
         });
         break;
       case "UNBLOCK_MESSAGE_BY_ID":
-        await this.setState(state => {
-          const messageBlockList = [...state.messageBlockList];
-          const message = state.messages.find(m => m.id === action.data.id);
-          const idToUnblock =
-            message && message.campaign ? message.campaign : action.data.id;
-          messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
-          this._storage.set("messageBlockList", messageBlockList);
-          return { messageBlockList };
-        });
+        this.unblockMessageById(action.data.id);
         break;
       case "UNBLOCK_PROVIDER_BY_ID":
         await this.setState(state => {

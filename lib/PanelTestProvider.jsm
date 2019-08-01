@@ -6,6 +6,7 @@
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const FIREFOX_VERSION = parseInt(Services.appinfo.version.match(/\d+/), 10);
+const TWO_DAYS = 2 * 24 * 3600 * 1000;
 
 const MESSAGES = () => [
   {
@@ -59,6 +60,21 @@ const MESSAGES = () => [
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
     targeting: `!hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
     trigger: { id: "toolbarBadgeUpdate" },
+  },
+  {
+    id: "WNP_THANK_YOU",
+    template: "update_action",
+    content: {
+      action: {
+        id: "moments-wnp",
+        data: {
+          url:
+            "https://www.mozilla.org/%LOCALE%/etc/firefox/retention/thank-you-a/",
+          expireDelta: TWO_DAYS,
+        },
+      },
+    },
+    trigger: { id: "momentsUpdate" },
   },
   {
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
