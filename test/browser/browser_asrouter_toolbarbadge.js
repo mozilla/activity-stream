@@ -25,12 +25,16 @@ add_task(async function test_fxa_badge_shown_nodelay() {
   msg.content.delay = undefined;
 
   let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+  // Click the button and clear the badge that occurs normally at startup
+  let fxaButton = browserWindow.document.getElementById(msg.content.target);
+  fxaButton.click();
 
-  Assert.ok(
-    !browserWindow.document
-      .getElementById(msg.content.target)
-      .querySelector(".toolbarbutton-badge")
-      .classList.contains("feature-callout"),
+  await BrowserTestUtils.waitForCondition(
+    () =>
+      !browserWindow.document
+        .getElementById(msg.content.target)
+        .querySelector(".toolbarbutton-badge")
+        .classList.contains("feature-callout"),
     "Initially element is not badged"
   );
 
@@ -61,7 +65,7 @@ add_task(async function test_fxa_badge_shown_nodelay() {
   browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
 
   // Click the button and clear the badge
-  let fxaButton = document.getElementById(msg.content.target);
+  fxaButton = document.getElementById(msg.content.target);
   fxaButton.click();
 
   await BrowserTestUtils.waitForCondition(
@@ -85,12 +89,16 @@ add_task(async function test_fxa_badge_shown_withdelay() {
   msg.content.delay = 1;
 
   let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+  // Click the button and clear the badge that occurs normally at startup
+  let fxaButton = browserWindow.document.getElementById(msg.content.target);
+  fxaButton.click();
 
-  Assert.ok(
-    !browserWindow.document
-      .getElementById(msg.content.target)
-      .querySelector(".toolbarbutton-badge")
-      .classList.contains("feature-callout"),
+  await BrowserTestUtils.waitForCondition(
+    () =>
+      !browserWindow.document
+        .getElementById(msg.content.target)
+        .querySelector(".toolbarbutton-badge")
+        .classList.contains("feature-callout"),
     "Initially element is not badged"
   );
 
@@ -121,7 +129,7 @@ add_task(async function test_fxa_badge_shown_withdelay() {
   browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
 
   // Click the button and clear the badge
-  let fxaButton = document.getElementById(msg.content.target);
+  fxaButton = document.getElementById(msg.content.target);
   fxaButton.click();
 
   await BrowserTestUtils.waitForCondition(
