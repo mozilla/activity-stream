@@ -33,9 +33,11 @@ function relativeTime(timestamp) {
   return new Date(timestamp).toLocaleString();
 }
 
+
+//https://spocs-staging.web.readitlater.com/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=staging_spocs
 const LAYOUT_VARIANTS = {
   basic: "Basic default layout (on by default in nightly)",
-  spocs: "A layout with all spocs shown",
+  staging_spocs: "A layout with all spocs shown",
   "dev-test-all":
     "A little bit of everything. Good layout for testing all components",
   "dev-test-feeds": "Stress testing for slow feeds",
