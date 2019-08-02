@@ -247,6 +247,7 @@ describe("ToolbarBadgeHub", () => {
     });
   });
   describe("registerBadgeNotificationListener", () => {
+    let msg_no_delay;
     beforeEach(async () => {
       await instance.init(sandbox.stub().resolves(), {
         addImpression: fakeAddImpression,
@@ -254,18 +255,25 @@ describe("ToolbarBadgeHub", () => {
       });
       sandbox.stub(instance, "addToolbarNotification").returns(fakeElement);
       sandbox.stub(instance, "removeToolbarNotification");
+      msg_no_delay = {
+        ...fxaMessage,
+        content: {
+          ...fxaMessage.content,
+          delay: 0,
+        },
+      };
     });
     afterEach(() => {
       instance.uninit();
     });
     it("should add an impression for the message", () => {
-      instance.registerBadgeNotificationListener(fxaMessage);
+      instance.registerBadgeNotificationListener(msg_no_delay);
 
       assert.calledOnce(instance._addImpression);
-      assert.calledWithExactly(instance._addImpression, fxaMessage);
+      assert.calledWithExactly(instance._addImpression, msg_no_delay);
     });
     it("should register a callback that adds/removes the notification", () => {
-      instance.registerBadgeNotificationListener(fxaMessage);
+      instance.registerBadgeNotificationListener(msg_no_delay);
 
       assert.calledOnce(everyWindowStub.registerCallback);
       assert.calledWithExactly(
@@ -289,7 +297,7 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         instance.addToolbarNotification,
         window,
-        fxaMessage
+        msg_no_delay
       );
 
       uninitFn(window);
@@ -300,17 +308,17 @@ describe("ToolbarBadgeHub", () => {
     it("should send an impression", async () => {
       sandbox.stub(instance, "sendUserEventTelemetry");
 
-      instance.registerBadgeNotificationListener(fxaMessage);
+      instance.registerBadgeNotificationListener(msg_no_delay);
 
       assert.calledOnce(instance.sendUserEventTelemetry);
       assert.calledWithExactly(
         instance.sendUserEventTelemetry,
         "IMPRESSION",
-        fxaMessage
+        msg_no_delay
       );
     });
     it("should unregister notifications when forcing a badge via devtools", () => {
-      instance.registerBadgeNotificationListener(fxaMessage, { force: true });
+      instance.registerBadgeNotificationListener(msg_no_delay, { force: true });
 
       assert.calledOnce(everyWindowStub.unregisterCallback);
       assert.calledWithExactly(everyWindowStub.unregisterCallback, instance.id);
