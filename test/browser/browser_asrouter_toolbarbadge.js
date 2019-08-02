@@ -1,5 +1,5 @@
-const { PanelTestProvider } = ChromeUtils.import(
-  "resource://activity-stream/lib/PanelTestProvider.jsm"
+const { OnboardingMessageProvider } = ChromeUtils.import(
+  "resource://activity-stream/lib/OnboardingMessageProvider.jsm"
 );
 const { ToolbarBadgeHub } = ChromeUtils.import(
   "resource://activity-stream/lib/ToolbarBadgeHub.jsm"
@@ -15,7 +15,7 @@ add_task(async function test_setup() {
 });
 
 add_task(async function test_fxa_badge_shown_nodelay() {
-  const [msg] = (await PanelTestProvider.getMessages()).filter(
+  const [msg] = (await OnboardingMessageProvider.getMessages()).filter(
     ({ id }) => id === "FXA_ACCOUNTS_BADGE"
   );
 
@@ -75,7 +75,7 @@ add_task(async function test_fxa_badge_shown_nodelay() {
 });
 
 add_task(async function test_fxa_badge_shown_withdelay() {
-  const [msg] = (await PanelTestProvider.getMessages()).filter(
+  const [msg] = (await OnboardingMessageProvider.getMessages()).filter(
     ({ id }) => id === "FXA_ACCOUNTS_BADGE"
   );
 
