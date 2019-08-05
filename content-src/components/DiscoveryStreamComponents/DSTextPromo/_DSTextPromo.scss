@@ -14,10 +14,18 @@
   }
 
   header {
+    @include dark-theme-only {
+      color: $grey-10;
+    }
+
     font-size: 15px;
   }
 
   .subtitle {
+    @include dark-theme-only {
+      color: $grey-40;
+    }
+
     font-size: 13px;
     margin: 0;
     color: $grey-50;
