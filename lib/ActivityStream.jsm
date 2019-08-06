@@ -104,9 +104,6 @@ const DEFAULT_SITES = new Map([
 ]);
 const GEO_PREF = "browser.search.region";
 const SPOCS_GEOS = ["US"];
-const IS_NIGHTLY_OR_UNBRANDED_BUILD = ["nightly", "default"].includes(
-  UpdateUtils.getUpdateChannel(true)
-);
 
 // Determine if spocs should be shown for a geo/locale
 function showSpocs({ geo }) {
@@ -445,19 +442,15 @@ const PREFS_CONFIG = new Map([
     {
       title: "Configuration for the new pocket new tab",
       getValue: ({ geo, locale }) => {
-        // XXX hardcoded_layout only works for en-*, so fix before adding locales
-        const locales = {
-          US: ["en-CA", "en-GB", "en-US", "en-ZA"],
-          CA: ["en-CA", "en-GB", "en-US", "en-ZA"],
-        }[geo];
+        // PLEASE NOTE:
+        // hardcoded_layout in `lib/DiscoveryStreamFeed.jsm` only works for en-* and requires refactoring for non english locales
+        const dsEnablementMatrix = {
+          US: ["en-CA", "en-GB", "en-US"],
+          CA: ["en-CA", "en-GB", "en-US"],
+        };
 
-        // Enable for US/en-US in all channels.
-        // Enable for specific geos and locales for Nightly.
-        const isEnabled =
-          (geo === `US` && locale === `en-US`) ||
-          (IS_NIGHTLY_OR_UNBRANDED_BUILD &&
-            locales &&
-            locales.includes(locale));
+        // Verify that the current geo & locale combination is enabled
+        const isEnabled = !!dsEnablementMatrix[geo] && dsEnablementMatrix[geo].includes(locale);
 
         return JSON.stringify({
           api_key_pref: "extensions.pocket.oAuthConsumerKey",
