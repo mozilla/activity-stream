@@ -6,6 +6,9 @@ import { cardContextTypes } from "../../Card/types.js";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import React from "react";
 
+// Animation time is mirrored in DSContextFooter.scss
+const ANIMATION_DURATION = 3000;
+
 const StatusMessage = ({ icon, fluentID }) => (
   <div className="status-message">
     <span
@@ -28,7 +31,7 @@ export class DSContextFooter extends React.PureComponent {
           {!context && context_type && (
             <CSSTransition
               key={fluentID}
-              timeout={3000}
+              timeout={ANIMATION_DURATION}
               classNames="story-animate"
             >
               <StatusMessage icon={icon} fluentID={fluentID} />
