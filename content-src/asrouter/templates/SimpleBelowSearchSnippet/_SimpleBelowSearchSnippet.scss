@@ -5,6 +5,7 @@
   &.withButton {
     padding: 0 25px;
     margin: auto;
+    background-color: transparent;
 
     // Add more padding if discovery stream is enabled.
     .ds-outer-wrapper-breakpoint-override & {
@@ -99,6 +100,7 @@
   &.withButton {
     line-height: 20px;
     margin-bottom: 10px;
+    background-color: transparent;
 
     .blockButton {
       display: none;
