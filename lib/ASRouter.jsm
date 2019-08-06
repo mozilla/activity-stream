@@ -1465,7 +1465,7 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
-  handleMessageRequest({ triggerId, template }) {
+  handleMessageRequest({ triggerId, triggerParam, template }) {
     const msgs = this._getUnblockedMessages().filter(m => {
       if (template && m.template !== template) {
         return false;
@@ -1476,7 +1476,11 @@ class _ASRouter {
 
       return true;
     });
-    return this._findMessage(msgs, { id: triggerId });
+
+    return this._findMessage(
+      msgs,
+      triggerId && { id: triggerId, param: triggerParam }
+    );
   }
 
   async setMessageById(id, target, force = true, action = {}) {

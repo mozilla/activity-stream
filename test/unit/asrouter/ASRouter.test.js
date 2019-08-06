@@ -915,6 +915,30 @@ describe("ASRouter", () => {
       assert.calledOnce(targetStub.sendAsyncMessage);
       assert.equal(Router.state.lastMessageId, null);
     });
+    it("should forward trigger param info", async () => {
+      const trigger = { triggerId: "foo", triggerParam: "bar" };
+      const message1 = {
+        id: "1",
+        campaign: "foocampaign",
+        trigger: { id: "foo" },
+      };
+      const message2 = {
+        id: "2",
+        campaign: "foocampaign",
+        trigger: { id: "bar" },
+      };
+      await Router.setState({ messages: [message2, message1] });
+      // Just return the first message provided as arg
+      const stub = sandbox.stub(Router, "_findMessage");
+
+      Router.handleMessageRequest(trigger);
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, sinon.match.array, {
+        id: trigger.triggerId,
+        param: trigger.triggerParam,
+      });
+    });
   });
 
   describe("#uninit", () => {
