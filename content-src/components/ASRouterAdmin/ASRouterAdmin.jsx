@@ -33,8 +33,6 @@ function relativeTime(timestamp) {
   return new Date(timestamp).toLocaleString();
 }
 
-
-//https://spocs-staging.web.readitlater.com/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=staging_spocs
 const LAYOUT_VARIANTS = {
   basic: "Basic default layout (on by default in nightly)",
   staging_spocs: "A layout with all spocs shown",
