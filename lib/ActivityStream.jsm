@@ -10,11 +10,6 @@ ChromeUtils.defineModuleGetter(
   "AppConstants",
   "resource://gre/modules/AppConstants.jsm"
 );
-ChromeUtils.defineModuleGetter(
-  this,
-  "UpdateUtils",
-  "resource://gre/modules/UpdateUtils.jsm"
-);
 
 // NB: Eagerly load modules that will be loaded/constructed/initialized in the
 // common case to avoid the overhead of wrapping and detecting lazy loading.
@@ -450,7 +445,8 @@ const PREFS_CONFIG = new Map([
         };
 
         // Verify that the current geo & locale combination is enabled
-        const isEnabled = !!dsEnablementMatrix[geo] && dsEnablementMatrix[geo].includes(locale);
+        const isEnabled =
+          !!dsEnablementMatrix[geo] && dsEnablementMatrix[geo].includes(locale);
 
         return JSON.stringify({
           api_key_pref: "extensions.pocket.oAuthConsumerKey",
