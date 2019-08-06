@@ -494,6 +494,7 @@ class _ASRouter {
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
     this.blockMessageById = this.blockMessageById.bind(this);
+    this.unblockMessageById = this.unblockMessageById.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.handleMessageRequest = this.handleMessageRequest.bind(this);
     this.addImpression = this.addImpression.bind(this);
@@ -728,6 +729,7 @@ class _ASRouter {
       handleMessageRequest: this.handleMessageRequest,
       addImpression: this.addImpression,
       blockMessageById: this.blockMessageById,
+      unblockMessageById: this.unblockMessageById,
       dispatch: this.dispatch,
     });
     ToolbarPanelHub.init(this.waitForInitialized, {
@@ -737,8 +739,8 @@ class _ASRouter {
 
     this._loadLocalProviders();
 
-    // We need to check whether to set up telemetry for trailhead
-    await this.setupTrailhead();
+    // Instead of setupTrailhead, which adds experiments, just load override pref values
+    await this.setFirstRunStateFromPref();
 
     const messageBlockList =
       (await this._storage.get("messageBlockList")) || [];
@@ -888,6 +890,25 @@ class _ASRouter {
     } catch (e) {
       return false;
     }
+  }
+
+  async setFirstRunStateFromPref() {
+    let interrupt;
+    let triplet;
+
+    const overrideValue = Services.prefs.getStringPref(
+      TRAILHEAD_CONFIG.OVERRIDE_PREF,
+      ""
+    );
+
+    if (overrideValue) {
+      [interrupt, triplet] = overrideValue.split("-");
+    }
+
+    await this.setState({
+      trailheadInterrupt: interrupt,
+      trailheadTriplet: triplet,
+    });
   }
 
   /**
@@ -1295,6 +1316,7 @@ class _ASRouter {
         }
         break;
       case "toolbar_badge":
+      case "update_action":
         ToolbarBadgeHub.registerBadgeNotificationListener(message, { force });
         break;
       default:
@@ -1465,33 +1487,17 @@ class _ASRouter {
     return impressions;
   }
 
-  async sendNextMessage(target, trigger) {
-    const msgs = this._getUnblockedMessages();
-    let message = null;
-    const previewMsgs = this.state.messages.filter(
-      item => item.provider === "preview"
-    );
-    // Always send preview messages when available
-    if (previewMsgs.length) {
-      [message] = previewMsgs;
-    } else {
-      message = await this._findMessage(msgs, trigger);
-    }
-
-    if (previewMsgs.length) {
-      // We don't want to cache preview messages, remove them after we selected the message to show
-      await this.setState(state => ({
-        lastMessageId: message.id,
-        messages: state.messages.filter(m => m.id !== message.id),
-      }));
-    } else {
-      await this.setState({ lastMessageId: message ? message.id : null });
-    }
-    await this._sendMessageToTarget(message, target, trigger);
-  }
-
-  handleMessageRequest({ triggerId, template, returnAll = false }) {
+  handleMessageRequest({
+    triggerId,
+    triggerParam,
+    template,
+    provider,
+    returnAll = false,
+  }) {
     const msgs = this._getUnblockedMessages().filter(m => {
+      if (provider && m.provider !== provider) {
+        return false;
+      }
       if (template && m.template !== template) {
         return false;
       }
@@ -1503,10 +1509,16 @@ class _ASRouter {
     });
 
     if (returnAll) {
-      return this._findAllMessages(msgs, { id: triggerId });
+      return this._findAllMessages(
+        msgs,
+        triggerId && { id: triggerId, param: triggerParam }
+      );
     }
 
-    return this._findMessage(msgs, { id: triggerId });
+    return this._findMessage(
+      msgs,
+      triggerId && { id: triggerId, param: triggerParam }
+    );
   }
 
   async setMessageById(id, target, force = true, action = {}) {
@@ -1537,6 +1549,17 @@ class _ASRouter {
       this._storage.set("messageBlockList", messageBlockList);
       this._storage.set("messageImpressions", messageImpressions);
       return { messageBlockList, messageImpressions };
+    });
+  }
+
+  unblockMessageById(id) {
+    return this.setState(state => {
+      const messageBlockList = [...state.messageBlockList];
+      const message = state.messages.find(m => m.id === id);
+      const idToUnblock = message && message.campaign ? message.campaign : id;
+      messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
+      this._storage.set("messageBlockList", messageBlockList);
+      return { messageBlockList };
     });
   }
 
@@ -1777,6 +1800,63 @@ class _ASRouter {
     this.onMessage({ data: action, target });
   }
 
+  async sendNewTabMessage(target, options = {}) {
+    const { endpoint } = options;
+    let message;
+
+    // Load preview endpoint for snippets if one is sent
+    if (endpoint) {
+      await this._addPreviewEndpoint(endpoint.url, target.portID);
+    }
+
+    // Load all messages
+    await this.loadMessagesFromAllProviders();
+
+    if (endpoint) {
+      message = await this.handleMessageRequest({ provider: "preview" });
+      // We don't want to cache preview messages, remove them after we selected the message to show
+      await this.setState(state => ({
+        lastMessageId: message ? message.id : null,
+        messages: message
+          ? state.messages.filter(m => m.id !== message.id)
+          : state.messages,
+      }));
+    } else {
+      // On new tab, send cards if they match; othwerise send a snippet
+      message =
+        (await this.handleMessageRequest({
+          provider: "onboarding",
+          template: "extended_triplets",
+        })) || (await this.handleMessageRequest({ provider: "snippets" }));
+      await this.setState({ lastMessageId: message ? message.id : null });
+    }
+
+    await this._sendMessageToTarget(message, target);
+  }
+
+  async sendTriggerMessage(target, trigger) {
+    await this.loadMessagesFromAllProviders();
+
+    if (trigger.id === "firstRun") {
+      // On about welcome, set up trailhead experiments
+      if (!this.state.trailheadInitialized) {
+        Services.prefs.setBoolPref(
+          TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF,
+          true
+        );
+        await this.setupTrailhead();
+      }
+    }
+
+    const message = await this.handleMessageRequest({
+      triggerId: trigger.id,
+      triggerParam: trigger.param,
+    });
+
+    await this.setState({ lastMessageId: message ? message.id : null });
+    await this._sendMessageToTarget(message, target, trigger);
+  }
+
   /* eslint-disable complexity */
   async onMessage({ data: action, target }) {
     switch (action.type) {
@@ -1785,37 +1865,16 @@ class _ASRouter {
           await this.handleUserAction({ data: action.data, target });
         }
         break;
-      case "SNIPPETS_REQUEST":
-      case "TRIGGER":
-        // Wait for our initial message loading to be done before responding to any UI requests
+      case "NEWTAB_MESSAGE_REQUEST":
         await this.waitForInitialized;
-        if (action.data && action.data.endpoint) {
-          await this._addPreviewEndpoint(
-            action.data.endpoint.url,
-            target.portID
-          );
-        }
-
-        // Special experiment intialization for trailhead
-        if (
-          action.data &&
-          action.data.trigger &&
-          action.data.trigger.id === "firstRun"
-        ) {
-          Services.prefs.setBoolPref(
-            TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF,
-            true
-          );
-          await this.setupTrailhead();
-        }
-
-        // Check if any updates are needed first
-        await this.loadMessagesFromAllProviders();
-        await this.sendNextMessage(
-          target,
-          (action.data && action.data.trigger) || {}
-        );
+        await this.sendNewTabMessage(target, action.data);
         break;
+      case "TRIGGER":
+        await this.waitForInitialized;
+        await this.sendTriggerMessage(
+          target,
+          action.data && action.data.trigger
+        );
       case "BLOCK_MESSAGE_BY_ID":
         await this.blockMessageById(action.data.id);
         // Block the message but don't dismiss it in case the action taken has
@@ -1848,15 +1907,7 @@ class _ASRouter {
         });
         break;
       case "UNBLOCK_MESSAGE_BY_ID":
-        await this.setState(state => {
-          const messageBlockList = [...state.messageBlockList];
-          const message = state.messages.find(m => m.id === action.data.id);
-          const idToUnblock =
-            message && message.campaign ? message.campaign : action.data.id;
-          messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
-          this._storage.set("messageBlockList", messageBlockList);
-          return { messageBlockList };
-        });
+        this.unblockMessageById(action.data.id);
         break;
       case "UNBLOCK_PROVIDER_BY_ID":
         await this.setState(state => {

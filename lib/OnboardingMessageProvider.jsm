@@ -99,6 +99,19 @@ const ONBOARDING_MESSAGES = () => [
     trigger: { id: "firstRun" },
   },
   {
+    id: "EXTENDED_TRIPLETS_1",
+    template: "extended_triplets",
+    targeting:
+      "trailheadTriplet && ((currentDate|date - profileAgeCreated) / 86400000) < 7",
+    includeBundle: {
+      length: 3,
+      template: "onboarding",
+      trigger: { id: "showOnboarding" },
+    },
+    frequency: { lifetime: 20 },
+    utm_term: "trailhead-cards",
+  },
+  {
     id: "TRAILHEAD_CARD_1",
     template: "onboarding",
     bundled: 3,
@@ -365,6 +378,17 @@ const ONBOARDING_MESSAGES = () => [
     targeting:
       "attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
     trigger: { id: "firstRun" },
+  },
+  {
+    id: "FXA_ACCOUNTS_BADGE",
+    template: "toolbar_badge",
+    content: {
+      delay: 10000, // delay for 10 seconds
+      target: "fxa-toolbar-menu-button",
+    },
+    // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
+    targeting: `isFxABadgeEnabled && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
+    trigger: { id: "toolbarBadgeUpdate" },
   },
 ];
 
