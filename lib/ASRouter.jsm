@@ -494,6 +494,7 @@ class _ASRouter {
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
     this.blockMessageById = this.blockMessageById.bind(this);
+    this.unblockMessageById = this.unblockMessageById.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.handleMessageRequest = this.handleMessageRequest.bind(this);
     this.addImpression = this.addImpression.bind(this);
