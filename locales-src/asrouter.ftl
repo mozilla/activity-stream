@@ -95,8 +95,8 @@ cfr-sync-bookmarks-cta-button = Turn on { -sync-brand-short-name }
 
 ## Send Tab
 
-cfr-send-tab-header-1 = Read this on the go
-cfr-send-tab-header-2 = Take this recipe to the kitchen
+cfr-send-tab-header = Read this on the go
+cfr-send-tab-recipe-header = Take this recipe to the kitchen
 cfr-send-tab-body = Send Tab lets you easily share this link to your phone or anywhere you’re signed in to { -brand-product-name }.
 cfr-send-tab-cta-button = Try Send Tab
   .accesskey = T
