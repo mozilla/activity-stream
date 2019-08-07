@@ -851,10 +851,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    */
   async refreshAll(options = {}) {
     const { updateOpenTabs, isStartup } = options;
+    // If we can updateOpenTabs we can be proactive in updating content,
+    // if we can not updateOpenTabs we need to ensure we queue the dispatch.
+    // Otherwise, a tab can be loading that is never allowed to update.
     const dispatchQueue = [];
     const dispatch = updateOpenTabs
       ? action => this.store.dispatch(ac.BroadcastToContent(action))
-      : e => dispatchQueue.push(e);
+      : action => dispatchQueue.push(action);
 
     this.loadAffinityScoresCache();
     await this.loadLayout(dispatch, isStartup);
@@ -866,9 +869,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         Cu.reportError(`Error trying to load component feeds: ${error}`)
       ),
     ]);
-    if (!updateOpenTabs) {
-      dispatchQueue.forEach(e => this.store.dispatch(e));
-    }
+    dispatchQueue.forEach(e => this.store.dispatch(e));
     if (isStartup) {
       await this._maybeUpdateCachedData();
     }
