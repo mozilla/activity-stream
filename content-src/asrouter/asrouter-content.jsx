@@ -114,6 +114,8 @@ export class ASRouterUISurface extends React.PureComponent {
     this.sendImpression = this.sendImpression.bind(this);
     this.sendUserActionTelemetry = this.sendUserActionTelemetry.bind(this);
     this.onUserAction = this.onUserAction.bind(this);
+    this.fetchFlowParams = this.fetchFlowParams.bind(this);
+
     this.state = { message: {} };
     if (props.document) {
       this.headerPortal = props.document.getElementById(
@@ -157,7 +159,7 @@ export class ASRouterUISurface extends React.PureComponent {
         );
       }
     } catch (error) {
-      console.error(error);
+      console.error(error); // eslint-disable-line no-console
       dispatch(
         ac.OnlyToMain({
           type: at.TELEMETRY_UNDESIRED_EVENT,
@@ -378,6 +380,7 @@ export class ASRouterUISurface extends React.PureComponent {
             onBlock={this.onBlockById(this.state.message.id)}
             onDismiss={this.onDismissById(this.state.message.id)}
             fxaEndpoint={this.props.fxaEndpoint}
+            fetchFlowParams={this.fetchFlowParams}
           />
         </ImpressionsWrapper>
       );
