@@ -51,7 +51,7 @@ ChromeUtils.defineModuleGetter(
 
 // Frequency at which to check for new messages
 const SYSTEM_TICK_INTERVAL = 5 * 60 * 1000;
-const notificationsByWindow = new WeakMap();
+let notificationsByWindow = new WeakMap();
 
 class _ToolbarBadgeHub {
   constructor() {
@@ -228,10 +228,6 @@ class _ToolbarBadgeHub {
     toolbarButton
       .querySelector(".toolbarbutton-badge")
       .classList.remove("feature-callout");
-    // Remove it from the toolbar icon
-    toolbarButton
-      .querySelector(".toolbarbutton-icon")
-      .classList.remove("feature-callout");
     toolbarButton.removeAttribute("badged");
   }
 
@@ -245,11 +241,6 @@ class _ToolbarBadgeHub {
       toolbarbutton.setAttribute("badged", true);
       toolbarbutton
         .querySelector(".toolbarbutton-badge")
-        .classList.add("feature-callout");
-      // This creates the cut-out effect for the icon where the notification
-      // fits in
-      toolbarbutton
-        .querySelector(".toolbarbutton-icon")
         .classList.add("feature-callout");
 
       // `mousedown` event required because of the `onmousedown` defined on
@@ -351,6 +342,7 @@ class _ToolbarBadgeHub {
     this._clearBadgeTimeout();
     clearInterval(this.state._intervalId);
     this.state = null;
+    notificationsByWindow = new WeakMap();
     Services.prefs.removeObserver(this.prefs.WHATSNEW_TOOLBAR_PANEL, this);
   }
 }
