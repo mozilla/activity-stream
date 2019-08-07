@@ -1812,21 +1812,47 @@ describe("DiscoveryStreamFeed", () => {
       assert.calledOnce(feed.loadComponentFeeds);
       assert.calledOnce(feed.loadSpocs);
     });
-    it("should pass in dispatch wrapped with broadcast if options.updateOpenTabs is true", async () => {
+    it.only("should pass in dispatch wrapped with broadcast if options.updateOpenTabs is true", async () => {
+      feed.loadLayout.restore();
+      feed.loadComponentFeeds.restore();
+      feed.loadSpocs.restore();
+
       await feed.refreshAll({ updateOpenTabs: true });
-      [feed.loadLayout, feed.loadComponentFeeds, feed.loadSpocs].forEach(fn => {
+
+      assert.equal(feed.store.dispatch.callCount, 5);
+      const firstCall = feed.store.dispatch.getCall(0);
+      const secondCall = feed.store.dispatch.getCall(1);
+      const thirdCall = feed.store.dispatch.getCall(2);
+      const fourthCall = feed.store.dispatch.getCall(3);
+      const fifthCall = feed.store.dispatch.getCall(4);
+      console.log(firstCall.args[0]);
+      console.log(secondCall.args[0]);
+      console.log(thirdCall.args[0]);
+      console.log(fourthCall.args[0]);
+      console.log(fifthCall.args[0]);
+      assert.isTrue(au.isBroadcastToContent(fourthCall.args[0]));
+      /*[feed.loadLayout, feed.loadComponentFeeds, feed.loadSpocs].forEach(fn => {
         assert.calledOnce(fn);
         const result = fn.firstCall.args[0]({ type: "FOO" });
         assert.isTrue(au.isBroadcastToContent(result));
-      });
+      });*/
     });
-    it("should pass in dispatch with regular actions if options.updateOpenTabs is false", async () => {
+    it.only("should pass in dispatch with regular actions if options.updateOpenTabs is false", async () => {
+      feed.loadLayout.restore();
+      feed.loadComponentFeeds.restore();
+      feed.loadSpocs.restore();
+
       await feed.refreshAll({ updateOpenTabs: false });
-      [feed.loadLayout, feed.loadComponentFeeds, feed.loadSpocs].forEach(fn => {
-        assert.calledOnce(fn);
-        const result = fn.firstCall.args[0]({ type: "FOO" });
-        assert.deepEqual(result, { type: "FOO" });
-      });
+
+      assert.equal(feed.store.dispatch.callCount, 4);
+      const firstCall = feed.store.dispatch.getCall(0);
+      const secondCall = feed.store.dispatch.getCall(1);
+      const thirdCall = feed.store.dispatch.getCall(2);
+      const fourthCall = feed.store.dispatch.getCall(3);
+      console.log(firstCall.args[0]);
+      console.log(secondCall.args[0]);
+      console.log(thirdCall.args[0]);
+      console.log(fourthCall.args[0]);
     });
     it("should set loaded to true if loadSpocs and loadComponentFeeds fails", async () => {
       feed.loadComponentFeeds.rejects("loadComponentFeeds error");
