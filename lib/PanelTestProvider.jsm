@@ -5,7 +5,7 @@
 
 const TWO_DAYS = 2 * 24 * 3600 * 1000;
 
-const MESSAGES = () => [
+const MESSAGES = async () => [
   {
     id: "SIMPLE_FXA_BOOKMARK_TEST_FLUENT",
     template: "fxa_bookmark_panel",
@@ -114,6 +114,7 @@ const MESSAGES = () => [
     trigger: { id: "whatsNewPanelOpened" },
   },
   {
+<<<<<<< HEAD
     id: "WHATS_NEW_70_3",
     template: "whatsnew_panel_message",
     order: 2,
@@ -132,12 +133,75 @@ const MESSAGES = () => [
     },
     targeting: `firefoxVersion > 69 && totalBlockedCount > 0`,
     trigger: { id: "whatsNewPanelOpened" },
+=======
+    id: "BOOKMARK_CFR",
+    template: "cfr_doorhanger",
+    content: {
+      category: "cfrAddons",
+      bucket_id: "CFR_M1",
+      notification_text: { string_id: "cfr-doorhanger-extension-notification" },
+      heading_text: { string_id: "cfr-doorhanger-extension-heading" },
+      info_icon: {
+        label: { string_id: "cfr-doorhanger-extension-sumo-link" },
+        sumo_path: "https://example.com",
+      },
+      addon: {
+        id: "954390",
+        title: "Bookmark CFR",
+        icon:
+          "resource://activity-stream/data/content/assets/cfr_fb_container.png",
+        rating: 4.6,
+        users: 299019,
+        author: "Mozilla",
+        amo_url: "https://addons.mozilla.org/firefox/addon/facebook-container/",
+      },
+      text:
+        "Stop Facebook from tracking your activity across the web. Use Facebook the way you normally do without annoying ads following you around.",
+      buttons: {
+        primary: {
+          label: { string_id: "cfr-doorhanger-extension-ok-button" },
+          action: {
+            type: "INSTALL_ADDON_FROM_URL",
+            data: { url: null },
+          },
+        },
+        secondary: [
+          {
+            label: { string_id: "cfr-doorhanger-extension-cancel-button" },
+            action: { type: "CANCEL" },
+          },
+          {
+            label: {
+              string_id: "cfr-doorhanger-extension-never-show-recommendation",
+            },
+          },
+          {
+            label: {
+              string_id: "cfr-doorhanger-extension-manage-settings-button",
+            },
+            action: {
+              type: "OPEN_PREFERENCES_PAGE",
+              data: { category: "general-cfraddons" },
+            },
+          },
+        ],
+      },
+    },
+    frequency: { lifetime: 3 },
+    targeting: `true`,
+    trigger: {
+      id: "openURL",
+      params: await ASRouterTargeting.Environment.recentBookmarks.then(
+        bookmarks => bookmarks.map(({ url }) => url)
+      ),
+    },
+>>>>>>> 085e0b26... Reuse the work from the previous triggers attempt
   },
 ];
 
 const PanelTestProvider = {
-  getMessages() {
-    return MESSAGES().map(message => ({
+  async getMessages() {
+    return (await MESSAGES()).map(message => ({
       ...message,
       targeting: `providerCohorts.panel_local_testing == "SHOW_TEST"`,
     }));

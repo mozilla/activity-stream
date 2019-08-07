@@ -45,7 +45,7 @@ function checkURLMatch(aLocationURI, { hosts, matchPatternSet }, aRequest) {
   }
 
   // Check current location against whitelisted hosts
-  if (hosts.has(match.host)) {
+  if (hosts.has(match.host) || hosts.has(match.url)) {
     return match;
   }
 

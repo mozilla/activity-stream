@@ -168,6 +168,7 @@ const QueryCache = {
     }),
     TotalBookmarksCount: new CachedTargetingGetter("getTotalBookmarksCount"),
     CheckBrowserNeedsUpdate: new CheckBrowserNeedsUpdate(),
+    RecentBookmarks: new CachedTargetingGetter("getRecentBookmarks"),
   },
 };
 
@@ -359,6 +360,9 @@ const TargetingGetters = {
       }))
     );
   },
+  get recentBookmarks() {
+    return QueryCache.queries.RecentBookmarks.get();
+  },
   get pinnedSites() {
     return NewTabUtils.pinnedLinks.links.map(site =>
       site
@@ -492,7 +496,9 @@ this.ASRouterTargeting = {
       (candidateMessageTrigger.patterns &&
         new MatchPatternSet(candidateMessageTrigger.patterns).matches(
           trigger.param.url
-        ))
+        )) ||
+      (candidateMessageTrigger.params &&
+        candidateMessageTrigger.params.includes(trigger.param.url))
     );
   },
 
