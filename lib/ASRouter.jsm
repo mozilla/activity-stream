@@ -156,6 +156,14 @@ async function chooseBranch(seed, branches) {
   return branches[await Sampling.ratioSample(seed, ratios)][0];
 }
 
+function additionalParamsForTrigger(id) {
+  if (id === "openURL") {
+    return ASRouterTargeting.Environment.recentBookmarks;
+  }
+
+  return [];
+}
+
 const MessageLoaderUtils = {
   STARTPAGE_VERSION,
   REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
@@ -751,7 +759,7 @@ class _ASRouter {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
           ASRouterTriggerListeners.get(trigger.id).init(
             this._triggerHandler,
-            trigger.params,
+            trigger.params.concat(await additionalParamsForTrigger(trigger.id)),
             trigger.patterns
           );
           unseenListeners.delete(trigger.id);
