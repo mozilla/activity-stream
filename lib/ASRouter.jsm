@@ -762,7 +762,10 @@ class _ASRouter {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
           ASRouterTriggerListeners.get(trigger.id).init(
             this._triggerHandler,
-            trigger.params && trigger.params.concat(await additionalParamsForTrigger(trigger.id)),
+            trigger.params &&
+              trigger.params.concat(
+                await additionalParamsForTrigger(trigger.id)
+              ),
             trigger.patterns
           );
           unseenListeners.delete(trigger.id);
