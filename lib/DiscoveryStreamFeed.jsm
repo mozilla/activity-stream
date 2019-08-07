@@ -660,8 +660,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   transform(spocs) {
     const { data, filtered: blockedItems } = this.filterBlocked(spocs, "spocs");
     if (data && data.spocs && data.spocs.length) {
-      const spocsPerDomain =
-        this.spocs_per_domain || 1;
+      const spocsPerDomain = this.spocs_per_domain || 1;
       const campaignMap = {};
       const campaignDuplicates = [];
 

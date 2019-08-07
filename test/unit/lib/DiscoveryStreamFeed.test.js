@@ -1829,7 +1829,7 @@ describe("DiscoveryStreamFeed", () => {
       assert.isTrue(au.isBroadcastToContent(secondCall.args[0]));
       assert.isTrue(au.isBroadcastToContent(thirdCall.args[0]));
       assert.isTrue(au.isBroadcastToContent(fourthCall.args[0]));
-      assert.isTrue(au.isBroadcastToContent(fourthCall.args[0]));
+      assert.isTrue(au.isBroadcastToContent(fifthCall.args[0]));
     });
     it("should pass in dispatch with regular actions if options.updateOpenTabs is false", async () => {
       feed.loadLayout.restore();
@@ -1844,16 +1844,11 @@ describe("DiscoveryStreamFeed", () => {
       const thirdCall = feed.store.dispatch.getCall(2);
       const fourthCall = feed.store.dispatch.getCall(3);
       const fifthCall = feed.store.dispatch.getCall(4);
-      console.log(firstCall.args[0]);
-      console.log(secondCall.args[0]);
-      console.log(thirdCall.args[0]);
-      console.log(fourthCall.args[0]);
-      console.log(fifthCall.args[0]);
       assert.isTrue(!au.isBroadcastToContent(firstCall.args[0]));
       assert.isTrue(!au.isBroadcastToContent(secondCall.args[0]));
       assert.isTrue(!au.isBroadcastToContent(thirdCall.args[0]));
       assert.isTrue(!au.isBroadcastToContent(fourthCall.args[0]));
-      assert.isTrue(!au.isBroadcastToContent(fourthCall.args[0]));
+      assert.isTrue(!au.isBroadcastToContent(fifthCall.args[0]));
     });
     it("should set loaded to true if loadSpocs and loadComponentFeeds fails", async () => {
       feed.loadComponentFeeds.rejects("loadComponentFeeds error");
