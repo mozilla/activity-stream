@@ -5,7 +5,7 @@
 
 const TWO_DAYS = 2 * 24 * 3600 * 1000;
 
-const MESSAGES = async () => [
+const MESSAGES = () => [
   {
     id: "SIMPLE_FXA_BOOKMARK_TEST_FLUENT",
     template: "fxa_bookmark_panel",
@@ -191,17 +191,15 @@ const MESSAGES = async () => [
     targeting: `true`,
     trigger: {
       id: "openURL",
-      params: await ASRouterTargeting.Environment.recentBookmarks.then(
-        bookmarks => bookmarks.map(({ url }) => url)
-      ),
+      patterns: ["*://*/*"],
     },
 >>>>>>> 085e0b26... Reuse the work from the previous triggers attempt
   },
 ];
 
 const PanelTestProvider = {
-  async getMessages() {
-    return (await MESSAGES()).map(message => ({
+  getMessages() {
+    return MESSAGES().map(message => ({
       ...message,
       targeting: `providerCohorts.panel_local_testing == "SHOW_TEST"`,
     }));

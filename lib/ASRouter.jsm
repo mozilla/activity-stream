@@ -156,9 +156,12 @@ async function chooseBranch(seed, branches) {
   return branches[await Sampling.ratioSample(seed, ratios)][0];
 }
 
+// istanbul ignore next
 function additionalParamsForTrigger(id) {
   if (id === "openURL") {
-    return ASRouterTargeting.Environment.recentBookmarks;
+    return ASRouterTargeting.Environment.recentBookmarks.then(bookmarks =>
+      bookmarks ? bookmarks.map(({ url }) => url) : []
+    );
   }
 
   return [];
@@ -759,7 +762,7 @@ class _ASRouter {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
           ASRouterTriggerListeners.get(trigger.id).init(
             this._triggerHandler,
-            trigger.params.concat(await additionalParamsForTrigger(trigger.id)),
+            trigger.params && trigger.params.concat(await additionalParamsForTrigger(trigger.id)),
             trigger.patterns
           );
           unseenListeners.delete(trigger.id);
