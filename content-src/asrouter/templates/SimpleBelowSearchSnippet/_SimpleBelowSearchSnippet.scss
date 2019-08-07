@@ -159,11 +159,6 @@
       @media (max-width: 865px) {
         display: none;
       }
-
-      // Disable breakpoints for now if discovery stream is enabled.
-      .ds-outer-wrapper-breakpoint-override & {
-        display: auto;
-      }
     }
 
     .buttonContainer {
