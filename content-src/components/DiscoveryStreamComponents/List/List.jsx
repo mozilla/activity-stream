@@ -66,14 +66,6 @@ export class ListItem extends React.PureComponent {
         >
           <div className="ds-list-item-text">
             <p>
-              {this.props.context && (
-                <span>
-                  <span className="ds-list-item-context clamp">
-                    {this.props.context}
-                  </span>
-                  <br />
-                </span>
-              )}
               <span className="ds-list-item-info clamp">
                 {this.props.domain}
               </span>
@@ -86,7 +78,10 @@ export class ListItem extends React.PureComponent {
                 </div>
               )}
             </div>
-            <DSContextFooter context_type={this.props.context_type} />
+            <DSContextFooter
+              context={this.props.context}
+              context_type={this.props.context_type}
+            />
           </div>
           <DSImage
             extraClassNames="ds-list-image"

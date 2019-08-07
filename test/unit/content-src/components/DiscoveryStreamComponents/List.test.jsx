@@ -126,13 +126,6 @@ describe("<ListItem> presentation component", () => {
     domain: "example.com",
     image_src: "FAKE_IMAGE_SRC",
   };
-  const ValidLSpocListItemProps = {
-    url: "FAKE_URL",
-    title: "FAKE_TITLE",
-    domain: "example.com",
-    image_src: "FAKE_IMAGE_SRC",
-    context: "FAKE_CONTEXT",
-  };
   let globals;
 
   beforeEach(() => {
@@ -150,20 +143,6 @@ describe("<ListItem> presentation component", () => {
       `SafeAnchor.ds-list-item-link[url="${ValidListItemProps.url}"]`
     );
     assert.lengthOf(anchors, 1);
-  });
-
-  it("should not contain 'span.ds-list-item-context' without props.context", () => {
-    const wrapper = shallow(<ListItem {...ValidListItemProps} />);
-
-    const contextEl = wrapper.find("span.ds-list-item-context");
-    assert.lengthOf(contextEl, 0);
-  });
-
-  it("should contain 'span.ds-list-item-context' spoc element", () => {
-    const wrapper = shallow(<ListItem {...ValidLSpocListItemProps} />);
-
-    const contextEl = wrapper.find("span.ds-list-item-context");
-    assert.lengthOf(contextEl, 1);
   });
 
   describe("onLinkClick", () => {
