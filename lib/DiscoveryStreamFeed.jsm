@@ -320,7 +320,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
       data: layout,
     });
+    this.layout = layout.layout;
     if (layout.spocs && layout.spocs.url) {
+      this.spocs_endpoint = layout.spocs.url;
+      this.spocs_per_domain = layout.spocs.spocs_per_domain;
       sendUpdate({
         type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
         data: layout.spocs.url,
@@ -436,9 +439,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async loadComponentFeeds(sendUpdate, isStartup) {
-    const { DiscoveryStream } = this.store.getState();
-
-    if (!DiscoveryStream || !DiscoveryStream.layout) {
+    if (!this.layout) {
       return;
     }
 
@@ -447,7 +448,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.componentFeedFetched = false;
     const start = perfService.absNow();
     const { newFeedsPromises, newFeeds } = this.buildFeedPromises(
-      DiscoveryStream.layout,
+      this.layout,
       isStartup,
       sendUpdate
     );
@@ -472,8 +473,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (this.showSpocs) {
       spocs = cachedData.spocs;
       if (this.isExpired({ cachedData, key: "spocs", isStartup })) {
-        const endpoint = this.store.getState().DiscoveryStream.spocs
-          .spocs_endpoint;
+        const endpoint = this.spocs_endpoint;
         const start = perfService.absNow();
 
         const headers = new Headers();
@@ -661,7 +661,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const { data, filtered: blockedItems } = this.filterBlocked(spocs, "spocs");
     if (data && data.spocs && data.spocs.length) {
       const spocsPerDomain =
-        this.store.getState().DiscoveryStream.spocs.spocs_per_domain || 1;
+        this.spocs_per_domain || 1;
       const campaignMap = {};
       const campaignDuplicates = [];
 
@@ -1021,6 +1021,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.store.dispatch(
       ac.BroadcastToContent({ type: at.DISCOVERY_STREAM_LAYOUT_RESET })
     );
+    this.layout = undefined;
+    this.spocs_endpoint = undefined;
+    this.spocs_per_domain = undefined;
     this.loaded = false;
     this.layoutRequestTime = undefined;
     this.spocsRequestTime = undefined;
