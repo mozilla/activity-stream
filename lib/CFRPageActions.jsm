@@ -72,6 +72,7 @@ class PageAction {
       "browser/newtab/asrouter.ftl",
       "browser/branding/brandings.ftl",
       "browser/branding/sync-brand.ftl",
+      "branding/brand.ftl",
     ]);
 
     // Saved timeout IDs for scheduled state changes, so they can be cancelled

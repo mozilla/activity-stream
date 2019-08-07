@@ -91,6 +91,7 @@ cfr-feature-type-recommended = Recommended Feature
 cfr-sync-bookmarks-header = Get this bookmark on your phone
 cfr-sync-bookmarks-body = Take your bookmarks, passwords, history and more everywhere you’re signed into { -brand-product-name }.
 cfr-sync-bookmarks-cta-button = Turn on { -sync-brand-short-name }
+  .accesskey = T
 
 ## Send Tab
 
@@ -98,9 +99,11 @@ cfr-send-tab-header-1 = Read this on the go
 cfr-send-tab-header-2 = Take this recipe to the kitchen
 cfr-send-tab-body = Send Tab lets you easily share this link to your phone or anywhere you’re signed in to { -brand-product-name }.
 cfr-send-tab-cta-button = Try Send Tab
+  .accesskey = T
 
 ## Firefox Send
 
 cfr-firefox-send-header = Share this PDF securely
 cfr-firefox-send-body = Keep your sensitive documents safe from prying eyes with end-to-end encryption and a link that disappears when you’re done.
 cfr-firefox-send-cta-button = Try { -send-brand-name }
+  .accesskey = T
