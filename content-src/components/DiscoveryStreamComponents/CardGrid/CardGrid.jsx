@@ -35,6 +35,7 @@ export class CardGrid extends React.PureComponent {
             pocket_id={rec.pocket_id}
             context_type={rec.context_type}
             bookmarkGuid={rec.bookmarkGuid}
+            engagement={rec.engagement}
           />
         )
       );

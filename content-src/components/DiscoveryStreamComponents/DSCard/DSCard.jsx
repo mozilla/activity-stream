@@ -72,6 +72,7 @@ export class DSCard extends React.PureComponent {
             <DSContextFooter
               context_type={this.props.context_type}
               context={this.props.context}
+              engagement={this.props.engagement}
             />
           </div>
           <ImpressionStats
