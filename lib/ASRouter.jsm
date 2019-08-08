@@ -95,9 +95,9 @@ const TRAILHEAD_CONFIG = {
   LOCALES: ["en-US", "en-GB", "en-CA", "de", "de-DE", "fr", "fr-FR"],
   EXPERIMENT_RATIOS: [["", 0], ["interrupts", 1], ["triplets", 3]],
   // Per bug 1571817, for those who meet the targeting criteria of extended
-  // triplets, 99% users (control group) will see the extended triplets and
-  // 1% (test group) won't.
-  EXPERIMENT_RATIOS_FOR_EXTENDED_TRIPLETS: [["control", 99], ["test", 1]],
+  // triplets, 99% users (control group) will see the extended triplets, and
+  // the rest 1% (holdback group) won't.
+  EXPERIMENT_RATIOS_FOR_EXTENDED_TRIPLETS: [["control", 99], ["holdback", 1]],
   EXTENDED_TRIPLETS_EXPERIMENT_PREF: "trailhead.extendedTriplets.experiment",
 };
 
@@ -1022,8 +1022,8 @@ class _ASRouter {
     TelemetryEnvironment.setExperimentActive(experimentName, branch);
 
     const state = { extendedTripletsInitialized: true };
-    // Disable the extended triplets for the "test" group.
-    if (branch === "test") {
+    // Disable the extended triplets for the "holdback" group.
+    if (branch === "holdback") {
       state.showExtendedTriplets = false;
     }
     await this.setState(state);
@@ -1870,13 +1870,15 @@ class _ASRouter {
       });
 
       // Set up the experiment for extended triplets. It's done here because we
-      // only want to enroll users (both for control and test) if they meet the
-      // targeting criteria.
+      // only want to enroll users (for both control and holdback) if they meet
+      // the targeting criteria.
       if (message) {
         await this.setupExtendedTriplets();
       }
 
-      if (!(message && this.state.showExtendedTriplets)) {
+      // If no extended triplets message was returned, or the holdback experiment
+      // is active, show snippets instead
+      if (!message || !this.state.showExtendedTriplets) {
         message = await this.handleMessageRequest({ provider: "snippets" });
       }
 

@@ -1242,6 +1242,61 @@ describe("ASRouter", () => {
 
         assert.calledOnce(spy);
       });
+      it("should fallback to snippets if one was assigned to the holdback experiment", async () => {
+        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = holdback branch
+        const handleMessageRequestStub = sandbox.stub(
+          Router,
+          "handleMessageRequest"
+        );
+        handleMessageRequestStub
+          .withArgs({
+            provider: "onboarding",
+            template: "extended_triplets",
+          })
+          .resolves({ id: "foo" });
+        const msg = fakeAsyncMessage({
+          type: "NEWTAB_MESSAGE_REQUEST",
+          data: {},
+        });
+        await Router.onMessage(msg);
+
+        assert.calledTwice(handleMessageRequestStub);
+        assert.calledWithExactly(handleMessageRequestStub, {
+          provider: "onboarding",
+          template: "extended_triplets",
+        });
+        assert.calledWithExactly(handleMessageRequestStub, {
+          provider: "snippets",
+        });
+      });
+      it("should fallback to snippets if onboarding message provider returned none", async () => {
+        const handleMessageRequestStub = sandbox.stub(
+          Router,
+          "handleMessageRequest"
+        );
+        handleMessageRequestStub
+          .withArgs({
+            provider: "onboarding",
+            template: "extended_triplets",
+          })
+          .resolves(null);
+        const spy = sandbox.spy(Router, "setupExtendedTriplets");
+        const msg = fakeAsyncMessage({
+          type: "NEWTAB_MESSAGE_REQUEST",
+          data: {},
+        });
+        await Router.onMessage(msg);
+
+        assert.notCalled(spy);
+        assert.calledTwice(handleMessageRequestStub);
+        assert.calledWithExactly(handleMessageRequestStub, {
+          provider: "onboarding",
+          template: "extended_triplets",
+        });
+        assert.calledWithExactly(handleMessageRequestStub, {
+          provider: "snippets",
+        });
+      });
     });
 
     describe("#onMessage: BLOCK_MESSAGE_BY_ID", () => {
@@ -2937,7 +2992,7 @@ describe("ASRouter", () => {
         );
       });
       it("should generates a test branch configuration and update Router.state", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = test branch
+        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = holdback branch
 
         await Router.setupExtendedTriplets();
 
@@ -2946,12 +3001,12 @@ describe("ASRouter", () => {
         assert.calledWith(
           setStringPrefStub,
           TRAILHEAD_CONFIG.EXTENDED_TRIPLETS_EXPERIMENT_PREF,
-          "test"
+          "holdback"
         );
         assert.calledWith(
           setExperimentActiveStub,
           "activity-stream-extended-triplets",
-          "test"
+          "holdback"
         );
       });
       it("should reuse the existing branch if it's already defined", async () => {
