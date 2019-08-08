@@ -132,6 +132,16 @@ describe("<FirstRun>", () => {
     });
   });
 
+  it("should pass along executeAction appropriately", () => {
+    const stub = sandbox.stub();
+    wrapper = mount(
+      <FirstRun message={message} document={fakeDoc} executeAction={stub} />
+    );
+
+    assert.propertyVal(wrapper.find(Interrupt).props(), "executeAction", stub);
+    assert.propertyVal(wrapper.find(Triplets).props(), "onAction", stub);
+  });
+
   it("should load flow params on mount if fxaEndpoint is defined", () => {
     const stub = sandbox.stub();
     wrapper = mount(
