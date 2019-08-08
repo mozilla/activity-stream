@@ -2,6 +2,10 @@ import {
   DSCard,
   PlaceholderDSCard,
 } from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
+import {
+  DSContextFooter,
+  StatusMessage,
+} from "content-src/components/DiscoveryStreamComponents/DSContextFooter/DSContextFooter";
 import { actionCreators as ac } from "common/Actions.jsm";
 import { DSLinkMenu } from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import React from "react";
@@ -69,6 +73,22 @@ describe("<DSCard>", () => {
 
   it("should start with no .active class", () => {
     assert.equal(wrapper.find(".active").length, 0);
+  });
+
+  it("should render badges for pocket, bookmark when not a spoc element ", () => {
+    wrapper = shallow(<DSCard context_type="bookmark" />);
+    const contextFooter = wrapper.find(DSContextFooter).shallow();
+
+    assert.lengthOf(contextFooter.find(StatusMessage), 1);
+  });
+
+  it("should render Sponsored Context for a spoc element", () => {
+    const context = "Sponsored by Foo";
+    wrapper = shallow(<DSCard context_type="bookmark" context={context} />);
+    const contextFooter = wrapper.find(DSContextFooter).shallow();
+
+    assert.lengthOf(contextFooter.find(StatusMessage), 0);
+    assert.equal(contextFooter.find(".story-sponsored-label").text(), context);
   });
 
   describe("onLinkClick", () => {

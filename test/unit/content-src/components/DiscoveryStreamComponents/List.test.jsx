@@ -4,6 +4,10 @@ import {
   PlaceholderListItem,
 } from "content-src/components/DiscoveryStreamComponents/List/List";
 import { actionCreators as ac } from "common/Actions.jsm";
+import {
+  DSContextFooter,
+  StatusMessage,
+} from "content-src/components/DiscoveryStreamComponents/DSContextFooter/DSContextFooter";
 import { DSEmptyState } from "content-src/components/DiscoveryStreamComponents/DSEmptyState/DSEmptyState";
 import { DSLinkMenu } from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import { GlobalOverrider } from "test/unit/utils";
@@ -125,6 +129,15 @@ describe("<ListItem> presentation component", () => {
     title: "FAKE_TITLE",
     domain: "example.com",
     image_src: "FAKE_IMAGE_SRC",
+    context_type: "pocket",
+  };
+  const ValidLSpocListItemProps = {
+    url: "FAKE_URL",
+    title: "FAKE_TITLE",
+    domain: "example.com",
+    image_src: "FAKE_IMAGE_SRC",
+    context_type: "pocket",
+    context: "FAKE_CONTEXT",
   };
   let globals;
 
@@ -143,6 +156,24 @@ describe("<ListItem> presentation component", () => {
       `SafeAnchor.ds-list-item-link[url="${ValidListItemProps.url}"]`
     );
     assert.lengthOf(anchors, 1);
+  });
+
+  it("should render badges for pocket, bookmark when not a spoc element ", () => {
+    const wrapper = shallow(<ListItem {...ValidListItemProps} />);
+    const contextFooter = wrapper.find(DSContextFooter).shallow();
+
+    assert.lengthOf(contextFooter.find(StatusMessage), 1);
+  });
+
+  it("should render Sponsored Context for a spoc element", () => {
+    const wrapper = shallow(<ListItem {...ValidLSpocListItemProps} />);
+    const contextFooter = wrapper.find(DSContextFooter).shallow();
+
+    assert.lengthOf(contextFooter.find(StatusMessage), 0);
+    assert.equal(
+      contextFooter.find(".story-sponsored-label").text(),
+      ValidLSpocListItemProps.context
+    );
   });
 
   describe("onLinkClick", () => {

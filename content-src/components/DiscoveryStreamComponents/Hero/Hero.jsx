@@ -105,15 +105,14 @@ export class Hero extends React.PureComponent {
             </div>
             <div className="meta">
               <div className="header-and-excerpt">
-                {heroRec.context ? (
-                  <p className="context">{heroRec.context}</p>
-                ) : (
-                  <p className="source clamp">{heroRec.domain}</p>
-                )}
+                <p className="source clamp">{heroRec.domain}</p>
                 <header className="clamp">{heroRec.title}</header>
                 <p className="excerpt clamp">{heroRec.excerpt}</p>
               </div>
-              <DSContextFooter context_type={heroRec.context_type} />
+              <DSContextFooter
+                context={heroRec.context}
+                context_type={heroRec.context_type}
+              />
             </div>
             <ImpressionStats
               campaignId={heroRec.campaign_id}
