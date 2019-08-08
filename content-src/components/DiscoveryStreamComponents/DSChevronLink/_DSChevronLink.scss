@@ -7,6 +7,10 @@
 
   &:active {
     color: $blue-70;
+
+    &::after {
+      background-color: $blue-70;
+    }
   }
 
   &:focus {
@@ -15,8 +19,12 @@
   }
 
   &::after {
-    content: '›';
+    content: ' ';
+    mask: url(resource://activity-stream/data/content/assets/glyph-caret-right.svg) 0 -8px no-repeat;
+    background-color: $blue-60;
     margin: 0 0 0 4px;
+    width: 5px;
+    height: 8px;
     text-decoration: none;
     display: inline-block;
   }

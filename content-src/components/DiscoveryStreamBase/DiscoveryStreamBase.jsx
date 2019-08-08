@@ -119,6 +119,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         return (
           <DSTextPromo
             image={component.properties.image}
+            alt_text={component.properties.alt_text}
             header={component.properties.header}
             cta_text={component.properties.cta_text}
             cta_url={component.properties.cta_url}

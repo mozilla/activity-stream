@@ -1290,10 +1290,14 @@ defaultLayoutResp = {
           type: "TextPromo",
           properties: {
             image: "https://placekitten.com/g/80/80",
+            alt_text: "Netflix logo",
             header: "Stranger Things Season 3 debuts on July 4th. Get Ready!",
             cta_text: "Watch Trailer",
             cta_url: "http://www.netflix.com",
             subtitle: "Sponsored by Netflix",
+          },
+          styles: {
+            ".ds-text-promo": "margin-top: 48px",
           },
         },
         {

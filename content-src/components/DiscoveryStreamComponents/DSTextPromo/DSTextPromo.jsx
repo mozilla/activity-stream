@@ -9,7 +9,7 @@ export class DSTextPromo extends React.PureComponent {
   render() {
     return (
       <div className="ds-text-promo">
-        <img src={this.props.image}/>
+        <img src={this.props.image} alt={this.props.alt_text} />
         <div class="text">
           <header>
             {`${this.props.header} `}

@@ -1,6 +1,7 @@
 .ds-text-promo {
   display: flex;
-  margin: 16px 0;
+  max-width: 744px;
+  margin: 16px auto;
 
   img {
     width: 40px;
@@ -19,6 +20,7 @@
       color: $grey-10;
     }
 
+    font-weight: 600;
     font-size: 15px;
   }
 
