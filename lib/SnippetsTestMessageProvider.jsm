@@ -416,6 +416,20 @@ const MESSAGES = () => [
     },
   },
   {
+    id: "SPECIAL_SNIPPET_LONG_CONTENT",
+    template: "simple_below_search_snippet",
+    content: {
+      icon: TEST_ICON,
+      icon_dark_theme: TEST_ICON_BW,
+      button_label: "Find Out Now",
+      button_url: "https://www.mozilla.org/en-US/firefox/accounts",
+      title: "See if you've been part of an online data breach.",
+      text:
+        "Firefox Monitor tells you what hackers already know about you. Here's some extra text to make the content really long.",
+      block_button_text: "Block",
+    },
+  },
+  {
     id: "SPECIAL_SNIPPET_MONITOR",
     template: "simple_below_search_snippet",
     content: {
