@@ -175,6 +175,7 @@ export class FirstRun extends React.PureComponent {
             onNextScene={this.closeInterrupt}
             UTMTerm={UTMTerm}
             sendUserActionTelemetry={sendUserActionTelemetry}
+            executeAction={executeAction}
             dispatch={dispatch}
             flowParams={flowParams}
             onDismiss={this.closeInterrupt}
