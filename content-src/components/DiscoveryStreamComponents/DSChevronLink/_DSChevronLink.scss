@@ -1,24 +1,41 @@
 .ds-chevron-link {
   color: $blue-60;
+  display: inline-block;
 
   &:hover {
     text-decoration: underline;
   }
 
   &:active {
+    @include dark-theme-only {
+      color: $blue-50;
+    }
+
     color: $blue-70;
 
     &::after {
+      @include dark-theme-only {
+        background-color: $blue-50;
+      }
+
       background-color: $blue-70;
     }
   }
 
   &:focus {
+    @include dark-theme-only {
+      box-shadow: 0 0 0 2px $grey-80, 0 0 0 5px $blue-50-50;
+    }
+
     box-shadow: 0 0 0 2px $white, 0 0 0 5px $blue-50-50;
     border-radius: 2px;
   }
 
   &::after {
+    @include dark-theme-only {
+      background-color: $blue-40;
+    }
+
     content: ' ';
     mask: url(resource://activity-stream/data/content/assets/glyph-caret-right.svg) 0 -8px no-repeat;
     background-color: $blue-60;

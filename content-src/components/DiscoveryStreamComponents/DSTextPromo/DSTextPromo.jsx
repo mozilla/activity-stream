@@ -12,7 +12,7 @@ export class DSTextPromo extends React.PureComponent {
         <img src={this.props.image} alt={this.props.alt_text} />
         <div class="text">
           <header>
-            {`${this.props.header} `}
+            {`${this.props.header}\u2003`}
             <SafeAnchor className="ds-chevron-link" url={this.props.cta_url}>
               {this.props.cta_text}
             </SafeAnchor>
