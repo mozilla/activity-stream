@@ -145,7 +145,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_2",
     template: "onboarding",
     bundled: 3,
-    order: 2,
+    order: 1,
     content: {
       title: { string_id: "onboarding-data-sync-title" },
       text: { string_id: "onboarding-data-sync-text2" },
@@ -170,7 +170,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_3",
     template: "onboarding",
     bundled: 3,
-    order: 3,
+    order: 2,
     content: {
       title: { string_id: "onboarding-firefox-monitor-title" },
       text: { string_id: "onboarding-firefox-monitor-text" },
@@ -227,7 +227,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_6",
     template: "onboarding",
     bundled: 3,
-    order: 1,
+    order: 3,
     content: {
       title: { string_id: "onboarding-mobile-phone-title" },
       text: { string_id: "onboarding-mobile-phone-text" },
@@ -390,6 +390,20 @@ const ONBOARDING_MESSAGES = () => [
     // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
     targeting: `isFxABadgeEnabled && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
     trigger: { id: "toolbarBadgeUpdate" },
+  },
+  {
+    id: "PROTECTIONS_PANEL_1",
+    template: "protections_panel",
+    content: {
+      title: "Browse without being followed",
+      body:
+        "Keep your data to yourself. Firefox protects you from many of the most common trackers that follow what you do online.",
+      link_text: "Learn more",
+      cta_url: `${Services.urlFormatter.formatURLPref(
+        "app.support.baseURL"
+      )}etp-promotions?as=u&utm_source=inproduct`,
+    },
+    trigger: { id: "protectionsPanelOpen" },
   },
 ];
 
