@@ -123,7 +123,7 @@
 
   .icon {
     margin-top: 8px;
-    margin-inline-start: 10px;
+    margin-inline-start: 12px;
     height: 32px;
     width: 32px;
 
@@ -177,7 +177,8 @@
       width: 42px;
       height: 42px;
       flex-shrink: 0;
-      margin: auto 10px auto 0;
+      margin: auto 0;
+      margin-inline-end: 10px;
     }
 
     .buttonContainer {
