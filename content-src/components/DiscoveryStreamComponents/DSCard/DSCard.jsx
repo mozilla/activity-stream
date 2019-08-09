@@ -46,7 +46,7 @@ export const VariantMeta = ({
     <div className="info-wrap">
       <p className="source clamp">
         {sponsor ? sponsor : source}
-        {context && <span className="spoc-label">&#8226; Sponsored</span>}
+        {context && ` · Sponsored`}
       </p>
       <header className="title clamp">{title}</header>
       {excerpt && <p className="excerpt clamp">{excerpt}</p>}
