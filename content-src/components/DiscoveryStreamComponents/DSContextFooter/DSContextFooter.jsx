@@ -15,7 +15,7 @@ export const StatusMessage = ({ icon, fluentID }) => (
       aria-haspopup="true"
       className={`story-badge-icon icon icon-${icon}`}
     />
-    <div className="story-context-label clamp" data-l10n-id={fluentID} />
+    <div className="story-context-label" data-l10n-id={fluentID} />
   </div>
 );
 

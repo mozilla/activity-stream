@@ -131,7 +131,7 @@ describe("<ListItem> presentation component", () => {
     image_src: "FAKE_IMAGE_SRC",
     context_type: "pocket",
   };
-  const ValidLSpocListItemProps = {
+  const ValidSpocListItemProps = {
     url: "FAKE_URL",
     title: "FAKE_TITLE",
     domain: "example.com",
@@ -166,13 +166,13 @@ describe("<ListItem> presentation component", () => {
   });
 
   it("should render Sponsored Context for a spoc element", () => {
-    const wrapper = shallow(<ListItem {...ValidLSpocListItemProps} />);
+    const wrapper = shallow(<ListItem {...ValidSpocListItemProps} />);
     const contextFooter = wrapper.find(DSContextFooter).shallow();
 
     assert.lengthOf(contextFooter.find(StatusMessage), 0);
     assert.equal(
       contextFooter.find(".story-sponsored-label").text(),
-      ValidLSpocListItemProps.context
+      ValidSpocListItemProps.context
     );
   });
 

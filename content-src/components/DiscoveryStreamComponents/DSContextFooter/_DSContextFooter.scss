@@ -13,6 +13,7 @@ $status-dark-green: #7C6;
       color: $grey-40;
     }
 
+    -webkit-line-clamp: 1;
     font-size: 13px;
     line-height: 24px;
     color: $grey-50;
