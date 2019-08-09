@@ -10,7 +10,7 @@ import React from "react";
 import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 import { DSContextFooter } from "../DSContextFooter/DSContextFooter.jsx";
 
-const DefaultMeta = ({
+export const DefaultMeta = ({
   source,
   title,
   excerpt,
@@ -33,7 +33,7 @@ const DefaultMeta = ({
   </div>
 );
 
-const VariantMeta = ({
+export const VariantMeta = ({
   source,
   title,
   excerpt,

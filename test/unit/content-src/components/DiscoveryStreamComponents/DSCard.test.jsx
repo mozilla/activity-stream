@@ -1,6 +1,8 @@
 import {
   DSCard,
+  DefaultMeta,
   PlaceholderDSCard,
+  VariantMeta,
 } from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
 import {
   DSContextFooter,
@@ -152,6 +154,29 @@ describe("<DSCard>", () => {
           tiles: [{ id: "fooidx", pos: 1, shim: "click shim" }],
         })
       );
+    });
+  });
+
+  describe("DSCard with CTA", () => {
+    beforeEach(() => {
+      wrapper = shallow(<DSCard />);
+    });
+
+    it("should render Default Meta", () => {
+      const default_meta = wrapper.find(DefaultMeta);
+      assert.ok(default_meta.exists());
+    });
+
+    it("should render cta-link by default when item has cta", () => {
+      wrapper.setProps({ cta: "test" });
+      const meta = wrapper.find(DefaultMeta).shallow();
+      assert.equal(meta.find(".cta-link").text(), "test");
+    });
+
+    it("should render cta-button when item has cta and cta_variant is true", () => {
+      wrapper.setProps({ cta: "test", cta_variant: true });
+      const meta = wrapper.find(VariantMeta).shallow();
+      assert.equal(meta.find(".cta-button").text(), "test");
     });
   });
 });
