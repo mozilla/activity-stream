@@ -16,7 +16,7 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
 
   renderText() {
     const { props } = this;
-    return (
+    return props.content.text ? (
       <RichText
         text={props.content.text}
         customElements={this.props.customElements}
@@ -24,16 +24,15 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
         links={props.content.links}
         sendClick={props.sendClick}
       />
-    );
+    ) : null;
   }
 
   renderTitle() {
     const { title } = this.props.content;
     return title ? (
-      <h3
-        className={`title ${this._shouldRenderButton() ? "title-inline" : ""}`}
-      >
+      <h3 className={"title title-inline"}>
         {title}
+        <br />
       </h3>
     ) : null;
   }
@@ -117,7 +116,8 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
               alt={props.content.icon_alt_text || ICON_ALT_TEXT}
             />
             <div className="textContainer">
-              {this.renderTitle()} <p className="body">{this.renderText()}</p>
+              {this.renderTitle()}
+              <p className="body">{this.renderText()}</p>
               {this.props.extraContent}
             </div>
             {<div className="buttonContainer">{this.renderButton()}</div>}
