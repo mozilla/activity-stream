@@ -9,6 +9,7 @@ import {
   StatusMessage,
 } from "content-src/components/DiscoveryStreamComponents/DSContextFooter/DSContextFooter";
 import { actionCreators as ac } from "common/Actions.jsm";
+import { DSContextFooter } from "content-src/components/DiscoveryStreamComponents/DSContextFooter/DSContextFooter";
 import { DSLinkMenu } from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import React from "react";
 import { SafeAnchor } from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
@@ -167,16 +168,44 @@ describe("<DSCard>", () => {
       assert.ok(default_meta.exists());
     });
 
+    it("should not render cta-link for item with no cta", () => {
+      const meta = wrapper.find(DefaultMeta).shallow();
+      assert.notOk(meta.find(".cta-link").exists());
+    });
+
     it("should render cta-link by default when item has cta", () => {
       wrapper.setProps({ cta: "test" });
       const meta = wrapper.find(DefaultMeta).shallow();
       assert.equal(meta.find(".cta-link").text(), "test");
     });
 
-    it("should render cta-button when item has cta and cta_variant is true", () => {
+    it("should render cta-button when item has cta and cta button variant is true", () => {
       wrapper.setProps({ cta: "test", cta_variant: true });
       const meta = wrapper.find(VariantMeta).shallow();
       assert.equal(meta.find(".cta-button").text(), "test");
+    });
+
+    it("should not render Sponsored by label in footer for spoc item with cta button variant", () => {
+      wrapper.setProps({
+        cta: "test",
+        context: "Sponsored by test",
+        cta_variant: true,
+      });
+
+      assert.ok(wrapper.find(VariantMeta).exists());
+      assert.notOk(wrapper.find(DSContextFooter).exists());
+    });
+
+    it("should render sponsor text on top for spoc item and cta_variant true", () => {
+      wrapper.setProps({
+        sponsor: "Test",
+        context: "Sponsored by test",
+        cta_variant: true,
+      });
+
+      assert.ok(wrapper.find(VariantMeta).exists());
+      const meta = wrapper.find(VariantMeta).shallow();
+      assert.equal(meta.find(".source").text(), "Test · Sponsored");
     });
   });
 });
