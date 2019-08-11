@@ -7,6 +7,7 @@ import { DSImage } from "../DSImage/DSImage.jsx";
 import { DSLinkMenu } from "../DSLinkMenu/DSLinkMenu";
 import { ImpressionStats } from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
+import ReactDOM from "react-dom";
 import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 import { DSContextFooter } from "../DSContextFooter/DSContextFooter.jsx";
 
@@ -15,6 +16,37 @@ export class DSCard extends React.PureComponent {
     super(props);
 
     this.onLinkClick = this.onLinkClick.bind(this);
+
+    this.state = {
+      isSeen: false,
+    };
+  }
+
+  onSeen(entries) {
+    if (this.state) {
+      const entry = entries.find(e => e.isIntersecting);
+
+      if (entry) {
+        this.setState({
+          isSeen: true,
+        });
+
+        // Stop observing since element has been seen
+        this.observer.unobserve(ReactDOM.findDOMNode(this));
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.observer = new IntersectionObserver(this.onSeen.bind(this));
+    this.observer.observe(ReactDOM.findDOMNode(this));
+  }
+
+  componentWillUnmount() {
+    // Remove observer on unmount
+    if (this.observer) {
+      this.observer.unobserve(ReactDOM.findDOMNode(this));
+    }
   }
 
   onLinkClick(event) {
@@ -46,8 +78,11 @@ export class DSCard extends React.PureComponent {
   }
 
   render() {
+    if (this.props.placeholder || !this.state.isSeen) {
+      return <div className="ds-card placeholder" />;
+    }
     return (
-      <div className={`ds-card${this.props.placeholder ? " placeholder" : ""}`}>
+      <div className="ds-card">
         <SafeAnchor
           className="ds-card-link"
           dispatch={this.props.dispatch}
@@ -89,20 +124,18 @@ export class DSCard extends React.PureComponent {
             source={this.props.type}
           />
         </SafeAnchor>
-        {!this.props.placeholder && (
-          <DSLinkMenu
-            id={this.props.id}
-            index={this.props.pos}
-            dispatch={this.props.dispatch}
-            url={this.props.url}
-            title={this.props.title}
-            source={this.props.source}
-            type={this.props.type}
-            pocket_id={this.props.pocket_id}
-            shim={this.props.shim}
-            bookmarkGuid={this.props.bookmarkGuid}
-          />
-        )}
+        <DSLinkMenu
+          id={this.props.id}
+          index={this.props.pos}
+          dispatch={this.props.dispatch}
+          url={this.props.url}
+          title={this.props.title}
+          source={this.props.source}
+          type={this.props.type}
+          pocket_id={this.props.pocket_id}
+          shim={this.props.shim}
+          bookmarkGuid={this.props.bookmarkGuid}
+        />
       </div>
     );
   }
