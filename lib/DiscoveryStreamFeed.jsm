@@ -332,7 +332,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (layout.spocs && layout.spocs.url) {
       sendUpdate({
         type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
-        data: layout.spocs.url,
+        data: layout.spocs,
       });
     }
   }
