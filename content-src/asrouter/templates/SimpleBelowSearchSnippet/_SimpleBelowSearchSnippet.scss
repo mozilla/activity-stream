@@ -105,6 +105,11 @@
     inset-inline-end: 20px;
     opacity: 1;
     top: 50%;
+
+    &:focus {
+      box-shadow: 0 0 0 3px $blue-40;
+      border-radius: 2px;
+    }
   }
 
   .title {
