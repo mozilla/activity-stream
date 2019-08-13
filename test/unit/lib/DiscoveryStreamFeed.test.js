@@ -294,6 +294,31 @@ describe("DiscoveryStreamFeed", () => {
         "https://spocs.getpocket.com/spocs"
       );
     });
+    it("should use local basic layout with hardcoded_layout and hardcoded_basic_layout being true", async () => {
+      feed.config.hardcoded_layout = true;
+      feed.config.hardcoded_basic_layout = true;
+      sandbox.stub(feed, "fetchLayout").returns(Promise.resolve(""));
+
+      await feed.loadLayout(feed.store.dispatch);
+
+      assert.notCalled(feed.fetchLayout);
+      assert.equal(
+        feed.store.getState().DiscoveryStream.spocs.spocs_endpoint,
+        "https://spocs.getpocket.com/spocs"
+      );
+      const { layout } = feed.store.getState().DiscoveryStream;
+      assert.equal(layout[0].components[2].properties.items, 3);
+    });
+    it("should use new spocs endpoint if in the config", async () => {
+      feed.config.spocs_endpoint = "https://spocs.getpocket.com/spocs2";
+
+      await feed.loadLayout(feed.store.dispatch);
+
+      assert.equal(
+        feed.store.getState().DiscoveryStream.spocs.spocs_endpoint,
+        "https://spocs.getpocket.com/spocs2"
+      );
+    });
     it("should fetch local layout for invalid layout endpoint or when fetch layout fails", async () => {
       feed.config.hardcoded_layout = false;
       fetchStub.resolves({ ok: false });
