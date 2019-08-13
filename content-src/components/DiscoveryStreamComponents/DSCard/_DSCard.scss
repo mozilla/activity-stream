@@ -104,7 +104,7 @@ $excerpt-line-height: 20;
     .excerpt {
       // show only 3 lines of copy
       @include limit-visibile-lines(
-        3,
+        4,
         $excerpt-line-height,
         $excerpt-font-size
       );
