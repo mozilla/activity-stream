@@ -956,6 +956,22 @@ describe("Reducers", () => {
       assert.equal(state.spocs.spocs_endpoint, "foo.com");
       assert.equal(state.spocs.spocs_per_domain, 2);
     });
+    it("should use initial state with DISCOVERY_STREAM_SPOCS_PLACEMENTS", () => {
+      const state = DiscoveryStream(undefined, {
+        type: at.DISCOVERY_STREAM_SPOCS_PLACEMENTS,
+        data: {},
+      });
+      assert.deepEqual(state.spocs.placements, []);
+    });
+    it("should set placements with DISCOVERY_STREAM_SPOCS_PLACEMENTS", () => {
+      const state = DiscoveryStream(undefined, {
+        type: at.DISCOVERY_STREAM_SPOCS_PLACEMENTS,
+        data: {
+          placements: [1, 2, 3],
+        },
+      });
+      assert.deepEqual(state.spocs.placements, [1, 2, 3]);
+    });
     it("should set spocs with DISCOVERY_STREAM_SPOCS_UPDATE", () => {
       const data = {
         lastUpdated: 123,
@@ -973,6 +989,7 @@ describe("Reducers", () => {
         loaded: true,
         frequency_caps: [],
         blocked: [],
+        placements: [],
       });
     });
     it("should handle no data from DISCOVERY_STREAM_SPOCS_UPDATE", () => {

@@ -68,6 +68,7 @@ const INITIAL_STATE = {
       loaded: false,
       frequency_caps: [],
       blocked: [],
+      placements: [],
     },
   },
   Search: {
@@ -596,13 +597,23 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
       return {
         ...prevState,
         spocs: {
-          ...INITIAL_STATE.DiscoveryStream.spocs,
+          ...prevState.spocs,
           spocs_endpoint:
             action.data.url ||
             INITIAL_STATE.DiscoveryStream.spocs.spocs_endpoint,
           spocs_per_domain:
             action.data.spocs_per_domain ||
             INITIAL_STATE.DiscoveryStream.spocs.spocs_per_domain,
+        },
+      };
+    case at.DISCOVERY_STREAM_SPOCS_PLACEMENTS:
+      return {
+        ...prevState,
+        spocs: {
+          ...prevState.spocs,
+          placements:
+            action.data.placements ||
+            INITIAL_STATE.DiscoveryStream.spocs.placements,
         },
       };
     case at.DISCOVERY_STREAM_SPOCS_UPDATE:

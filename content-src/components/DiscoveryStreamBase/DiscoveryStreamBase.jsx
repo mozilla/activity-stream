@@ -122,16 +122,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           />
         );
       case "TextPromo":
-        return (
-          <DSTextPromo
-            image={component.properties.image_src}
-            alt_text={component.properties.alt_text}
-            header={component.properties.excerpt}
-            cta_text={component.properties.cta_text}
-            cta_url={component.properties.cta_url}
-            subtitle={component.properties.context}
-          />
-        );
+        return <DSTextPromo data={component.data} />;
       case "Message":
         return (
           <DSMessage
