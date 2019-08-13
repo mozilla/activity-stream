@@ -5,8 +5,10 @@
 import React from "react";
 import { Interrupt } from "./Interrupt";
 import { Triplets } from "./Triplets";
-import { actionCreators as ac, actionTypes as at } from "common/Actions.jsm";
-import { addUtmParams } from "./addUtmParams";
+import { BASE_PARAMS } from "./addUtmParams";
+
+// Note: should match the transition time on .trailheadCards in _Trailhead.scss
+const TRANSITION_LENGTH = 500;
 
 export const FLUENT_FILES = [
   "branding/brand.ftl",
@@ -16,8 +18,9 @@ export const FLUENT_FILES = [
 ];
 
 export const helpers = {
-  selectInterruptAndTriplets(message = {}) {
-    const hasInterrupt = Boolean(message.content);
+  selectInterruptAndTriplets(message = {}, interruptCleared) {
+    const hasInterrupt =
+      interruptCleared === true ? false : Boolean(message.content);
     const hasTriplets = Boolean(message.bundle && message.bundle.length);
     const UTMTerm = message.utm_term || "";
     return {
@@ -35,37 +38,6 @@ export const helpers = {
       link.href = file;
       link.rel = "localization";
     });
-  },
-
-  async fetchFlowParams({ fxaEndpoint, UTMTerm, dispatch, setFlowParams }) {
-    try {
-      const url = new URL(
-        `${fxaEndpoint}/metrics-flow?entrypoint=activity-stream-firstrun&form_type=email`
-      );
-      addUtmParams(url, UTMTerm);
-      const response = await fetch(url, { credentials: "omit" });
-      if (response.status === 200) {
-        const { deviceId, flowId, flowBeginTime } = await response.json();
-        setFlowParams({ deviceId, flowId, flowBeginTime });
-      } else {
-        dispatch(
-          ac.OnlyToMain({
-            type: at.TELEMETRY_UNDESIRED_EVENT,
-            data: {
-              event: "FXA_METRICS_FETCH_ERROR",
-              value: response.status,
-            },
-          })
-        );
-      }
-    } catch (error) {
-      dispatch(
-        ac.OnlyToMain({
-          type: at.TELEMETRY_UNDESIRED_EVENT,
-          data: { event: "FXA_METRICS_ERROR" },
-        })
-      );
-    }
   },
 };
 
@@ -100,18 +72,22 @@ export class FirstRun extends React.PureComponent {
   }
 
   static getDerivedStateFromProps(props, state) {
-    const { message } = props;
-    if (message && message.id !== state.prevMessageId) {
+    const { message, interruptCleared } = props;
+    if (
+      interruptCleared !== state.prevInterruptCleared ||
+      (message && message.id !== state.prevMessageId)
+    ) {
       const {
         hasTriplets,
         hasInterrupt,
         interrupt,
         triplets,
         UTMTerm,
-      } = helpers.selectInterruptAndTriplets(message);
+      } = helpers.selectInterruptAndTriplets(message, interruptCleared);
 
       return {
         prevMessageId: message.id,
+        prevInterruptCleared: interruptCleared,
 
         hasInterrupt,
         hasTriplets,
@@ -129,17 +105,18 @@ export class FirstRun extends React.PureComponent {
     return null;
   }
 
-  fetchFlowParams() {
-    const { fxaEndpoint, dispatch } = this.props;
+  async fetchFlowParams() {
+    const { fxaEndpoint, fetchFlowParams } = this.props;
     const { UTMTerm } = this.state;
     if (fxaEndpoint && UTMTerm && !this.didLoadFlowParams) {
       this.didLoadFlowParams = true;
-      helpers.fetchFlowParams({
-        fxaEndpoint,
-        UTMTerm,
-        dispatch,
-        setFlowParams: flowParams => this.setState({ flowParams }),
+      const flowParams = await fetchFlowParams({
+        ...BASE_PARAMS,
+        entrypoint: "activity-stream-firstrun",
+        form_type: "email",
+        utm_term: UTMTerm,
       });
+      this.setState({ flowParams });
     }
   }
 
@@ -171,6 +148,11 @@ export class FirstRun extends React.PureComponent {
 
   closeTriplets() {
     this.setState({ isTripletsContainerVisible: false });
+
+    // Closing triplets should prevent any future extended triplets from showing up
+    setTimeout(() => {
+      this.props.onBlockById("EXTENDED_TRIPLETS_1");
+    }, TRANSITION_LENGTH);
   }
 
   render() {
@@ -202,6 +184,7 @@ export class FirstRun extends React.PureComponent {
             onNextScene={this.closeInterrupt}
             UTMTerm={UTMTerm}
             sendUserActionTelemetry={sendUserActionTelemetry}
+            executeAction={executeAction}
             dispatch={dispatch}
             flowParams={flowParams}
             onDismiss={this.closeInterrupt}

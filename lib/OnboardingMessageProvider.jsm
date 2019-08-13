@@ -3,10 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 /* globals Localization */
-const { AttributionCode } = ChromeUtils.import(
+ChromeUtils.defineModuleGetter(
+  this,
+  "AttributionCode",
   "resource:///modules/AttributionCode.jsm"
 );
-const { AddonRepository } = ChromeUtils.import(
+ChromeUtils.defineModuleGetter(
+  this,
+  "AddonRepository",
   "resource://gre/modules/addons/AddonRepository.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
@@ -99,6 +103,20 @@ const ONBOARDING_MESSAGES = () => [
     trigger: { id: "firstRun" },
   },
   {
+    id: "EXTENDED_TRIPLETS_1",
+    template: "extended_triplets",
+    campaign: "firstrun_triplets",
+    targeting:
+      "trailheadTriplet && ((currentDate|date - profileAgeCreated) / 86400000) < 7",
+    includeBundle: {
+      length: 3,
+      template: "onboarding",
+      trigger: { id: "showOnboarding" },
+    },
+    frequency: { lifetime: 20 },
+    utm_term: "trailhead-cards",
+  },
+  {
     id: "TRAILHEAD_CARD_1",
     template: "onboarding",
     bundled: 3,
@@ -131,7 +149,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_2",
     template: "onboarding",
     bundled: 3,
-    order: 2,
+    order: 1,
     content: {
       title: { string_id: "onboarding-data-sync-title" },
       text: { string_id: "onboarding-data-sync-text2" },
@@ -156,7 +174,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_3",
     template: "onboarding",
     bundled: 3,
-    order: 3,
+    order: 2,
     content: {
       title: { string_id: "onboarding-firefox-monitor-title" },
       text: { string_id: "onboarding-firefox-monitor-text" },
@@ -213,7 +231,7 @@ const ONBOARDING_MESSAGES = () => [
     id: "TRAILHEAD_CARD_6",
     template: "onboarding",
     bundled: 3,
-    order: 1,
+    order: 3,
     content: {
       title: { string_id: "onboarding-mobile-phone-title" },
       text: { string_id: "onboarding-mobile-phone-text" },
@@ -365,6 +383,31 @@ const ONBOARDING_MESSAGES = () => [
     targeting:
       "attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
     trigger: { id: "firstRun" },
+  },
+  {
+    id: "FXA_ACCOUNTS_BADGE",
+    template: "toolbar_badge",
+    content: {
+      delay: 10000, // delay for 10 seconds
+      target: "fxa-toolbar-menu-button",
+    },
+    // Never accessed the FxA panel && doesn't use Firefox sync & has FxA enabled
+    targeting: `isFxABadgeEnabled && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true`,
+    trigger: { id: "toolbarBadgeUpdate" },
+  },
+  {
+    id: "PROTECTIONS_PANEL_1",
+    template: "protections_panel",
+    content: {
+      title: "Browse without being followed",
+      body:
+        "Keep your data to yourself. Firefox protects you from many of the most common trackers that follow what you do online.",
+      link_text: "Learn more",
+      cta_url: `${Services.urlFormatter.formatURLPref(
+        "app.support.baseURL"
+      )}etp-promotions?as=u&utm_source=inproduct`,
+    },
+    trigger: { id: "protectionsPanelOpen" },
   },
 ];
 

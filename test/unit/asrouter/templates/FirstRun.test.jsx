@@ -1,5 +1,4 @@
 import {
-  helpers,
   FirstRun,
   FLUENT_FILES,
 } from "content-src/asrouter/templates/FirstRun/FirstRun";
@@ -45,9 +44,12 @@ describe("<FirstRun>", () => {
   let message;
   let fakeDoc;
   let sandbox;
+  let clock;
+  let onBlockByIdStub;
 
   async function setup() {
     sandbox = sinon.createSandbox();
+    clock = sandbox.useFakeTimers();
     message = await getTestMessage("TRAILHEAD_1");
     fakeDoc = {
       body: document.createElement("body"),
@@ -56,6 +58,7 @@ describe("<FirstRun>", () => {
       getElementById: () => document.createElement("div"),
       activeElement: document.createElement("div"),
     };
+    onBlockByIdStub = sandbox.stub();
 
     sandbox
       .stub(global, "fetch")
@@ -72,6 +75,7 @@ describe("<FirstRun>", () => {
         document={fakeDoc}
         dispatch={() => {}}
         sendUserActionTelemetry={() => {}}
+        onBlockById={onBlockByIdStub}
       />
     );
   }
@@ -133,42 +137,59 @@ describe("<FirstRun>", () => {
     });
   });
 
+  it("should pass along executeAction appropriately", () => {
+    const stub = sandbox.stub();
+    wrapper = mount(
+      <FirstRun message={message} document={fakeDoc} executeAction={stub} />
+    );
+
+    assert.propertyVal(wrapper.find(Interrupt).props(), "executeAction", stub);
+    assert.propertyVal(wrapper.find(Triplets).props(), "onAction", stub);
+  });
+
   it("should load flow params on mount if fxaEndpoint is defined", () => {
-    const spy = sandbox.spy(helpers, "fetchFlowParams");
+    const stub = sandbox.stub();
     wrapper = mount(
       <FirstRun
         message={message}
         document={fakeDoc}
         dispatch={() => {}}
+        fetchFlowParams={stub}
         fxaEndpoint="https://foo.com"
       />
     );
-    assert.calledOnce(spy);
+    assert.calledOnce(stub);
   });
 
   it("should load flow params onUpdate if fxaEndpoint is not defined on mount and then later defined", () => {
-    const spy = sandbox.spy(helpers, "fetchFlowParams");
+    const stub = sandbox.stub();
     wrapper = mount(
-      <FirstRun message={message} document={fakeDoc} dispatch={() => {}} />
+      <FirstRun
+        message={message}
+        document={fakeDoc}
+        fetchFlowParams={stub}
+        dispatch={() => {}}
+      />
     );
-    assert.notCalled(spy);
+    assert.notCalled(stub);
     wrapper.setProps({ fxaEndpoint: "https://foo.com" });
-    assert.calledOnce(spy);
+    assert.calledOnce(stub);
   });
 
   it("should not load flow params again onUpdate if they were already set", () => {
-    const spy = sandbox.spy(helpers, "fetchFlowParams");
+    const stub = sandbox.stub();
     wrapper = mount(
       <FirstRun
         message={message}
         document={fakeDoc}
         dispatch={() => {}}
+        fetchFlowParams={stub}
         fxaEndpoint="https://foo.com"
       />
     );
     wrapper.setProps({ foo: "bar" });
     wrapper.setProps({ foo: "baz" });
-    assert.calledOnce(spy);
+    assert.calledOnce(stub);
   });
 
   it("should load fluent files on mount", () => {
@@ -192,7 +213,14 @@ describe("<FirstRun>", () => {
     );
   });
 
-  it("should hide triplets when closeTriplets is called", () => {
+  it("should hide the interrupt when props.interruptCleared changes to true", () => {
+    assert.lengthOf(wrapper.find(Interrupt), 1, "Interrupt shown");
+    wrapper.setProps({ interruptCleared: true });
+
+    assert.lengthOf(wrapper.find(Interrupt), 0, "Interrupt hidden");
+  });
+
+  it("should hide triplets when closeTriplets is called and block extended triplets after 500ms", () => {
     // Simulate calling next scene
     wrapper
       .find(Triplets)
@@ -206,5 +234,9 @@ describe("<FirstRun>", () => {
         .hasClass("show"),
       "Show triplet content"
     );
+
+    assert.notCalled(onBlockByIdStub);
+    clock.tick(500);
+    assert.calledWith(onBlockByIdStub, "EXTENDED_TRIPLETS_1");
   });
 });

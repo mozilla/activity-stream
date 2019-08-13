@@ -156,6 +156,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             type={component.type}
             dispatch={this.props.dispatch}
             items={component.properties.items}
+            cta_variant={component.cta_variant}
           />
         );
       case "Hero":
