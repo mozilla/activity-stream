@@ -306,6 +306,8 @@ describe("DiscoveryStreamFeed", () => {
         feed.store.getState().DiscoveryStream.spocs.spocs_endpoint,
         "https://spocs.getpocket.com/spocs"
       );
+      const { layout } = feed.store.getState().DiscoveryStream;
+      assert.equal(layout[0].components[2].properties.items, 3);
     });
     it("should use new spocs endpoint if in the config", async () => {
       feed.config.spocs_endpoint = "https://spocs.getpocket.com/spocs2";
