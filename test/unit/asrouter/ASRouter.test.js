@@ -1876,7 +1876,6 @@ describe("ASRouter", () => {
       it("should add/remove observers for `webextension-install-notify`", async () => {
         sandbox.spy(global.Services.obs, "addObserver");
         sandbox.spy(global.Services.obs, "removeObserver");
-        sandbox.spy(Router, "blockMessageById");
 
         sandbox.stub(MessageLoaderUtils, "installAddonFromURL").resolves(null);
         const msg = fakeExecuteUserAction({
@@ -1894,8 +1893,6 @@ describe("ASRouter", () => {
 
         assert.calledOnce(global.Services.obs.removeObserver);
         assert.calledOnce(channel.sendAsyncMessage);
-        assert.calledOnce(Router.blockMessageById);
-        assert.calledWithExactly(Router.blockMessageById, "RETURN_TO_AMO_1");
       });
     });
 
