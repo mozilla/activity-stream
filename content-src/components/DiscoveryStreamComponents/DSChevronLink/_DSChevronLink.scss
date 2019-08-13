@@ -1,6 +1,7 @@
 .ds-chevron-link {
   color: $blue-60;
   display: inline-block;
+  outline: 0;
 
   &:hover {
     text-decoration: underline;
