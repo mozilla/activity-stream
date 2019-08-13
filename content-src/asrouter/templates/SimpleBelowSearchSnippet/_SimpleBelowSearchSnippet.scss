@@ -29,6 +29,7 @@
 
         .blockButton {
           display: block;
+          opacity: 1;
 
           // larger inset if discovery stream is enabled.
           .ds-outer-wrapper-breakpoint-override & {
@@ -107,7 +108,7 @@
     top: 50%;
 
     &:focus {
-      box-shadow: 0 0 0 3px $blue-40;
+      box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
       border-radius: 2px;
     }
   }
@@ -154,11 +155,16 @@
     background-color: transparent;
 
     .blockButton {
-      display: none;
+      display: block;
       inset-inline-end: -15%;
-      opacity: 1;
+      opacity: 0;
       margin: auto;
       top: unset;
+
+      &:focus {
+        opacity: 1;
+        box-shadow: none;
+      }
 
       @media (max-width: 1120px) {
         inset-inline-end: 2%;
