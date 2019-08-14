@@ -257,16 +257,16 @@ class _ToolbarBadgeHub {
   }
 
   registerBadgeToAllWindows(message) {
-    // Impression should be added when the badge becomes visible
-    this._addImpression(message);
-    // Send a telemetry ping when adding the notification badge
-    this.sendUserEventTelemetry("IMPRESSION", message);
-
     if (message.template === "update_action") {
       this.executeAction({ ...message.content.action, message_id: message.id });
       // No badge to set only an action to execute
       return;
     }
+
+    // Impression should be added when the badge becomes visible
+    this._addImpression(message);
+    // Send a telemetry ping when adding the notification badge
+    this.sendUserEventTelemetry("IMPRESSION", message);
 
     EveryWindow.registerCallback(
       this.id,
