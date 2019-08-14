@@ -55,6 +55,12 @@ const FETCH_TIMEOUT = 45 * 1000;
 const PREF_CONFIG = "discoverystream.config";
 const PREF_ENDPOINTS = "discoverystream.endpoints";
 const PREF_IMPRESSION_ID = "browser.newtabpage.activity-stream.impressionId";
+const PREF_ENABLED =
+  "browser.newtabpage.activity-stream.discoverystream.enabled";
+const PREF_HARDCODED_BASIC_LAYOUT =
+  "browser.newtabpage.activity-stream.discoverystream.hardcoded-basic-layout";
+const PREF_SPOCS_ENDPOINT =
+  "browser.newtabpage.activity-stream.discoverystream.spocs-endpoint";
 const PREF_TOPSTORIES = "feeds.section.topstories";
 const PREF_SPOCS_CLEAR_ENDPOINT = "discoverystream.endpointSpocsClear";
 const PREF_SHOW_SPONSORED = "showSponsored";
@@ -148,6 +154,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         `Could not parse preference. Try resetting ${PREF_CONFIG} in about:config. ${e}`
       );
     }
+    this._prefCache.config.enabled =
+      this._prefCache.config.enabled &&
+      Services.prefs.getBoolPref(PREF_ENABLED, false);
     return this._prefCache.config;
   }
 
@@ -331,15 +340,24 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
 
     if (!layout || !layout.layout) {
-      if (this.config.hardcoded_basic_layout) {
+      if (
+        this.config.hardcoded_basic_layout ||
+        Services.prefs.getBoolPref(PREF_HARDCODED_BASIC_LAYOUT, false)
+      ) {
         layout = { lastUpdate: Date.now(), ...basicLayoutResp };
       } else {
         layout = { lastUpdate: Date.now(), ...defaultLayoutResp };
       }
     }
 
-    if (layout.spocs && this.config.spocs_endpoint) {
-      layout.spocs.url = this.config.spocs_endpoint;
+    if (
+      layout.spocs &&
+      (this.config.spocs_endpoint ||
+        Services.prefs.getCharPref(PREF_SPOCS_ENDPOINT, ""))
+    ) {
+      layout.spocs.url =
+        this.config.spocs_endpoint ||
+        Services.prefs.getCharPref(PREF_SPOCS_ENDPOINT, "");
     }
 
     sendUpdate({
