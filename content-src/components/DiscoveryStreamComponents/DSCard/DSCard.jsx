@@ -57,7 +57,7 @@ export const VariantMeta = ({
       <header className="title clamp">{title}</header>
       {excerpt && <p className="excerpt clamp">{excerpt}</p>}
     </div>
-    {cta && <button className="button cta-button">{cta}</button>}
+    {context && cta && <button className="button cta-button">{cta}</button>}
     {!context && (
       <DSContextFooter
         context_type={context_type}
