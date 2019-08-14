@@ -17,6 +17,7 @@ export const DefaultMeta = ({
   context,
   context_type,
   cta,
+  engagement,
 }) => (
   <div className="meta">
     <div className="info-wrap">
@@ -29,7 +30,11 @@ export const DefaultMeta = ({
         </div>
       )}
     </div>
-    <DSContextFooter context_type={context_type} context={context} />
+    <DSContextFooter
+      context_type={context_type}
+      context={context}
+      engagement={engagement}
+    />
   </div>
 );
 
@@ -40,6 +45,7 @@ export const VariantMeta = ({
   context,
   context_type,
   cta,
+  engagement,
   sponsor,
 }) => (
   <div className="meta">
@@ -51,9 +57,13 @@ export const VariantMeta = ({
       <header className="title clamp">{title}</header>
       {excerpt && <p className="excerpt clamp">{excerpt}</p>}
     </div>
-    {cta && <button className="button cta-button">{cta}</button>}
+    {context && cta && <button className="button cta-button">{cta}</button>}
     {!context && (
-      <DSContextFooter context_type={context_type} context={context} />
+      <DSContextFooter
+        context_type={context_type}
+        context={context}
+        engagement={engagement}
+      />
     )}
   </div>
 );
@@ -159,6 +169,7 @@ export class DSCard extends React.PureComponent {
               excerpt={this.props.excerpt}
               context={this.props.context}
               context_type={this.props.context_type}
+              engagement={this.props.engagement}
               cta={this.props.cta}
               sponsor={this.props.sponsor}
             />
@@ -169,6 +180,7 @@ export class DSCard extends React.PureComponent {
               title={this.props.title}
               excerpt={this.props.excerpt}
               context={this.props.context}
+              engagement={this.props.engagement}
               context_type={this.props.context_type}
               cta={this.props.cta}
             />
