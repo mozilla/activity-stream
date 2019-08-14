@@ -178,8 +178,18 @@ describe("<DSCard>", () => {
       assert.equal(meta.find(".cta-link").text(), "test");
     });
 
-    it("should render cta-button when item has cta and cta button variant is true", () => {
+    it("should not render cta-button for non spoc content", () => {
       wrapper.setProps({ cta: "test", cta_variant: true });
+      const meta = wrapper.find(VariantMeta);
+      assert.lengthOf(meta.find(".cta-button"), 0);
+    });
+
+    it("should render cta-button when item has cta and cta button variant is true and is spoc", () => {
+      wrapper.setProps({
+        cta: "test",
+        cta_variant: true,
+        context: "Sponsored by Foo",
+      });
       const meta = wrapper.find(VariantMeta);
       assert.equal(meta.find(".cta-button").text(), "test");
     });
