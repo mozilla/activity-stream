@@ -55,6 +55,9 @@ const FETCH_TIMEOUT = 45 * 1000;
 const PREF_CONFIG = "discoverystream.config";
 const PREF_ENDPOINTS = "discoverystream.endpoints";
 const PREF_IMPRESSION_ID = "browser.newtabpage.activity-stream.impressionId";
+const PREF_ENABLED = "discoverystream.enabled";
+const PREF_HARDCODED_BASIC_LAYOUT = "discoverystream.hardcoded-basic-layout";
+const PREF_SPOCS_ENDPOINT = "discoverystream.spocs-endpoint";
 const PREF_TOPSTORIES = "feeds.section.topstories";
 const PREF_SPOCS_CLEAR_ENDPOINT = "discoverystream.endpointSpocsClear";
 const PREF_SHOW_SPONSORED = "showSponsored";
@@ -148,6 +151,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         `Could not parse preference. Try resetting ${PREF_CONFIG} in about:config. ${e}`
       );
     }
+    this._prefCache.config.enabled =
+      this._prefCache.config.enabled &&
+      this.store.getState().Prefs.values[PREF_ENABLED];
+
     return this._prefCache.config;
   }
 
@@ -331,15 +338,24 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
 
     if (!layout || !layout.layout) {
-      if (this.config.hardcoded_basic_layout) {
+      if (
+        this.config.hardcoded_basic_layout ||
+        this.store.getState().Prefs.values[PREF_HARDCODED_BASIC_LAYOUT]
+      ) {
         layout = { lastUpdate: Date.now(), ...basicLayoutResp };
       } else {
         layout = { lastUpdate: Date.now(), ...defaultLayoutResp };
       }
     }
 
-    if (layout.spocs && this.config.spocs_endpoint) {
-      layout.spocs.url = this.config.spocs_endpoint;
+    if (
+      layout.spocs &&
+      (this.store.getState().Prefs.values[PREF_SPOCS_ENDPOINT] ||
+        this.config.spocs_endpoint)
+    ) {
+      layout.spocs.url =
+        this.store.getState().Prefs.values[PREF_SPOCS_ENDPOINT] ||
+        this.config.spocs_endpoint;
     }
 
     sendUpdate({
@@ -1247,6 +1263,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       case at.PREF_CHANGED:
         switch (action.data.name) {
           case PREF_CONFIG:
+          case PREF_ENABLED:
+          case PREF_HARDCODED_BASIC_LAYOUT:
+          case PREF_SPOCS_ENDPOINT:
             // Clear the cached config and broadcast the newly computed value
             this._prefCache.config = null;
             this.store.dispatch(
@@ -1439,7 +1458,7 @@ basicLayoutResp = {
           feed: {
             embed_reference: null,
             url:
-              "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=40249-e88c401e1b1f2242d9e441c4&locale_lang=en-US&feed_variant=default_spocs_on",
+              "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=default_spocs_on",
           },
           spocs: {
             probability: 1,
