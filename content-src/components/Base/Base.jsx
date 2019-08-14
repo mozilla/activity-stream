@@ -19,6 +19,7 @@ const PrefsButton = props => (
       className="icon icon-settings"
       onClick={props.onClick}
       data-l10n-id="newtab-settings-button"
+      tabIndex="1"
     />
   </div>
 );

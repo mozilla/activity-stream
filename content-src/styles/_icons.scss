@@ -76,6 +76,12 @@
 
   &.icon-settings {
     background-image: url('chrome://browser/skin/settings.svg');
+
+    &:focus {
+      border: $input-border-active;
+      border-radius: 2px;
+      box-shadow: var(--newtab-textbox-focus-boxshadow);
+    }
   }
 
   &.icon-pin {

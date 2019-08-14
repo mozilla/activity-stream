@@ -154,7 +154,7 @@ export class _Search extends React.PureComponent {
               data-l10n-id="newtab-search-box-search-the-web-input"
               ref={this.onSearchHandoffButtonMount}
               onClick={this.onSearchHandoffClick}
-              tabIndex="-1"
+              tabIndex="0"
             >
               <div
                 className="fake-textbox"
