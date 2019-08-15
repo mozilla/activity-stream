@@ -19,7 +19,7 @@ const PrefsButton = props => (
       className="icon icon-settings"
       onClick={props.onClick}
       data-l10n-id="newtab-settings-button"
-      tabIndex="1"
+      tabIndex="0"
     />
   </div>
 );
@@ -177,6 +177,7 @@ export class BaseContent extends React.PureComponent {
               dispatch={this.props.dispatch}
             />
             <div className={`body-wrapper${initialized ? " on" : ""}`}>
+              <PrefsButton onClick={this.openPreferences} />
               {isDiscoveryStream ? (
                 <ErrorBoundary className="borderless-error">
                   <DiscoveryStreamBase />
@@ -184,7 +185,6 @@ export class BaseContent extends React.PureComponent {
               ) : (
                 <Sections />
               )}
-              <PrefsButton onClick={this.openPreferences} />
             </div>
             <ConfirmDialog />
           </main>
