@@ -48,6 +48,11 @@ ChromeUtils.defineModuleGetter(
   "clearInterval",
   "resource://gre/modules/Timer.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "requestIdleCallback",
+  "resource://gre/modules/Timer.jsm"
+);
 
 // Frequency at which to check for new messages
 const SYSTEM_TICK_INTERVAL = 5 * 60 * 1000;
@@ -297,7 +302,7 @@ class _ToolbarBadgeHub {
 
     if (message.content.delay) {
       this.state.showBadgeTimeoutId = setTimeout(() => {
-        this.registerBadgeToAllWindows(message);
+        requestIdleCallback(() => this.registerBadgeToAllWindows(message));
       }, message.content.delay);
     } else {
       this.registerBadgeToAllWindows(message);
