@@ -353,9 +353,15 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       (this.store.getState().Prefs.values[PREF_SPOCS_ENDPOINT] ||
         this.config.spocs_endpoint)
     ) {
-      layout.spocs.url =
-        this.store.getState().Prefs.values[PREF_SPOCS_ENDPOINT] ||
-        this.config.spocs_endpoint;
+      layout = {
+        ...layout,
+        spocs: {
+          ...layout.spocs,
+          url:
+            this.store.getState().Prefs.values[PREF_SPOCS_ENDPOINT] ||
+            this.config.spocs_endpoint,
+        },
+      };
     }
 
     sendUpdate({
