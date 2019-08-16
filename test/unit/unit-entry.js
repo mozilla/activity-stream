@@ -307,6 +307,7 @@ const TEST_GLOBAL = {
     defineLazyModuleGetters() {},
     defineLazyServiceGetter() {},
     defineLazyServiceGetters() {},
+    defineLazyPreferenceGetter() {},
     generateQI() {
       return {};
     },
