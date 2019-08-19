@@ -742,6 +742,7 @@ class _ASRouter {
     ToolbarPanelHub.init(this.waitForInitialized, {
       getMessages: this.handleMessageRequest,
       dispatch: this.dispatch,
+      handleUserAction: this.handleUserAction,
     });
 
     this._loadLocalProviders();

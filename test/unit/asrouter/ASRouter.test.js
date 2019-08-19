@@ -214,6 +214,7 @@ describe("ASRouter", () => {
         {
           getMessages: Router.handleMessageRequest,
           dispatch: Router.dispatch,
+          handleUserAction: Router.handleUserAction,
         }
       );
 
