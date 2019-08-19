@@ -3,20 +3,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "Services",
-  "resource://gre/modules/Services.jsm"
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
 );
-ChromeUtils.defineModuleGetter(
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Services: "resource://gre/modules/Services.jsm",
+  EveryWindow: "resource:///modules/EveryWindow.jsm",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+});
+XPCOMUtils.defineLazyServiceGetter(
   this,
-  "EveryWindow",
-  "resource:///modules/EveryWindow.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm"
+  "TrackingDBService",
+  "@mozilla.org/tracking-db-service;1",
+  "nsITrackingDBService"
 );
 
 const WHATSNEW_ENABLED_PREF = "browser.messaging-system.whatsNewPanel.enabled";
@@ -153,6 +152,8 @@ class _ToolbarPanelHub {
 
     if (messages && !container.querySelector(".whatsNew-message")) {
       let previousDate = 0;
+      // Get and store any variable part of the message content
+      this.state.contentArguments = await this._contentArguments();
       for (let message of messages) {
         container.appendChild(
           this._createMessageElements(win, doc, message, previousDate)
@@ -217,14 +218,9 @@ class _ToolbarPanelHub {
       wrapperEl.appendChild(iconEl);
     }
 
-    const titleEl = this._createElement(doc, "h2");
-    titleEl.classList.add("whatsNew-message-title");
-    this._setString(doc, titleEl, content.title);
-    wrapperEl.appendChild(titleEl);
-
-    const bodyEl = this._createElement(doc, "p");
-    this._setString(doc, bodyEl, content.body);
-    wrapperEl.appendChild(bodyEl);
+    wrapperEl.appendChild(
+      this._addSpecialMessageTemplateElements(win, doc, content)
+    );
 
     if (content.link_text) {
       const linkEl = this._createElement(doc, "button");
@@ -234,6 +230,50 @@ class _ToolbarPanelHub {
     }
 
     return messageEl;
+  }
+
+  _createProtectionsPanelSubtitle(win, doc, content) {
+    const wrapperEl = new win.DocumentFragment();
+    const subTitleEl = this._createElement(doc, "h4");
+    subTitleEl.classList.add("whatsNew-message-subtitle");
+    this._setString(doc, subTitleEl, content.title);
+    wrapperEl.appendChild(subTitleEl);
+
+    const trackersBlocked = this._createElement(doc, "h2");
+    subTitleEl.classList.add("whatsNew-message-subtitle");
+    this._setString(doc, trackersBlocked, content.title);
+    wrapperEl.appendChild(trackersBlocked);
+
+    return wrapperEl;
+  }
+
+  _createMessageBody(doc, content) {
+    const bodyEl = this._createElement(doc, "p");
+    this._setString(doc, bodyEl, content.body);
+
+    return bodyEl;
+  }
+
+  _createMessageContent(win, doc, content) {
+    const wrapperEl = new win.DocumentFragment();
+
+    const titleEl = this._createElement(doc, "h2");
+    titleEl.classList.add("whatsNew-message-title");
+    this._setString(doc, titleEl, content.title);
+    wrapperEl.appendChild(titleEl);
+
+    switch (content.layout) {
+      case "tracking-protections":
+        wrapperEl.appendChild(
+          this._createProtectionsPanelSubtitle(win, doc, content)
+        );
+        wrapperEl.appendChild(this._createMessageBody(doc, content));
+        break;
+      default:
+        wrapperEl.appendChild(this._createMessageBody(doc, content));
+    }
+
+    return wrapperEl;
   }
 
   _createHeroElement(win, doc, content) {
@@ -253,14 +293,6 @@ class _ToolbarPanelHub {
         csp: null,
       });
     });
-    const titleEl = this._createElement(doc, "h2");
-    titleEl.classList.add("whatsNew-message-title");
-    this._setString(doc, titleEl, content.title);
-    wrapperEl.appendChild(titleEl);
-
-    const bodyEl = this._createElement(doc, "p");
-    this._setString(doc, bodyEl, content.body);
-    wrapperEl.appendChild(bodyEl);
 
     if (content.link_text) {
       const linkEl = this._createElement(doc, "button");
@@ -287,11 +319,24 @@ class _ToolbarPanelHub {
     return dateEl;
   }
 
+  async _contentArguments() {
+    return {
+      earliestDate: new Date(
+        await TrackingDBService.getEarliestRecordedDate()
+      ).getTime(),
+      "blocked-count": await TrackingDBService.sumAllEvents(),
+    };
+  }
+
   // If `string_id` is present it means we are relying on fluent for translations.
   // Otherwise, we have a vanilla string.
   _setString(doc, el, stringObj) {
     if (stringObj.string_id) {
-      doc.l10n.setAttributes(el, stringObj.string_id);
+      doc.l10n.setAttributes(
+        el,
+        stringObj.string_id,
+        this.state.contentArguments
+      );
     } else {
       el.textContent = stringObj;
     }
