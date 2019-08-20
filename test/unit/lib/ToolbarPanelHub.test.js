@@ -3,7 +3,7 @@ import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
 import { PanelTestProvider } from "lib/PanelTestProvider.jsm";
 
-describe("ToolbarPanelHub", () => {
+describe.only("ToolbarPanelHub", () => {
   let globals;
   let sandbox;
   let instance;
@@ -20,6 +20,8 @@ describe("ToolbarPanelHub", () => {
   let waitForInitializedStub;
   let isBrowserPrivateStub;
   let fakeDispatch;
+  let getEarliestRecordedDateStub;
+  let sumAllEventsStub;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -58,6 +60,10 @@ describe("ToolbarPanelHub", () => {
       },
     };
     fakeWindow = {
+      // eslint-disable-next-line object-shorthand
+      DocumentFragment: function() {
+        return fakeElementById;
+      },
       document: fakeDocument,
       browser: {
         ownerDocument: fakeDocument,
@@ -93,6 +99,12 @@ describe("ToolbarPanelHub", () => {
     });
     globals.set("PrivateBrowsingUtils", {
       isBrowserPrivate: isBrowserPrivateStub,
+    });
+    getEarliestRecordedDateStub = sandbox.stub();
+    sumAllEventsStub = sandbox.stub();
+    globals.set("TrackingDBService", {
+      getEarliestRecordedDate: getEarliestRecordedDateStub,
+      sumAllEvents: sumAllEventsStub,
     });
   });
   afterEach(() => {
