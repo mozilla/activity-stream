@@ -164,7 +164,7 @@ export class _TopSites extends React.PureComponent {
           dispatch={props.dispatch}
         >
           <TopSiteList
-            TopSites={props.TopSites}
+            TopSites={props.TopSitesWithSpoc || props.TopSites}
             TopSitesRows={props.TopSitesRows}
             dispatch={props.dispatch}
             topSiteIconType={topSiteIconType}

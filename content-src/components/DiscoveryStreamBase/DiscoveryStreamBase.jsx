@@ -114,7 +114,13 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "Highlights":
         return <Highlights />;
       case "TopSites":
-        return <TopSites header={component.header} />;
+        return (
+          <TopSites
+            header={component.header}
+            data={component.data}
+            promoAlignment={component.promo_alignment}
+          />
+        );
       case "TextPromo":
         return (
           <DSTextPromo
