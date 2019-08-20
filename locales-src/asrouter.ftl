@@ -93,7 +93,7 @@ cfr-whatsnew-button =
 # Message title
 cfr-whatsnew-tracking-protections-title = Trackers blocked
 # Message subtitle
-cfr-whatsnew-tracking-protections-subtitle = Since { DATETIME($earliestDate, day: "numeric", month: "long", year: "numeric") }
+cfr-whatsnew-tracking-protections-subtitle = Since { DATETIME($earliestDate, month: "long", year: "numeric") }
 
 cfr-whatsnew-panel-header = What’s New
 
