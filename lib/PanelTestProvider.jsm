@@ -135,7 +135,7 @@ const MESSAGES = () => [
       cta_url: "protections",
       cta_type: "OPEN_ABOUT_PAGE",
     },
-    targeting: `firefoxVersion > 69`,
+    targeting: `firefoxVersion > 69 && totalBlockedCount > 0`,
     trigger: { id: "whatsNewPanelOpened" },
   },
   {
