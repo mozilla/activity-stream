@@ -15,11 +15,12 @@
     margin: -4.5px 0 0;
   }
 
-  header {
+  h3 {
     @include dark-theme-only {
       color: $grey-10;
     }
 
+    margin: 0;
     font-weight: 600;
     font-size: 15px;
   }
@@ -75,7 +76,7 @@
     }
 
     content: ' ';
-    mask: url('resource://activity-stream/data/content/assets/glyph-caret-right.svg') 0 -8px no-repeat;
+    mask: url('#{$image-path}glyph-caret-right.svg') 0 -8px no-repeat;
     background-color: $blue-60;
     margin: 0 0 0 4px;
     width: 5px;
