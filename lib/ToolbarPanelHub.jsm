@@ -42,9 +42,10 @@ class _ToolbarPanelHub {
     this.state = null;
   }
 
-  async init(waitForInitialized, { getMessages, dispatch }) {
+  async init(waitForInitialized, { getMessages, dispatch, handleUserAction }) {
     this._getMessages = getMessages;
     this._dispatch = dispatch;
+    this._handleUserAction = handleUserAction;
     // Wait for ASRouter messages to become available in order to know
     // if we can show the What's New panel
     await waitForInitialized;
@@ -187,19 +188,16 @@ class _ToolbarPanelHub {
    */
   _attachClickListener(win, element, message) {
     element.addEventListener("click", () => {
-      switch (message.content.layout) {
-        case "tracking-protections":
-          win.switchToTabHavingURI(message.content.cta_url, true);
-          break;
-        default:
-          win.ownerGlobal.openLinkIn(message.content.cta_url, "tabshifted", {
-            private: false,
-            triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
-              {}
-            ),
-            csp: null,
-          });
-      }
+      this._handleUserAction({
+        target: win,
+        data: {
+          type: message.content.cta_type,
+          data: {
+            args: message.content.cta_url,
+            where: "tabshifted",
+          },
+        },
+      });
 
       this.sendUserEventTelemetry(win, "CLICK", message);
     });
@@ -294,28 +292,30 @@ class _ToolbarPanelHub {
     return wrapperEl;
   }
 
-  _createHeroElement(win, doc, content) {
+  _createHeroElement(win, doc, message) {
     const messageEl = this._createElement(doc, "div");
     messageEl.setAttribute("id", "protections-popup-message");
     messageEl.classList.add("whatsNew-hero-message");
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
-    wrapperEl.addEventListener("click", () => {
-      win.ownerGlobal.openLinkIn(content.cta_url, "tabshifted", {
-        private: false,
-        relatedToCurrent: true,
-        triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
-          {}
-        ),
-        csp: null,
-      });
-    });
 
-    if (content.link_text) {
+    this._attachClickListener(win, wrapperEl, message);
+
+    wrapperEl.appendChild(
+      this._createElement(doc, "h2", {
+        classList: "whatsNew-message-title",
+        content: message.content.title,
+      })
+    );
+    wrapperEl.appendChild(
+      this._createElement(doc, "p", { content: message.content.body })
+    );
+
+    if (message.content.link_text) {
       const linkEl = this._createElement(doc, "button");
       linkEl.classList.add("text-link");
-      this._setString(doc, linkEl, content.link_text);
+      this._setString(doc, linkEl, message.content.link_text);
       wrapperEl.appendChild(linkEl);
     }
 
@@ -456,7 +456,7 @@ class _ToolbarPanelHub {
         triggerId: "protectionsPanelOpen",
       });
       if (message) {
-        const messageEl = this._createHeroElement(win, doc, message.content);
+        const messageEl = this._createHeroElement(win, doc, message);
         container.appendChild(messageEl);
         infoButton.addEventListener("click", toggleMessage);
         this.sendUserEventTelemetry(win, "IMPRESSION", message.id);
