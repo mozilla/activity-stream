@@ -194,6 +194,7 @@ class _ToolbarPanelHub {
     }
 
     const wrapperEl = this._createElement(doc, "button");
+    // istanbul ignore next
     wrapperEl.doCommand = () => {};
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
