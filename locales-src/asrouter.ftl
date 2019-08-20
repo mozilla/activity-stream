@@ -90,6 +90,9 @@ cfr-whatsnew-button =
   .label = What’s New
   .tooltiptext = What’s New
 
+# This string is displayed before a large numeral that indicates the total number
+# of tracking elements blocked. Don’t add $blockedCount to
+# your localization, because it would result in the number showing twice.
 cfr-whatsnew-tracking-protections-title =
   { $blockedCount ->
     [one] Tracker blocked
