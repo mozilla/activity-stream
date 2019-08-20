@@ -1341,7 +1341,6 @@ defaultLayoutResp = {
       components: [
         {
           type: "CardGrid",
-          cta_variant: false,
           properties: {
             items: 21,
           },
