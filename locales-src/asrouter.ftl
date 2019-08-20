@@ -90,7 +90,11 @@ cfr-whatsnew-button =
   .label = What’s New
   .tooltiptext = What’s New
 
-cfr-whatsnew-tracking-protections-title = Trackers blocked
+cfr-whatsnew-tracking-protections-title =
+  { $blockedCount ->
+    [one] Tracker blocked
+   *[other] Trackers blocked
+  }
 cfr-whatsnew-tracking-protections-subtitle = Since { DATETIME($earliestDate, month: "long", year: "numeric") }
 
 cfr-whatsnew-panel-header = What’s New

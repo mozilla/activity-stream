@@ -337,7 +337,7 @@ class _ToolbarPanelHub {
   async _contentArguments() {
     let nf = new Services.intl.NumberFormat();
     return {
-      // Needs to match variable name used in asrouter.ftl
+      // Keys need to match variable names used in asrouter.ftl
       earliestDate: new Date(
         await TrackingDBService.getEarliestRecordedDate()
       ).getTime(),
