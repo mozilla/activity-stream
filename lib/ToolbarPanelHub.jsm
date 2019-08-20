@@ -182,6 +182,29 @@ class _ToolbarPanelHub {
     });
   }
 
+  /**
+   * Attach click event listener defined in message payload
+   */
+  _attachClickListener(win, element, message) {
+    element.addEventListener("click", () => {
+      switch (message.content.layout) {
+        case "tracking-protections":
+          win.switchToTabHavingURI(message.content.cta_url, true);
+          break;
+        default:
+          win.ownerGlobal.openLinkIn(message.content.cta_url, "tabshifted", {
+            private: false,
+            triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
+              {}
+            ),
+            csp: null,
+          });
+      }
+
+      this.sendUserEventTelemetry(win, "CLICK", message);
+    });
+  }
+
   _createMessageElements(win, doc, message, previousDate) {
     const { content } = message;
     const messageEl = this._createElement(doc, "div");
@@ -190,24 +213,23 @@ class _ToolbarPanelHub {
     // Only render date if it is different from the one rendered before.
     if (content.published_date !== previousDate) {
       messageEl.appendChild(
-        this._createDateElement(doc, content.published_date)
+        this._createElement(doc, "p", {
+          classList: "whatsNew-message-date",
+          content: new Date(content.published_date).toLocaleDateString(
+            "default",
+            {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            }
+          ),
+        })
       );
     }
 
     const wrapperEl = this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
-    wrapperEl.addEventListener("click", () => {
-      win.ownerGlobal.openLinkIn(content.cta_url, "tabshifted", {
-        private: false,
-        triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal(
-          {}
-        ),
-        csp: null,
-      });
-
-      this.sendUserEventTelemetry(win, "CLICK", message);
-    });
 
     if (content.icon_url) {
       wrapperEl.classList.add("has-icon");
@@ -218,60 +240,56 @@ class _ToolbarPanelHub {
       wrapperEl.appendChild(iconEl);
     }
 
-    wrapperEl.appendChild(
-      this._addSpecialMessageTemplateElements(win, doc, content)
-    );
+    wrapperEl.appendChild(this._createMessageContent(win, doc, content));
 
     if (content.link_text) {
-      const linkEl = this._createElement(doc, "button");
-      linkEl.classList.add("text-link");
-      this._setString(doc, linkEl, content.link_text);
-      wrapperEl.appendChild(linkEl);
+      wrapperEl.appendChild(
+        this._createElement(doc, "button", {
+          classList: "text-link",
+          content: content.link_text,
+        })
+      );
     }
+
+    // Attach event listener on entire message container
+    this._attachClickListener(win, wrapperEl, message);
 
     return messageEl;
   }
 
-  _createProtectionsPanelSubtitle(win, doc, content) {
-    const wrapperEl = new win.DocumentFragment();
-    const subTitleEl = this._createElement(doc, "h4");
-    subTitleEl.classList.add("whatsNew-message-subtitle");
-    this._setString(doc, subTitleEl, content.title);
-    wrapperEl.appendChild(subTitleEl);
-
-    const trackersBlocked = this._createElement(doc, "h2");
-    subTitleEl.classList.add("whatsNew-message-subtitle");
-    this._setString(doc, trackersBlocked, content.title);
-    wrapperEl.appendChild(trackersBlocked);
-
-    return wrapperEl;
-  }
-
-  _createMessageBody(doc, content) {
-    const bodyEl = this._createElement(doc, "p");
-    this._setString(doc, bodyEl, content.body);
-
-    return bodyEl;
-  }
-
+  /**
+   * Return message title (optional subtitle) and body
+   */
   _createMessageContent(win, doc, content) {
     const wrapperEl = new win.DocumentFragment();
 
-    const titleEl = this._createElement(doc, "h2");
-    titleEl.classList.add("whatsNew-message-title");
-    this._setString(doc, titleEl, content.title);
-    wrapperEl.appendChild(titleEl);
+    wrapperEl.appendChild(
+      this._createElement(doc, "h2", {
+        classList: "whatsNew-message-title",
+        content: content.title,
+      })
+    );
 
     switch (content.layout) {
       case "tracking-protections":
         wrapperEl.appendChild(
-          this._createProtectionsPanelSubtitle(win, doc, content)
+          this._createElement(doc, "h4", {
+            classList: "whatsNew-message-subtitle",
+            content: content.subtitle,
+          })
         );
-        wrapperEl.appendChild(this._createMessageBody(doc, content));
+        wrapperEl.appendChild(
+          this._createElement(doc, "h2", {
+            classList: "whatsNew-message-title",
+            content: this.state.contentArguments.blockedCount,
+          })
+        );
         break;
-      default:
-        wrapperEl.appendChild(this._createMessageBody(doc, content));
     }
+
+    wrapperEl.appendChild(
+      this._createElement(doc, "p", { content: content.body })
+    );
 
     return wrapperEl;
   }
@@ -304,27 +322,25 @@ class _ToolbarPanelHub {
     return messageEl;
   }
 
-  _createElement(doc, elem) {
-    return doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
-  }
+  _createElement(doc, elem, options = {}) {
+    const node = doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
+    if (options.classList) {
+      node.classList.add(options.classList);
+    }
+    if (options.content) {
+      this._setString(doc, node, options.content);
+    }
 
-  _createDateElement(doc, date) {
-    const dateEl = this._createElement(doc, "p");
-    dateEl.classList.add("whatsNew-message-date");
-    dateEl.textContent = new Date(date).toLocaleDateString("default", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-    return dateEl;
+    return node;
   }
 
   async _contentArguments() {
+    let nf = new Services.intl.NumberFormat();
     return {
       earliestDate: new Date(
         await TrackingDBService.getEarliestRecordedDate()
       ).getTime(),
-      "blocked-count": await TrackingDBService.sumAllEvents(),
+      blockedCount: nf.format(await TrackingDBService.sumAllEvents()),
     };
   }
 

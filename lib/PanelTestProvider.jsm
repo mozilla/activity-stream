@@ -124,12 +124,13 @@ const MESSAGES = () => [
     template: "whatsnew_panel_message",
     content: {
       published_date: 1560969794394,
+      layout: "tracking-protections",
       title: { string_id: "cfr-whatsnew-tracking-protections-title" },
       subtitle: { string_id: "cfr-whatsnew-tracking-protections-subtitle" },
       body:
         "Firefox blocks many common social and cross-site trackers that follow what you do online.",
-      link_text: "Learn more on our blog",
-      cta_url: "https://blog.mozilla.org/",
+      link_text: "View full protection report",
+      cta_url: "about:protections",
     },
     targeting: `firefoxVersion > 69`,
     trigger: { id: "whatsNewPanelOpened" },
