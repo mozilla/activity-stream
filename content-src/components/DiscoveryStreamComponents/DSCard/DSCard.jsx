@@ -166,7 +166,7 @@ export class DSCard extends React.PureComponent {
               rawSource={this.props.raw_image_src}
             />
           </div>
-          {isButtonCTA && (
+          {isButtonCTA ? (
             <CTAButtonMeta
               source={this.props.source}
               title={this.props.title}
@@ -177,8 +177,7 @@ export class DSCard extends React.PureComponent {
               cta={this.props.cta}
               sponsor={this.props.sponsor}
             />
-          )}
-          {!isButtonCTA && (
+          ) : (
             <DefaultMeta
               source={this.props.source}
               title={this.props.title}
