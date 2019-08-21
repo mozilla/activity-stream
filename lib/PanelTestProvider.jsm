@@ -122,6 +122,21 @@ const MESSAGES = () => [
     trigger: { id: "whatsNewPanelOpened" },
   },
   {
+    id: "WHATS_NEW_69_1",
+    template: "whatsnew_panel_message",
+    content: {
+      published_date: 1557346235089,
+      title: "Something new in Firefox 69",
+      body:
+        "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
+      link_text: "Learn more on our blog",
+      cta_url: "https://blog.mozilla.org/",
+      cta_type: "OPEN_URL",
+    },
+    targeting: `firefoxVersion > 68`,
+    trigger: { id: "whatsNewPanelOpened" },
+  },
+  {
     id: "WHATS_NEW_70_3",
     template: "whatsnew_panel_message",
     content: {
@@ -136,21 +151,6 @@ const MESSAGES = () => [
       cta_type: "OPEN_ABOUT_PAGE",
     },
     targeting: `firefoxVersion > 69 && totalBlockedCount > 0`,
-    trigger: { id: "whatsNewPanelOpened" },
-  },
-  {
-    id: "WHATS_NEW_69_1",
-    template: "whatsnew_panel_message",
-    content: {
-      published_date: 1557346235089,
-      title: "Something new in Firefox 69",
-      body:
-        "The New Enhanced Tracking Protection, gives you the best level of protection and performance. Discover how this version is the safest version of firefox ever made.",
-      link_text: "Learn more on our blog",
-      cta_url: "https://blog.mozilla.org/",
-      cta_type: "OPEN_URL",
-    },
-    targeting: `firefoxVersion > 68`,
     trigger: { id: "whatsNewPanelOpened" },
   },
 ];
