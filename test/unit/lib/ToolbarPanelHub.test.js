@@ -21,7 +21,7 @@ describe("ToolbarPanelHub", () => {
   let isBrowserPrivateStub;
   let fakeDispatch;
   let getEarliestRecordedDateStub;
-  let sumAllEventsStub;
+  let getEventsByDateRangeStub;
   let handleUserActionStub;
 
   beforeEach(async () => {
@@ -102,10 +102,13 @@ describe("ToolbarPanelHub", () => {
       isBrowserPrivate: isBrowserPrivateStub,
     });
     getEarliestRecordedDateStub = sandbox.stub();
-    sumAllEventsStub = sandbox.stub();
+    getEventsByDateRangeStub = sandbox.stub();
     globals.set("TrackingDBService", {
-      getEarliestRecordedDate: getEarliestRecordedDateStub,
-      sumAllEvents: sumAllEventsStub,
+      getEarliestRecordedDate: getEarliestRecordedDateStub.returns(
+        // A random date that's not the current timestamp
+        new Date() - 500
+      ),
+      getEventsByDateRange: getEventsByDateRangeStub.returns([]),
     });
     handleUserActionStub = sandbox.stub();
   });
@@ -325,6 +328,25 @@ describe("ToolbarPanelHub", () => {
         subtitle,
         message.content.subtitle.string_id,
         instance.state.contentArguments
+      );
+    });
+    it("should correctly compute blocker trackers and date", async () => {
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m => m.template === "whatsnew_panel_message"
+      );
+      getMessagesStub.returns(messages);
+      getEventsByDateRangeStub.returns([
+        { getResultByName: sandbox.stub().returns(2) },
+        { getResultByName: sandbox.stub().returns(3) },
+      ]);
+
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      assert.calledWithExactly(
+        fakeDocument.l10n.setAttributes,
+        sinon.match.object,
+        sinon.match.string,
+        { blockedCount: 5, earliestDate: getEarliestRecordedDateStub() }
       );
     });
     it("should only render unique dates (no duplicates)", async () => {
