@@ -352,6 +352,7 @@ class _ToolbarPanelHub {
       doc.l10n.setAttributes(
         el,
         stringObj.string_id,
+        // Pass all available arguments to Fluent
         this.state.contentArguments
       );
     } else {
