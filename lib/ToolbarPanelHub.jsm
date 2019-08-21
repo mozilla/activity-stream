@@ -340,12 +340,29 @@ class _ToolbarPanelHub {
 
   async _contentArguments() {
     let nf = new Services.intl.NumberFormat();
+    // Between now and 6 weeks ago
+    const dateTo = new Date();
+    const dateFrom = new Date(dateTo.getTime() - 42 * 24 * 60 * 60 * 1000);
+    const eventsByDate = await TrackingDBService.getEventsByDateRange(
+      dateFrom,
+      dateTo
+    );
+    // Count all events in the past 6 weeks
+    const totalEvents = eventsByDate.reduce(
+      (acc, day) => acc + day.getResultByName("count"),
+      0
+    );
     return {
       // Keys need to match variable names used in asrouter.ftl
+      // `earliestDate` will be either 6 weeks ago or when tracking recording
+      // started. Whichever is more recent.
       earliestDate: new Date(
-        await TrackingDBService.getEarliestRecordedDate()
+        Math.max(
+          new Date(await TrackingDBService.getEarliestRecordedDate()),
+          dateFrom
+        )
       ).getTime(),
-      blockedCount: nf.format(await TrackingDBService.sumAllEvents()),
+      blockedCount: nf.format(totalEvents),
     };
   }
 
