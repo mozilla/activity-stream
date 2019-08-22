@@ -14,6 +14,7 @@ ChromeUtils.defineModuleGetter(
   "resource://gre/modules/addons/AddonRepository.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const FIREFOX_VERSION = parseInt(Services.appinfo.version.match(/\d+/), 10);
 
 const L10N = new Localization([
   "branding/brand.ftl",
@@ -407,6 +408,29 @@ const ONBOARDING_MESSAGES = () => [
       )}etp-promotions?as=u&utm_source=inproduct`,
     },
     trigger: { id: "protectionsPanelOpen" },
+  },
+  {
+    id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
+    template: "toolbar_badge",
+    content: {
+      // delay: 5 * 3600 * 1000,
+      delay: 5000,
+      target: "whats-new-menu-button",
+      action: { id: "show-whatsnew-button" },
+    },
+    priority: 1,
+    trigger: { id: "toolbarBadgeUpdate" },
+    frequency: {
+      // Makes it so that we track impressions for this message while at the
+      // same time it can have unlimited impressions
+      lifetime: Infinity,
+    },
+    // Never saw this message or saw it in the past 4 days or more recent
+    targeting: `isWhatsNewPanelEnabled &&
+      (earliestFirefoxVersion && firefoxVersion > earliestFirefoxVersion) &&
+        (!messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'] ||
+      (messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length >= 1 &&
+        currentDate|date - messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'][0] <= 4 * 24 * 3600 * 1000))`,
   },
 ];
 
