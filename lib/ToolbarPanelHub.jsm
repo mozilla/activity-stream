@@ -137,18 +137,23 @@ class _ToolbarPanelHub {
     });
   }
 
+  // Newer messages first and use `order` field to decide between messages
+  // with the same timestamp
+  _sortWhatsNewMessages(m1, m2) {
+    // Sort by published_date in descending order.
+    if (m1.content.published_date === m2.content.published_date) {
+      // Ascending order
+      return m1.order - m2.order;
+    }
+    if (m1.content.published_date > m2.content.published_date) {
+      return -1;
+    }
+    return 1;
+  }
+
   // Render what's new messages into the panel.
   async renderMessages(win, doc, containerId) {
-    const messages = (await this.messages).sort((m1, m2) => {
-      // Sort by published_date in descending order.
-      if (m1.content.published_date === m2.content.published_date) {
-        return 0;
-      }
-      if (m1.content.published_date > m2.content.published_date) {
-        return -1;
-      }
-      return 1;
-    });
+    const messages = (await this.messages).sort(this._sortWhatsNewMessages);
     const container = doc.getElementById(containerId);
 
     if (messages && !container.querySelector(".whatsNew-message")) {

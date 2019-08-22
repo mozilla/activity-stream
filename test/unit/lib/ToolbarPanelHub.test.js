@@ -283,6 +283,30 @@ describe("ToolbarPanelHub", () => {
       eventListeners.click();
       assert.calledOnce(handleUserActionStub);
     });
+    it("should sort based on order field value", async () => {
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m =>
+          m.template === "whatsnew_panel_message" &&
+          m.content.published_date === 1560969794394
+      );
+
+      messages.forEach(m => (m.content.title = m.order));
+
+      getMessagesStub.returns(messages);
+
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      // Select the title elements that are supposed to be set to the same
+      // value as the `order` field of the message
+      const titleEls = createdElements
+        .filter(
+          el =>
+            el.classList.add.firstCall &&
+            el.classList.add.firstCall.args[0] === "whatsNew-message-title"
+        )
+        .map(el => el.textContent);
+      assert.deepEqual(titleEls, [1, 2, 3]);
+    });
     it("should accept string for image attributes", async () => {
       const messages = (await PanelTestProvider.getMessages()).filter(
         m => m.template === "whatsnew_panel_message"

@@ -92,6 +92,7 @@ const MESSAGES = () => [
   {
     id: "WHATS_NEW_70_1",
     template: "whatsnew_panel_message",
+    order: 3,
     content: {
       published_date: 1560969794394,
       title: "Protection Is Our Focus",
@@ -109,6 +110,7 @@ const MESSAGES = () => [
   {
     id: "WHATS_NEW_70_2",
     template: "whatsnew_panel_message",
+    order: 1,
     content: {
       published_date: 1560969794394,
       title: "Another thing new in Firefox 70",
@@ -124,6 +126,7 @@ const MESSAGES = () => [
   {
     id: "WHATS_NEW_69_1",
     template: "whatsnew_panel_message",
+    order: 1,
     content: {
       published_date: 1557346235089,
       title: "Something new in Firefox 69",
@@ -139,6 +142,7 @@ const MESSAGES = () => [
   {
     id: "WHATS_NEW_70_3",
     template: "whatsnew_panel_message",
+    order: 2,
     content: {
       published_date: 1560969794394,
       layout: "tracking-protections",
