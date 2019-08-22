@@ -148,6 +148,9 @@ const MESSAGES = () => [
       layout: "tracking-protections",
       title: { string_id: "cfr-whatsnew-tracking-protections-title" },
       subtitle: { string_id: "cfr-whatsnew-tracking-protections-subtitle" },
+      icon_url:
+        "resource://activity-stream/data/content/assets/protection-report-icon.png",
+      icon_alt: "Protection Report icon",
       body:
         "Firefox blocks many common social and cross-site trackers that follow what you do online.",
       link_text: "View full protection report",
