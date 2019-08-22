@@ -15,6 +15,7 @@ ChromeUtils.defineModuleGetter(
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 const FIREFOX_VERSION = parseInt(Services.appinfo.version.match(/\d+/), 10);
+const ONE_MINUTE = 60 * 1000;
 
 const L10N = new Localization([
   "branding/brand.ftl",
@@ -413,8 +414,7 @@ const ONBOARDING_MESSAGES = () => [
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
     template: "toolbar_badge",
     content: {
-      // delay: 5 * 3600 * 1000,
-      delay: 5000,
+      delay: 5 * ONE_MINUTE,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
     },
