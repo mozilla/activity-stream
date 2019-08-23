@@ -32,6 +32,8 @@ describe("PanelTestProvider", () => {
     );
     for (let message of whatsNewMessages) {
       assert.jsonSchema(message.content, whats_new_schema);
+      // Not part of `message.content` so it can't be enforced through schema
+      assert.property(message, "order");
     }
   });
 });
