@@ -71,7 +71,9 @@ export class _TopSites extends React.PureComponent {
    * Dispatch session statistics about the quality of TopSites icons and pinned count.
    */
   _dispatchTopSitesStats() {
-    const topSites = this._getVisibleTopSites();
+    const topSites = this._getVisibleTopSites().filter(
+      topSite => topSite !== null && topSite !== undefined
+    );
     const topSitesIconsStats = countTopSitesIconsTypes(topSites);
     const topSitesPinned = topSites.filter(site => !!site.isPinned).length;
     const searchShortcuts = topSites.filter(site => !!site.searchTopSite)
