@@ -342,7 +342,6 @@ class _ToolbarPanelHub {
   }
 
   async _contentArguments() {
-    let nf = new Services.intl.NumberFormat();
     // Between now and 6 weeks ago
     const dateTo = new Date();
     const dateFrom = new Date(dateTo.getTime() - 42 * 24 * 60 * 60 * 1000);
@@ -365,7 +364,7 @@ class _ToolbarPanelHub {
           dateFrom
         )
       ).getTime(),
-      blockedCount: nf.format(totalEvents),
+      blockedCount: totalEvents.toLocaleString(),
     };
   }
 

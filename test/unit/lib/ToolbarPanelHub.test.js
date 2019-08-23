@@ -370,7 +370,7 @@ describe("ToolbarPanelHub", () => {
         fakeDocument.l10n.setAttributes,
         sinon.match.object,
         sinon.match.string,
-        { blockedCount: 5, earliestDate: getEarliestRecordedDateStub() }
+        { blockedCount: "5", earliestDate: getEarliestRecordedDateStub() }
       );
     });
     it("should only render unique dates (no duplicates)", async () => {
