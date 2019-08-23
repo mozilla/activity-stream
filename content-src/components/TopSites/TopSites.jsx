@@ -164,7 +164,7 @@ export class _TopSites extends React.PureComponent {
           dispatch={props.dispatch}
         >
           <TopSiteList
-            TopSites={props.TopSitesWithSpoc || props.TopSites}
+            TopSites={props.TopSites}
             TopSitesRows={props.TopSitesRows}
             dispatch={props.dispatch}
             topSiteIconType={topSiteIconType}
@@ -208,8 +208,9 @@ export class _TopSites extends React.PureComponent {
   }
 }
 
-export const TopSites = connect(state => ({
-  TopSites: state.TopSites,
+export const TopSites = connect((state, props) => ({
+  // For SPOC Experiment only, take TopSites from DiscoveryStream TopSites that takes in SPOC Data
+  TopSites: props.TopSitesWithSpoc || state.TopSites,
   Prefs: state.Prefs,
   TopSitesRows: state.Prefs.values.topSitesRows,
 }))(_TopSites);

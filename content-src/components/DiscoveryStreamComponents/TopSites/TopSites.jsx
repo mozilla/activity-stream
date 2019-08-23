@@ -25,7 +25,9 @@ export class _TopSites extends React.PureComponent {
       spoc =>
         !userTopSites.has(spoc.url) &&
         !userTopSites.has(`http://${spoc.domain}`) &&
-        !userTopSites.has(`http://www.${spoc.domain}`)
+        !userTopSites.has(`https://${spoc.domain}`) &&
+        !userTopSites.has(`http://www.${spoc.domain}`) &&
+        !userTopSites.has(`https://www.${spoc.domain}`)
     );
   }
 
