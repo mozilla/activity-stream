@@ -15,6 +15,7 @@ export class DSImage extends React.PureComponent {
     this.state = {
       isSeen: false,
       optimizedImageFailed: false,
+      useTransition: false,
     };
   }
 
@@ -40,6 +41,14 @@ export class DSImage extends React.PureComponent {
     }
   }
 
+  onIdleCallback() {
+    if (!this.state.isSeen) {
+      this.setState({
+        useTransition: true,
+      });
+    }
+  }
+
   reformatImageURL(url, width, height) {
     // Change the image URL to request a size tailored for the parent container width
     // Also: force JPEG, quality 60, no upscaling, no EXIF data
@@ -50,7 +59,15 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.observer = new IntersectionObserver(this.onSeen.bind(this));
+    this.idleCallbackId = window.requestIdleCallback(
+      this.onIdleCallback.bind(this)
+    );
+    this.observer = new IntersectionObserver(this.onSeen.bind(this), {
+      // Assume an image will be eventually seen if it is within 520px of the viewport
+      // This is half the average Desktop vertical screen size:
+      // http://gs.statcounter.com/screen-resolution-stats/desktop/north-america
+      rootMargin: `520px`,
+    });
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
 
@@ -62,9 +79,11 @@ export class DSImage extends React.PureComponent {
   }
 
   render() {
-    const classNames = `ds-image${
-      this.props.extraClassNames ? ` ${this.props.extraClassNames}` : ``
-    }`;
+    let classNames = `ds-image
+      ${this.props.extraClassNames ? ` ${this.props.extraClassNames}` : ``}
+      ${this.state && this.state.useTransition ? ` use-transition` : ``}
+      ${this.state && this.state.isSeen ? ` loaded` : ``}
+    `;
 
     let img;
 
