@@ -91,11 +91,11 @@
     }
 
     @media (max-width: 865px) {
-      margin: 0;
-      margin-inline-end: 60px;
+      margin-inline-start: 0;
     }
 
-    @media (max-width: 609px) {
+    // There is an off-by-one gap between breakpoints; this is to prevent weirdness at exactly 610px.
+    @media (max-width: $break-point-medium - 1px) {
       margin: auto;
     }
 
@@ -177,10 +177,6 @@
 
       @media (max-width: 1120px) {
         inset-inline-end: 2%;
-      }
-
-      @media (max-width: $break-point-medium) {
-        margin: auto;
       }
 
       .ds-outer-wrapper-breakpoint-override & {
