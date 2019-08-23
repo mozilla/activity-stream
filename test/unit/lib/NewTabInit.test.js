@@ -24,6 +24,21 @@ describe("NewTabInit", () => {
     );
     assert.calledWith(store.dispatch, resp);
   });
+  it("should remove invalid values from state", () => {
+    STATE.foo = Promise.resolve(123);
+    STATE.bar = 456;
+    STATE.baz = () => 789;
+
+    requestFromTab(911);
+
+    assert.calledWith(
+      store.dispatch,
+      ac.AlsoToOneContent(
+        { type: at.NEW_TAB_INITIAL_STATE, data: { bar: 456 } },
+        911
+      )
+    );
+  });
   describe("early / simulated new tabs", () => {
     const simulateTabInit = portID =>
       instance.onAction({

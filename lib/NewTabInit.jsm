@@ -26,6 +26,34 @@ this.NewTabInit = class NewTabInit {
       type: at.NEW_TAB_INITIAL_STATE,
       data: this.store.getState(),
     };
+
+    // If the store contains data like functions or Promises, it causes the
+    // message to be serialized with stringify instead of passed to content via
+    // structured clone, so report the bad data and clean it up.
+    function check(obj, prefix = "") {
+      Object.entries(obj).forEach(([key, val]) => {
+        let remove = false;
+        switch (typeof val) {
+          case "object":
+            if (val instanceof Promise) {
+              remove = true;
+            } else if (val) {
+              check(val, `${prefix}${key}.`);
+            }
+            break;
+          case "function":
+            remove = true;
+            break;
+        }
+        if (remove) {
+          // eslint-disable-next-line no-console
+          console.error("Removed invalid", prefix, key, val);
+          delete obj[key];
+        }
+      });
+    }
+    check(action);
+
     this.store.dispatch(ac.AlsoToOneContent(action, target));
 
     // Remember that this early tab has already gotten a rehydration response in
