@@ -22,6 +22,15 @@ describe("ScreenshotUtils", () => {
       assert.notCalled(url.createObjectURL);
       assert.equal(localImageObject, null);
     });
+    it("should return null if remoteImage data is unusable", () => {
+      globals.restore();
+      let localImageObject = ScreenshotUtils.createLocalImageObject({
+        data: {},
+        path: true,
+      });
+
+      assert.equal(localImageObject, null);
+    });
     it("should create a local image object with the correct properties if remoteImage is a blob", () => {
       let localImageObject = ScreenshotUtils.createLocalImageObject({
         path: "/path1",

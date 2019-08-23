@@ -29,10 +29,20 @@ export const ScreenshotUtils = {
       return null;
     }
     if (this.isBlob(false, remoteImage)) {
-      return {
-        url: global.URL.createObjectURL(remoteImage.data),
-        path: remoteImage.path,
-      };
+      try {
+        return {
+          url: global.URL.createObjectURL(remoteImage.data),
+          path: remoteImage.path,
+        };
+      } catch (e) {
+        console.error(
+          `Content msg: `,
+          `Failed to createObjectURL from remoteImage data`,
+          `Dispatch error: `,
+          e
+        ); // eslint-disable-line no-console
+        return null;
+      }
     }
     return { url: remoteImage };
   },
