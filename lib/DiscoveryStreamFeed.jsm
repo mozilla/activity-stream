@@ -1406,7 +1406,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 defaultLayoutResp = {
   spocs: {
     url: "https://spocs.getpocket.com/spocs",
-    spocs_per_domain: 1000,
+    spocs_per_domain: 1,
   },
   layout: [
     {
