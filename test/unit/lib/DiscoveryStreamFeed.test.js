@@ -1023,66 +1023,34 @@ describe("DiscoveryStreamFeed", () => {
 
   describe("#filterBlocked", () => {
     it("should return initial data if spocs are empty", () => {
-      const { data: result } = feed.filterBlocked({ spocs: [] });
+      const { data: result } = feed.filterBlocked([]);
 
-      assert.equal(result.spocs.length, 0);
+      assert.equal(result.length, 0);
     });
-    it("should return initial spocs data if links are not blocked", () => {
-      const { data: result } = feed.filterBlocked(
-        {
-          spocs: [{ url: "https://foo.com" }, { url: "test.com" }],
-        },
-        "spocs"
-      );
-      assert.equal(result.spocs.length, 2);
+    it("should return initial data if links are not blocked", () => {
+      const { data: result } = feed.filterBlocked([{ url: "https://foo.com" }, { url: "test.com" }]);
+      assert.equal(result.length, 2);
     });
-    it("should return filtered out spocs based on blockedlist", () => {
+    it("should return filtered out based on blockedlist", () => {
       fakeNewTabUtils.blockedLinks.links = [{ url: "https://foo.com" }];
       fakeNewTabUtils.blockedLinks.isBlocked = site =>
         fakeNewTabUtils.blockedLinks.links[0].url === site.url;
 
-      const { data: result, filtered } = feed.filterBlocked(
-        {
-          spocs: [
-            { id: 1, url: "https://foo.com" },
-            { id: 2, url: "test.com" },
-          ],
-        },
-        "spocs"
-      );
+      const { data: result, filtered } = feed.filterBlocked([
+        { id: 1, url: "https://foo.com" },
+        { id: 2, url: "test.com" },
+      ]);
 
-      assert.lengthOf(result.spocs, 1);
-      assert.equal(result.spocs[0].url, "test.com");
-      assert.notInclude(result.spocs, fakeNewTabUtils.blockedLinks.links[0]);
+      assert.lengthOf(result, 1);
+      assert.equal(result[0].url, "test.com");
+      assert.notInclude(result, fakeNewTabUtils.blockedLinks.links[0]);
       assert.deepEqual(filtered, [{ id: 1, url: "https://foo.com" }]);
     });
     it("should return initial recommendations data if links are not blocked", () => {
       const { data: result } = feed.filterBlocked(
-        {
-          recommendations: [{ url: "https://foo.com" }, { url: "test.com" }],
-        },
-        "recommendations"
+        [{ url: "https://foo.com" }, { url: "test.com" }],
       );
-      assert.equal(result.recommendations.length, 2);
-    });
-    it("should return filtered out recommendations based on blockedlist", () => {
-      fakeNewTabUtils.blockedLinks.links = [{ url: "https://foo.com" }];
-      fakeNewTabUtils.blockedLinks.isBlocked = site =>
-        fakeNewTabUtils.blockedLinks.links[0].url === site.url;
-
-      const { data: result } = feed.filterBlocked(
-        {
-          recommendations: [{ url: "https://foo.com" }, { url: "test.com" }],
-        },
-        "recommendations"
-      );
-
-      assert.lengthOf(result.recommendations, 1);
-      assert.equal(result.recommendations[0].url, "test.com");
-      assert.notInclude(
-        result.recommendations,
-        fakeNewTabUtils.blockedLinks.links[0]
-      );
+      assert.equal(result.length, 2);
     });
     it("filterRecommendations based on blockedlist by passing feed data", () => {
       fakeNewTabUtils.blockedLinks.links = [{ url: "https://foo.com" }];

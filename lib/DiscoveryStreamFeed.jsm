@@ -464,7 +464,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       feed.data.recommendations &&
       feed.data.recommendations.length
     ) {
-      const { data: recommendations } = this.filterBlocked(feed.data.recommendations);
+      const { data: recommendations } = this.filterBlocked(
+        feed.data.recommendations
+      );
       return {
         ...feed,
         data: {
