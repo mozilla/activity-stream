@@ -1028,7 +1028,10 @@ describe("DiscoveryStreamFeed", () => {
       assert.equal(result.length, 0);
     });
     it("should return initial data if links are not blocked", () => {
-      const { data: result } = feed.filterBlocked([{ url: "https://foo.com" }, { url: "test.com" }]);
+      const { data: result } = feed.filterBlocked([
+        { url: "https://foo.com" },
+        { url: "test.com" },
+      ]);
       assert.equal(result.length, 2);
     });
     it("should return filtered out based on blockedlist", () => {
@@ -1047,9 +1050,10 @@ describe("DiscoveryStreamFeed", () => {
       assert.deepEqual(filtered, [{ id: 1, url: "https://foo.com" }]);
     });
     it("should return initial recommendations data if links are not blocked", () => {
-      const { data: result } = feed.filterBlocked(
-        [{ url: "https://foo.com" }, { url: "test.com" }],
-      );
+      const { data: result } = feed.filterBlocked([
+        { url: "https://foo.com" },
+        { url: "test.com" },
+      ]);
       assert.equal(result.length, 2);
     });
     it("filterRecommendations based on blockedlist by passing feed data", () => {
