@@ -1556,7 +1556,10 @@ describe("DiscoveryStreamFeed", () => {
       };
       sandbox.stub(feed.store, "getState").returns({
         DiscoveryStream: {
-          spocs: { data },
+          spocs: {
+            data,
+            placements: [{ name: "spocs" }],
+          },
         },
       });
     });

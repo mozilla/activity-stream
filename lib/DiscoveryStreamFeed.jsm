@@ -1333,8 +1333,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         break;
       case at.PLACES_LINK_BLOCKED:
         if (this.showSpocs) {
-          const { spocs } = this.store.getState().DiscoveryStream;
-          const spocsList = spocs.data.spocs || [];
+          const spocsState = this.store.getState().DiscoveryStream.spocs;
+          let spocsList = [];
+          this.placementsForEach(placement => {
+            const spocs = spocsState.data[placement.name];
+            if (spocs && spocs.length) {
+              spocsList = [...spocsList, ...spocs];
+            }
+          });
           const filtered = spocsList.filter(s => s.url === action.data.url);
           if (filtered.length) {
             this._sendSpocsFill({ blocked_by_user: filtered }, false);
@@ -1352,7 +1358,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
                 data: action.data,
               })
             );
-            return;
+            break;
           }
         }
         this.store.dispatch(

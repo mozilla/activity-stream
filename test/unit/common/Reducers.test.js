@@ -1038,6 +1038,7 @@ describe("Reducers", () => {
         spocs: {
           data: {},
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
         feeds: {
           data: {},
@@ -1058,6 +1059,7 @@ describe("Reducers", () => {
             spocs: [{ url: "https://foo.com" }, { url: "test-spoc.com" }],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
         feeds: {
           data: {},
@@ -1076,6 +1078,7 @@ describe("Reducers", () => {
         spocs: {
           data: {},
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
         feeds: {
           data: {
@@ -1117,6 +1120,7 @@ describe("Reducers", () => {
             spocs: [{ url: "https://foo.com" }, { url: "test-spoc.com" }],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
       };
       const deleteAction = {
@@ -1155,6 +1159,7 @@ describe("Reducers", () => {
           data: {
             spocs: [{ url: "https://foo.com" }, { url: "test-spoc.com" }],
           },
+          placements: [{ name: "spocs" }],
           loaded: true,
         },
       };
@@ -1225,6 +1230,7 @@ describe("Reducers", () => {
             ],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
       };
       const deleteAction = {
@@ -1264,6 +1270,7 @@ describe("Reducers", () => {
             ],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
       };
       const deleteAction = {
@@ -1300,6 +1307,7 @@ describe("Reducers", () => {
             spocs: [{ url: "https://foo.com" }, { url: "test-spoc.com" }],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
       };
       const bookmarkAction = {
@@ -1376,6 +1384,7 @@ describe("Reducers", () => {
             ],
           },
           loaded: true,
+          placements: [{ name: "spocs" }],
         },
       };
       const action = {

@@ -522,15 +522,27 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
   const isNotReady = () =>
     !action.data || !prevState.spocs.loaded || !prevState.feeds.loaded;
 
+  const handlePlacements = handleSites => {
+    const { data, placements } = prevState.spocs;
+    const result = {};
+
+    placements.forEach(placement => {
+      const placementSpocs = data[placement.name];
+
+      if (!placementSpocs || !placementSpocs.length) {
+        return;
+      }
+
+      result[placement.name] = handleSites(placementSpocs);
+    });
+    return result;
+  };
+
   const nextState = handleSites => ({
     ...prevState,
     spocs: {
       ...prevState.spocs,
-      data: prevState.spocs.data.spocs
-        ? {
-            spocs: handleSites(prevState.spocs.data.spocs),
-          }
-        : {},
+      data: handlePlacements(handleSites),
     },
     feeds: {
       ...prevState.feeds,
