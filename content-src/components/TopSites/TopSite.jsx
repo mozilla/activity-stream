@@ -7,6 +7,7 @@ import {
   MIN_CORNER_FAVICON_SIZE,
   MIN_RICH_FAVICON_SIZE,
   TOP_SITES_CONTEXT_MENU_OPTIONS,
+  TOP_SITES_SPOC_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SOURCE,
 } from "./TopSitesConstants";
@@ -172,12 +173,16 @@ export class TopSiteLink extends React.PureComponent {
       smallFaviconStyle = { backgroundImage: `url(${tippyTopIcon})` };
     } else if (link.customScreenshotURL) {
       // assume high quality custom screenshot and use rich icon styles and class names
+
+      // TopSite spoc experiment only
+      const spocImgURL = link.type === "SPOC" ? link.customScreenshotURL : "";
+
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
         backgroundColor: link.backgroundColor,
         backgroundImage: hasScreenshotImage
           ? `url(${this.state.screenshotImage.url})`
-          : "none",
+          : `url(${spocImgURL})`,
       };
     } else if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
       // styles and class names for top sites with rich icons
@@ -256,6 +261,9 @@ export class TopSiteLink extends React.PureComponent {
               {link.isPinned && <div className="icon icon-pin-small" />}
               <span dir="auto">{title}</span>
             </div>
+            {link.type === "SPOC" ? (
+              <span className="top-site-spoc-label">Sponsored</span>
+            ) : null}
           </a>
           {children}
         </div>
@@ -348,6 +356,11 @@ export class TopSite extends React.PureComponent {
     const { link } = props;
     const isContextMenuOpen = props.activeIndex === props.index;
     const title = link.label || link.hostname;
+    const menuOptions =
+      link.type !== "SPOC"
+        ? TOP_SITES_CONTEXT_MENU_OPTIONS
+        : TOP_SITES_SPOC_CONTEXT_MENU_OPTIONS;
+
     return (
       <TopSiteLink
         {...props}
@@ -371,7 +384,7 @@ export class TopSite extends React.PureComponent {
               options={
                 link.searchTopSite
                   ? TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS
-                  : TOP_SITES_CONTEXT_MENU_OPTIONS
+                  : menuOptions
               }
               site={link}
               siteInfo={this._getTelemetryInfo()}
