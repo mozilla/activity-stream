@@ -25,6 +25,7 @@ export class DSMessage extends React.PureComponent {
             </SafeAnchor>
           )}
         </header>
+        {this.props.subtitle && (<div className="subtitle">{this.props.subtitle}</div>)}
       </div>
     );
   }

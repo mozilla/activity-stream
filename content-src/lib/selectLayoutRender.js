@@ -139,19 +139,29 @@ export const selectLayoutRender = (state, prefs, rickRollCache) => {
     return { ...component, data };
   };
 
+  const filterComponent = (c) => {
+    return (
+      !filterArray.includes(c.type) &&
+      (!c.sponsored || spocs.showSpocs)
+    );
+  };
+
+  const filterRow = (r) => {
+    return (
+      r.components.filter(filterComponent).length &&
+      (!r.sponsored || spocs.showSpocs)
+    );
+  };
+
   const renderLayout = () => {
     const renderedLayoutArray = [];
-    for (const row of layout.filter(
-      r => r.components.filter(c => !filterArray.includes(c.type)).length
-    )) {
+    for (const row of layout.filter(filterRow)) {
       let components = [];
       renderedLayoutArray.push({
         ...row,
         components,
       });
-      for (const component of row.components.filter(
-        c => !filterArray.includes(c.type)
-      )) {
+      for (const component of row.components.filter(filterComponent)) {
         if (component.feed) {
           const spocsConfig = component.spocs;
           // Are we still waiting on a feed/spocs, render what we have,

@@ -574,6 +574,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     sendUpdate({
       type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
       data: {
+        showSpocs: this.showSpocs,
         lastUpdated: spocs.lastUpdated,
         spocs: newSpocs,
       },
@@ -1340,9 +1341,89 @@ defaultLayoutResp = {
       width: 12,
       components: [
         {
+          type: "Message",
+          header: {
+            title: "Not Sponsored by Collection Title",
+            subtitle: "Not Sponsored by Brand Name",
+          },
+          properties: {},
+        },
+        {
+          type: "Message",
+          header: {
+            title: "Sponsored by Collection Title",
+            subtitle: "Sponsored by Brand Name",
+          },
+          campaign_id: "123456",
+          sponsored: true,
+          properties: {},
+        },
+      ],
+    },
+    {
+      width: 12,
+      campaign_id: "123456",
+      components: [
+        {
+          type: "Message",
+          header: {
+            title: "campaign but not paid",
+            subtitle: "campaign but not paid",
+          },
+          properties: {},
+        },
+        {
+          type: "Message",
+          header: {
+            title: "campaign but not paid",
+            subtitle: "campaign but not paid",
+          },
+          properties: {},
+        },
+      ],
+    },
+    {
+      width: 12,
+      components: [
+        {
+          type: "Message",
+          campaign_id: "123456",
+          header: {
+            title: "campaign but not paid",
+            subtitle: "campaign but not paid",
+          },
+          properties: {},
+        },
+        {
+          type: "Message",
+          header: {
+            title: "not campaign but not paid",
+            subtitle: "not campaign but not paid",
+          },
+          properties: {},
+        },
+      ],
+    },
+    {
+      width: 12,
+      campaign_id: "123456",
+      sponsored: true,
+      components: [
+        {
+          type: "Message",
+          header: {
+            title: "Sponsored by Collection Title",
+            subtitle: "Sponsored by Brand Name",
+          },
+          properties: {},
+          styles: {
+            ".ds-message": "margin-bottom: -28px",
+          },
+        },
+        {
           type: "CardGrid",
           properties: {
-            items: 21,
+            items: 3,
           },
           header: {
             title: "",
@@ -1352,22 +1433,20 @@ defaultLayoutResp = {
             url:
               "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&count=30",
           },
-          spocs: {
-            probability: 1,
-            positions: [
-              {
-                index: 2,
-              },
-              {
-                index: 4,
-              },
-              {
-                index: 11,
-              },
-              {
-                index: 20,
-              },
-            ],
+        },
+        {
+          type: "Hero",
+          properties: {
+            items: 5,
+            offset: 3,
+          },
+          header: {
+            title: "",
+          },
+          feed: {
+            embed_reference: null,
+            url:
+              "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&count=30",
           },
         },
         {

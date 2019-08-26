@@ -6,6 +6,7 @@ import { actionCreators as ac } from "common/Actions.jsm";
 import { CardGrid } from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
 import { CollapsibleSection } from "content-src/components/CollapsibleSection/CollapsibleSection";
 import { connect } from "react-redux";
+import { DSDismiss } from "content-src/components/DiscoveryStreamComponents/DSDismiss/DSDismiss";
 import { DSMessage } from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
 import { DSTextPromo } from "content-src/components/DiscoveryStreamComponents/DSTextPromo/DSTextPromo";
 import { Hero } from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
@@ -320,11 +321,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     const styles = [];
     return (
       <div className="discovery-stream ds-layout">
-        {layoutRender.map((row, rowIndex) => (
-          <div
-            key={`row-${rowIndex}`}
-            className={`ds-column ds-column-${row.width}`}
-          >
+        {layoutRender.map((row, rowIndex) => {
+          const contents = (
             <div className="ds-column-grid">
               {row.components.map((component, componentIndex) => {
                 if (!component) {
@@ -334,6 +332,14 @@ export class _DiscoveryStreamBase extends React.PureComponent {
                   ...(styles[rowIndex] || []),
                   component.styles,
                 ];
+                // TODO make this dry
+                if (component.campaign_id) {
+                  return (
+                    <DSDismiss key={`component-${componentIndex}`} campaignId={component.campaign_id}>
+                      {this.renderComponent(component, row.width)}
+                    </DSDismiss>
+                  );
+                }
                 return (
                   <div key={`component-${componentIndex}`}>
                     {this.renderComponent(component, row.width)}
@@ -341,8 +347,29 @@ export class _DiscoveryStreamBase extends React.PureComponent {
                 );
               })}
             </div>
-          </div>
-        ))}
+          );
+          // TODO Dry this out too.
+          if (row.campaign_id) {
+            return (
+              <div
+                key={`row-${rowIndex}`}
+                className={`ds-column ds-column-${row.width}`}
+              >
+                <DSDismiss campaignId={row.campaign_id}>
+                  {contents}
+                </DSDismiss>
+              </div>
+            );
+          }
+          return (
+            <div
+              key={`row-${rowIndex}`}
+              className={`ds-column ds-column-${row.width}`}
+            >
+              {contents}
+            </div>
+          );
+        })}
         {this.renderStyles(styles)}
       </div>
     );
