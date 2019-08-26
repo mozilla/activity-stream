@@ -464,10 +464,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       feed.data.recommendations &&
       feed.data.recommendations.length
     ) {
-      const { data } = this.filterBlocked(feed.data, "recommendations");
+      const { data: recommendations } = this.filterBlocked(feed.data.recommendations);
       return {
         ...feed,
-        data,
+        data: {
+          ...feed.data,
+          recommendations,
+        },
       };
     }
     return feed;
@@ -623,8 +626,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       frequencyCapped = [...frequencyCapped, ...caps];
 
       const { data: blockedResults, filtered: blocks } = this.filterBlocked(
-        capResult,
-        "spocs"
+        capResult
       );
       blockedItems = [...blockedItems, ...blocks];
 
@@ -766,10 +768,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return item;
   }
 
-  filterBlocked(data, type) {
+  filterBlocked(data) {
     const filtered = [];
-    if (data && data[type] && data[type].length) {
-      const filteredItems = data[type].filter(item => {
+    if (data && data.length) {
+      const filteredItems = data.filter(item => {
         const blocked = NewTabUtils.blockedLinks.isBlocked({ url: item.url });
         if (blocked) {
           filtered.push(item);
@@ -777,10 +779,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         return !blocked;
       });
       return {
-        data: {
-          ...data,
-          [type]: filteredItems,
-        },
+        data: filteredItems,
         filtered,
       };
     }
