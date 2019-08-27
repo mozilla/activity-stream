@@ -7,17 +7,28 @@ import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 
 export class DSTextPromo extends React.PureComponent {
   render() {
+    // Grab the first item in the array as we only have 1 spoc position.
+    if (
+      !this.props.data ||
+      !this.props.data.spocs ||
+      !this.props.data.spocs[0]
+    ) {
+      return null;
+    }
+    const [
+      { image_src, alt_text, title, url, context, cta },
+    ] = this.props.data.spocs;
     return (
       <div className="ds-text-promo">
-        <img src={this.props.image} alt={this.props.alt_text} />
+        <img src={image_src} alt={alt_text || title} />
         <div className="text">
           <h3>
-            {`${this.props.header}\u2003`}
-            <SafeAnchor className="ds-chevron-link" url={this.props.cta_url}>
-              {this.props.cta_text}
+            {`${title}\u2003`}
+            <SafeAnchor className="ds-chevron-link" url={url}>
+              {cta}
             </SafeAnchor>
           </h3>
-          <p className="subtitle">{this.props.subtitle}</p>
+          <p className="subtitle">{context}</p>
         </div>
       </div>
     );
