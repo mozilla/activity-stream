@@ -8,6 +8,7 @@ import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 
 export class DSTextPromo extends React.PureComponent {
   render() {
+    console.log(this.props.campaignId);
     return (
       <div className="ds-text-promo">
         <img src={this.props.image} alt={this.props.alt_text} />
@@ -21,22 +22,22 @@ export class DSTextPromo extends React.PureComponent {
               url={this.props.cta_url}
             >
               {this.props.cta_text}
-              <ImpressionStats
-                campaignId={this.props.campaignId}
-                rows={[
-                  {
-                    id: this.props.id,
-                    pos: this.props.pos,
-                    shim: this.props.shim && this.props.shim.impression,
-                  },
-                ]}
-                dispatch={this.props.dispatch}
-                source={this.props.type}
-              />
             </SafeAnchor>
           </h3>
           <p className="subtitle">{this.props.subtitle}</p>
         </div>
+        <ImpressionStats
+          campaignId={this.props.campaignId}
+          rows={[
+            {
+              id: this.props.id,
+              pos: this.props.pos,
+              shim: this.props.shim && this.props.shim.impression,
+            },
+          ]}
+          dispatch={this.props.dispatch}
+          source={this.props.type}
+        />
       </div>
     );
   }
