@@ -122,7 +122,28 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           />
         );
       case "TextPromo":
-        return <DSTextPromo data={component.data} />;
+        // Grab the first item in the array as we only have 1 spoc position.
+        if (
+          !component.data ||
+          !component.data.spocs ||
+          !component.data.spocs[0]
+        ) {
+          return null;
+        }
+        const [
+          { image_src, alt_text, title, url, context, cta },
+        ] = component.data.spocs;
+
+        return (
+          <DSTextPromo
+            image={image_src}
+            alt_text={alt_text || title}
+            header={title}
+            cta_text={cta}
+            cta_url={url}
+            subtitle={context}
+          />
+        );
       case "Message":
         return (
           <DSMessage
