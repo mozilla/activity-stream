@@ -115,11 +115,20 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "Highlights":
         return <Highlights />;
       case "TopSites":
+        let promoAlignment;
+        if (
+          component.spocs &&
+          component.spocs.positions &&
+          component.spocs.positions.length
+        ) {
+          promoAlignment =
+            component.spocs.positions[0].index === 0 ? "left" : "right";
+        }
         return (
           <TopSites
             header={component.header}
             data={component.data}
-            promoAlignment={component.promo_alignment}
+            promoAlignment={promoAlignment}
           />
         );
       case "TextPromo":
