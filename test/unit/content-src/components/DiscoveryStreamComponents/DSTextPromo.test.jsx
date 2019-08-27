@@ -6,7 +6,7 @@ describe("<DSTextPromo>", () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallow(<DSTextPromo />);
+    wrapper = shallow(<DSTextPromo shim={{ impression: "1234" }} />);
   });
 
   it("should render", () => {

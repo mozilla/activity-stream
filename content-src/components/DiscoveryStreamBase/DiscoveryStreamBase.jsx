@@ -132,7 +132,17 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         }
         // Grab the first item in the array as we only have 1 spoc position.
         const [spoc] = component.data.spocs;
-        const { image_src, alt_text, title, url, context, cta } = spoc;
+        const {
+          image_src,
+          alt_text,
+          title,
+          url,
+          context,
+          cta,
+          campaign_id,
+          id,
+          shim,
+        } = spoc;
 
         return (
           <DSDismiss
@@ -145,12 +155,18 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             shouldSendImpressionStats={true}
           >
             <DSTextPromo
+              dispatch={this.props.dispatch}
               image={image_src}
               alt_text={alt_text || title}
               header={title}
               cta_text={cta}
               cta_url={url}
               subtitle={context}
+              campaignId={campaign_id}
+              id={id}
+              pos={0}
+              shim={shim}
+              type={component.type}
             />
           </DSDismiss>
         );

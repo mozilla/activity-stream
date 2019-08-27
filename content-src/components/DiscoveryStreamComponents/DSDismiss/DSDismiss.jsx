@@ -39,11 +39,12 @@ export class DSDismiss extends React.PureComponent {
   }
 
   render() {
-    // TODO: Styling
     return (
       <div className="ds-dismiss">
         {this.props.children}
-        <button onClick={this.onDismissClick}>dismiss</button>
+        <button className="ds-dismiss-button" onClick={this.onDismissClick}>
+          dismiss
+        </button>
       </div>
     );
   }
