@@ -84,6 +84,10 @@ export class _TopSites extends React.PureComponent {
       label: topSiteSpoc.sponsor,
       title: topSiteSpoc.sponsor,
       url: topSiteSpoc.url,
+      campaignId: topSiteSpoc.campaign_id,
+      id: topSiteSpoc.id,
+      shim: topSiteSpoc.shim,
+      pos: promoAlignment === "left" ? 0 : 7,
     };
 
     const firstAvailableIndex = this.getFirstAvailableIndex(

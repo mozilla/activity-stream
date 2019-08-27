@@ -12,6 +12,7 @@ import {
   TOP_SITES_SOURCE,
 } from "./TopSitesConstants";
 import { LinkMenu } from "content-src/components/LinkMenu/LinkMenu";
+import { ImpressionStats } from "../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import { ScreenshotUtils } from "content-src/lib/screenshot-utils";
 import { TOP_SITES_MAX_SITES_PER_ROW } from "common/Reducers.jsm";
@@ -266,6 +267,20 @@ export class TopSiteLink extends React.PureComponent {
             ) : null}
           </a>
           {children}
+          {link.type === "SPOC" ? (
+            <ImpressionStats
+              campaignId={link.campaignId}
+              rows={[
+                {
+                  id: link.id,
+                  pos: link.pos,
+                  shim: link.shim && link.shim.impression,
+                },
+              ]}
+              dispatch={this.props.dispatch}
+              source="TOPSITES"
+            />
+          ) : null}
         </div>
       </li>
     );
