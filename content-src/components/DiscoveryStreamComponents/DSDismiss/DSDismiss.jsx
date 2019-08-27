@@ -24,17 +24,15 @@ export class DSDismiss extends React.PureComponent {
     const { action, impression, userEvent } = blockUrlOption;
 
     this.props.dispatch(action);
-    if (userEvent) {
-      const userEventData = Object.assign(
-        {
-          event: userEvent,
-          source,
-          action_position: index,
-        },
-        this.props.data
-      );
-      this.props.dispatch(ac.UserEvent(userEventData));
-    }
+    const userEventData = Object.assign(
+      {
+        event: userEvent,
+        source,
+        action_position: index,
+      },
+      this.props.data
+    );
+    this.props.dispatch(ac.UserEvent(userEventData));
     if (impression && this.props.shouldSendImpressionStats) {
       this.props.dispatch(impression);
     }

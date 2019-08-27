@@ -136,7 +136,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
         return (
           <DSDismiss
-            data={spoc}
+            data={{
+              url: spoc.url,
+              guid: spoc.id,
+              shim: spoc.shim,
+            }}
             dispatch={this.props.dispatch}
             shouldSendImpressionStats={true}
           >
