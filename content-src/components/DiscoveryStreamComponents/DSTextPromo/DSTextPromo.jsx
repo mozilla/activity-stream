@@ -8,7 +8,6 @@ import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 
 export class DSTextPromo extends React.PureComponent {
   render() {
-    console.log(this.props.campaignId);
     return (
       <div className="ds-text-promo">
         <img src={this.props.image} alt={this.props.alt_text} />
