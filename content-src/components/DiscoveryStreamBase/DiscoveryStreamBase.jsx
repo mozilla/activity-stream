@@ -6,6 +6,7 @@ import { actionCreators as ac } from "common/Actions.jsm";
 import { CardGrid } from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
 import { CollapsibleSection } from "content-src/components/CollapsibleSection/CollapsibleSection";
 import { connect } from "react-redux";
+import { DSDismiss } from "content-src/components/DiscoveryStreamComponents/DSDismiss/DSDismiss";
 import { DSMessage } from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
 import { DSTextPromo } from "content-src/components/DiscoveryStreamComponents/DSTextPromo/DSTextPromo";
 import { Hero } from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
@@ -122,7 +123,6 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           />
         );
       case "TextPromo":
-        // Grab the first item in the array as we only have 1 spoc position.
         if (
           !component.data ||
           !component.data.spocs ||
@@ -130,19 +130,25 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         ) {
           return null;
         }
-        const [
-          { image_src, alt_text, title, url, context, cta },
-        ] = component.data.spocs;
+        // Grab the first item in the array as we only have 1 spoc position.
+        const [spoc] = component.data.spocs;
+        const { image_src, alt_text, title, url, context, cta } = spoc;
 
         return (
-          <DSTextPromo
-            image={image_src}
-            alt_text={alt_text || title}
-            header={title}
-            cta_text={cta}
-            cta_url={url}
-            subtitle={context}
-          />
+          <DSDismiss
+            data={spoc}
+            dispatch={this.props.dispatch}
+            shouldSendImpressionStats={true}
+          >
+            <DSTextPromo
+              image={image_src}
+              alt_text={alt_text || title}
+              header={title}
+              cta_text={cta}
+              cta_url={url}
+              subtitle={context}
+            />
+          </DSDismiss>
         );
       case "Message":
         return (
