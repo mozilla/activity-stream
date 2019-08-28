@@ -88,6 +88,7 @@ describe("Discovery Stream <TopSites>", () => {
       url: "foo",
       campaignId: "1234",
       id: "5678",
+      guid: "5678",
       shim: {
         impression: "1011",
       },
@@ -101,6 +102,7 @@ describe("Discovery Stream <TopSites>", () => {
       url: "foo",
       campaignId: "1234",
       id: "5678",
+      guid: "5678",
       shim: {
         impression: "1011",
       },
@@ -161,6 +163,7 @@ describe("Discovery Stream <TopSites>", () => {
         url: "foo2",
         campaignId: "1234",
         id: "5678",
+        guid: "5678",
         shim: {
           impression: "1011",
         },

@@ -86,6 +86,7 @@ export class _TopSites extends React.PureComponent {
       url: topSiteSpoc.url,
       campaignId: topSiteSpoc.campaign_id,
       id: topSiteSpoc.id,
+      guid: topSiteSpoc.id,
       shim: topSiteSpoc.shim,
       // For now we are assuming position based on intended position.
       // Actual position can shift based on other content.
