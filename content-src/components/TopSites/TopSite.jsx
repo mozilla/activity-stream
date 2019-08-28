@@ -651,10 +651,6 @@ export class TopSiteList extends React.PureComponent {
       const slotProps = {
         key: link ? link.url : holeIndex++,
         index: i,
-        ...(link.type !== SPOC_TYPE ? {
-          activeIndex: this.state.activeIndex,
-          onActivate: this.onActivate,
-        } : {}),
       };
       if (i >= maxNarrowVisibleIndex) {
         slotProps.className = "hide-for-narrow";
@@ -665,6 +661,8 @@ export class TopSiteList extends React.PureComponent {
         ) : (
           <TopSite
             link={link}
+            activeIndex={this.state.activeIndex}
+            onActivate={this.onActivate}
             {...slotProps}
             {...commonProps}
           />
