@@ -13,7 +13,7 @@ export class DSTextPromo extends React.PureComponent {
     this.onLinkClick = this.onLinkClick.bind(this);
   }
 
-  onLinkClick(event) {
+  onLinkClick() {
     if (this.props.dispatch) {
       this.props.dispatch(
         ac.UserEvent({
