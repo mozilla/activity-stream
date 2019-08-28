@@ -32,6 +32,13 @@ describe("<DSTextPromo>", () => {
     assert.ok(wrapper.find(".ds-dismiss").exists());
   });
 
+  it("should render proper hover state", () => {
+    wrapper.instance().onHover();
+    assert.ok(wrapper.find(".hovering").exists());
+    wrapper.instance().offHover();
+    assert.ok(!wrapper.find(".hovering").exists());
+  });
+
   it("should dispatch a BlockUrl event on click", () => {
     wrapper.instance().onDismissClick();
 

@@ -10,6 +10,11 @@ export class DSDismiss extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onDismissClick = this.onDismissClick.bind(this);
+    this.onHover = this.onHover.bind(this);
+    this.offHover = this.offHover.bind(this);
+    this.state = {
+      hovering: false,
+    };
   }
 
   onDismissClick() {
@@ -38,12 +43,34 @@ export class DSDismiss extends React.PureComponent {
     }
   }
 
+  onHover() {
+    this.setState({
+      hovering: true,
+    });
+  }
+
+  offHover() {
+    this.setState({
+      hovering: false,
+    });
+  }
+
   render() {
+    let className = "ds-dismiss";
+    if (this.state.hovering) {
+      className += " hovering";
+    }
     return (
-      <div className="ds-dismiss">
+      <div className={className}>
         {this.props.children}
-        <button className="ds-dismiss-button" onClick={this.onDismissClick}>
-          dismiss
+        <button
+          className="ds-dismiss-button"
+          onHover={this.onHover}
+          onClick={this.onDismissClick}
+          onMouseEnter={this.onHover}
+          onMouseLeave={this.offHover}
+        >
+          <span className="icon icon-dismiss" />
         </button>
       </div>
     );
