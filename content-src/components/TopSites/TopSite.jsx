@@ -299,6 +299,7 @@ export class TopSite extends React.PureComponent {
     super(props);
     this.state = { showContextMenu: false };
     this.onLinkClick = this.onLinkClick.bind(this);
+    this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
 
   /**
@@ -376,9 +377,18 @@ export class TopSite extends React.PureComponent {
     }
   }
 
+  onMenuUpdate(isOpen) {
+    if (isOpen) {
+      this.props.onActivate(this.props.index);
+    } else {
+      this.props.onActivate();
+    }
+  }
+
   render() {
     const { props } = this;
     const { link } = props;
+    const isContextMenuOpen = props.activeIndex === props.index;
     const title = link.label || link.hostname;
     const menuOptions =
       link.type !== SPOC_TYPE
@@ -390,17 +400,21 @@ export class TopSite extends React.PureComponent {
         {...props}
         onClick={this.onLinkClick}
         onDragEvent={this.props.onDragEvent}
-        className={`${props.className || ""}`}
+        className={`${props.className || ""}${
+          isContextMenuOpen ? " active" : ""
+        }`}
         title={title}
       >
         <div>
           <ContextMenuButton
             tooltip="newtab-menu-content-tooltip"
             tooltipArgs={{ title }}
+            onUpdate={this.onMenuUpdate}
           >
             <LinkMenu
               dispatch={props.dispatch}
               index={props.index}
+              onUpdate={this.onMenuUpdate}
               options={
                 link.searchTopSite
                   ? TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS
@@ -418,6 +432,7 @@ export class TopSite extends React.PureComponent {
 }
 TopSite.defaultProps = {
   link: {},
+  onActivate() {},
 };
 
 export class TopSitePlaceholder extends React.PureComponent {
@@ -454,6 +469,7 @@ export class TopSitePlaceholder extends React.PureComponent {
 export class TopSiteList extends React.PureComponent {
   static get DEFAULT_STATE() {
     return {
+      activeIndex: null,
       draggedIndex: null,
       draggedSite: null,
       draggedTitle: null,
@@ -465,6 +481,7 @@ export class TopSiteList extends React.PureComponent {
     super(props);
     this.state = TopSiteList.DEFAULT_STATE;
     this.onDragEvent = this.onDragEvent.bind(this);
+    this.onActivate = this.onActivate.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -504,6 +521,7 @@ export class TopSiteList extends React.PureComponent {
           draggedIndex: index,
           draggedSite: link,
           draggedTitle: title,
+          activeIndex: null,
         });
         this.userEvent("DRAG", index);
         break;
@@ -602,6 +620,10 @@ export class TopSiteList extends React.PureComponent {
     return preview;
   }
 
+  onActivate(index) {
+    this.setState({ activeIndex: index });
+  }
+
   render() {
     const { props } = this;
     const topSites = this.state.topSitesPreview || this._getTopSites();
@@ -629,6 +651,10 @@ export class TopSiteList extends React.PureComponent {
       const slotProps = {
         key: link ? link.url : holeIndex++,
         index: i,
+        ...(link.type !== SPOC_TYPE ? {
+          activeIndex: this.state.activeIndex,
+          onActivate: this.onActivate,
+        } : {}),
       };
       if (i >= maxNarrowVisibleIndex) {
         slotProps.className = "hide-for-narrow";
