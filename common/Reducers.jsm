@@ -601,7 +601,7 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
       return {
         ...prevState,
         spocs: {
-          ...INITIAL_STATE.DiscoveryStream.spocs,
+          ...prevState.spocs,
           frequency_caps: [...prevState.spocs.frequency_caps, ...action.data],
         },
       };
@@ -609,7 +609,7 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
       return {
         ...prevState,
         spocs: {
-          ...prevState.spocs,
+          ...INITIAL_STATE.DiscoveryStream.spocs,
           spocs_endpoint:
             action.data.url ||
             INITIAL_STATE.DiscoveryStream.spocs.spocs_endpoint,
