@@ -177,7 +177,8 @@ export class TopSiteLink extends React.PureComponent {
       // assume high quality custom screenshot and use rich icon styles and class names
 
       // TopSite spoc experiment only
-      const spocImgURL = link.type === SPOC_TYPE ? link.customScreenshotURL : "";
+      const spocImgURL =
+        link.type === SPOC_TYPE ? link.customScreenshotURL : "";
 
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
