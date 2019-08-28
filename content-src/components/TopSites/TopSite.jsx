@@ -421,6 +421,7 @@ export class TopSite extends React.PureComponent {
                   : menuOptions
               }
               site={link}
+              shouldSendImpressionStats={link.type === SPOC_TYPE}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE}
             />
