@@ -12,10 +12,12 @@ import {
   TOP_SITES_SOURCE,
 } from "./TopSitesConstants";
 import { LinkMenu } from "content-src/components/LinkMenu/LinkMenu";
+import { ImpressionStats } from "../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import { ScreenshotUtils } from "content-src/lib/screenshot-utils";
 import { TOP_SITES_MAX_SITES_PER_ROW } from "common/Reducers.jsm";
 import { ContextMenuButton } from "content-src/components/ContextMenu/ContextMenuButton";
+const SPOC_TYPE = "SPOC";
 
 export class TopSiteLink extends React.PureComponent {
   constructor(props) {
@@ -175,7 +177,8 @@ export class TopSiteLink extends React.PureComponent {
       // assume high quality custom screenshot and use rich icon styles and class names
 
       // TopSite spoc experiment only
-      const spocImgURL = link.type === "SPOC" ? link.customScreenshotURL : "";
+      const spocImgURL =
+        link.type === SPOC_TYPE ? link.customScreenshotURL : "";
 
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
@@ -261,11 +264,25 @@ export class TopSiteLink extends React.PureComponent {
               {link.isPinned && <div className="icon icon-pin-small" />}
               <span dir="auto">{title}</span>
             </div>
-            {link.type === "SPOC" ? (
+            {link.type === SPOC_TYPE ? (
               <span className="top-site-spoc-label">Sponsored</span>
             ) : null}
           </a>
           {children}
+          {link.type === SPOC_TYPE ? (
+            <ImpressionStats
+              campaignId={link.campaignId}
+              rows={[
+                {
+                  id: link.id,
+                  pos: link.pos,
+                  shim: link.shim && link.shim.impression,
+                },
+              ]}
+              dispatch={this.props.dispatch}
+              source={TOP_SITES_SOURCE}
+            />
+          ) : null}
         </div>
       </li>
     );
@@ -333,6 +350,23 @@ export class TopSite extends React.PureComponent {
           }),
         })
       );
+
+      // Fire off a spoc specific impression.
+      if (this.props.link.type === SPOC_TYPE) {
+        this.props.dispatch(
+          ac.ImpressionStats({
+            source: TOP_SITES_SOURCE,
+            click: 0,
+            tiles: [
+              {
+                id: this.props.link.id,
+                pos: this.props.link.pos,
+                shim: this.props.link.shim && this.props.link.shim.click,
+              },
+            ],
+          })
+        );
+      }
     } else {
       this.props.dispatch(
         ac.OnlyToMain({
@@ -357,7 +391,7 @@ export class TopSite extends React.PureComponent {
     const isContextMenuOpen = props.activeIndex === props.index;
     const title = link.label || link.hostname;
     const menuOptions =
-      link.type !== "SPOC"
+      link.type !== SPOC_TYPE
         ? TOP_SITES_CONTEXT_MENU_OPTIONS
         : TOP_SITES_SPOC_CONTEXT_MENU_OPTIONS;
 
@@ -387,6 +421,7 @@ export class TopSite extends React.PureComponent {
                   : menuOptions
               }
               site={link}
+              shouldSendImpressionStats={link.type === SPOC_TYPE}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE}
             />

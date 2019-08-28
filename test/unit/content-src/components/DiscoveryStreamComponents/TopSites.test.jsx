@@ -75,14 +75,38 @@ describe("Discovery Stream <TopSites>", () => {
       url: "foo",
       sponsor: "bar",
       image_src: "foobar",
+      campaign_id: "1234",
+      id: "5678",
+      shim: { impression: "1011" },
     };
     const data = { spocs: [topSiteSpoc] };
-    const resultSpoc = {
+    const resultSpocLeft = {
       customScreenshotURL: "foobar",
       type: "SPOC",
       label: "bar",
       title: "bar",
       url: "foo",
+      campaignId: "1234",
+      id: "5678",
+      guid: "5678",
+      shim: {
+        impression: "1011",
+      },
+      pos: 0,
+    };
+    const resultSpocRight = {
+      customScreenshotURL: "foobar",
+      type: "SPOC",
+      label: "bar",
+      title: "bar",
+      url: "foo",
+      campaignId: "1234",
+      id: "5678",
+      guid: "5678",
+      shim: {
+        impression: "1011",
+      },
+      pos: 7,
     };
     const pinnedSite = {
       label: "pinnedSite",
@@ -114,7 +138,14 @@ describe("Discovery Stream <TopSites>", () => {
       const extraSpocData = {
         spocs: [
           topSiteSpoc,
-          { url: "foo2", sponsor: "bar2", image_src: "foobar2" },
+          {
+            url: "foo2",
+            sponsor: "bar2",
+            image_src: "foobar2",
+            campaign_id: "1234",
+            id: "5678",
+            shim: { impression: "1011" },
+          },
         ],
       };
 
@@ -130,6 +161,13 @@ describe("Discovery Stream <TopSites>", () => {
         label: "bar2",
         title: "bar2",
         url: "foo2",
+        campaignId: "1234",
+        id: "5678",
+        guid: "5678",
+        shim: {
+          impression: "1011",
+        },
+        pos: 7,
       };
       const expectedResult = {
         rows: [...topSitesWithOrganicSpoc.rows, availableSpoc],
@@ -142,7 +180,7 @@ describe("Discovery Stream <TopSites>", () => {
       const result = insertSpocContent(defaultTopSites, data, "right");
 
       const expectedResult = {
-        rows: [...defaultTopSiteRows, resultSpoc],
+        rows: [...defaultTopSiteRows, resultSpocRight],
       };
       assert.deepEqual(result, expectedResult);
     });
@@ -150,7 +188,7 @@ describe("Discovery Stream <TopSites>", () => {
     it("should add to front of row if the row is not full and alignment is left", () => {
       const result = insertSpocContent(defaultTopSites, data, "left");
       assert.deepEqual(result, {
-        rows: [resultSpoc, ...defaultTopSiteRows],
+        rows: [resultSpocLeft, ...defaultTopSiteRows],
       });
     });
 
@@ -168,7 +206,7 @@ describe("Discovery Stream <TopSites>", () => {
       );
 
       assert.deepEqual(result, {
-        rows: [pinnedSite, pinnedSite, resultSpoc, ...defaultTopSiteRows],
+        rows: [pinnedSite, pinnedSite, resultSpocLeft, ...defaultTopSiteRows],
       });
     });
 
@@ -177,7 +215,7 @@ describe("Discovery Stream <TopSites>", () => {
       const result = insertSpocContent({ rows: pinnedArray }, data, "right");
 
       assert.deepEqual(result, {
-        rows: [...pinnedArray, resultSpoc],
+        rows: [...pinnedArray, resultSpocRight],
       });
     });
 
@@ -190,7 +228,7 @@ describe("Discovery Stream <TopSites>", () => {
       const result = insertSpocContent({ rows: rowsWithPins }, data, "right");
 
       assert.deepEqual(result, {
-        rows: [topSite, resultSpoc, ...pinnedArray, topSite],
+        rows: [topSite, resultSpocRight, ...pinnedArray, topSite],
       });
     });
 
@@ -202,7 +240,7 @@ describe("Discovery Stream <TopSites>", () => {
 
       // Pinned items should retain in Index 0 and Index 3 like defined in rowsWithPins
       assert.deepEqual(result, {
-        rows: [pinnedSite, resultSpoc, topSite, pinnedSite, topSite],
+        rows: [pinnedSite, resultSpocLeft, topSite, pinnedSite, topSite],
       });
     });
   });

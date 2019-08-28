@@ -84,6 +84,15 @@ export class _TopSites extends React.PureComponent {
       label: topSiteSpoc.sponsor,
       title: topSiteSpoc.sponsor,
       url: topSiteSpoc.url,
+      campaignId: topSiteSpoc.campaign_id,
+      id: topSiteSpoc.id,
+      guid: topSiteSpoc.id,
+      shim: topSiteSpoc.shim,
+      // For now we are assuming position based on intended position.
+      // Actual position can shift based on other content.
+      // We also hard code left and right to be 0 and 7.
+      // We send the intended postion in the ping.
+      pos: promoAlignment === "left" ? 0 : 7,
     };
 
     const firstAvailableIndex = this.getFirstAvailableIndex(
