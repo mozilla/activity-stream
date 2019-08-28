@@ -48,7 +48,7 @@ export const selectLayoutRender = (state, prefs, rickRollCache) => {
   const positions = {};
   const DS_COMPONENTS = [
     "Message",
-    "DSTextPromo",
+    "TextPromo",
     "SectionTitle",
     "Navigation",
     "CardGrid",
