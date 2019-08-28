@@ -360,7 +360,7 @@ export class TopSite extends React.PureComponent {
               {
                 id: this.props.link.id,
                 pos: this.props.link.pos,
-                shim: this.props.link.shim && this.props.shim.click,
+                shim: this.props.link.shim && this.props.link.shim.click,
               },
             ],
           })
