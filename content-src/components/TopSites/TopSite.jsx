@@ -280,7 +280,7 @@ export class TopSiteLink extends React.PureComponent {
                 },
               ]}
               dispatch={this.props.dispatch}
-              source="TOPSITES"
+              source={TOP_SITES_SOURCE}
             />
           ) : null}
         </div>
