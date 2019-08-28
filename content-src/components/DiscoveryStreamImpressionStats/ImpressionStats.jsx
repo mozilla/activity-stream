@@ -193,12 +193,6 @@ export class ImpressionStats extends React.PureComponent {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.rows.length && this.props.rows !== prevProps.rows) {
-      this.setImpressionObserverOrAddListener();
-    }
-  }
-
   componentWillUnmount() {
     if (this._handleIntersect && this.impressionObserver) {
       this.impressionObserver.unobserve(this.refs.impression);
