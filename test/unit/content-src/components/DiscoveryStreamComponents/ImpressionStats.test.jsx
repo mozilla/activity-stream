@@ -153,9 +153,7 @@ describe("<ImpressionStats>", () => {
     const dispatch = sinon.spy();
     const props = {
       dispatch,
-      IntersectionObserver: buildIntersectionObserver(
-        ZeroIntersectEntries
-      ),
+      IntersectionObserver: buildIntersectionObserver(ZeroIntersectEntries),
     };
     const wrapper = renderImpressionStats(props);
 
