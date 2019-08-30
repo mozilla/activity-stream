@@ -19,33 +19,30 @@ add_task(async function test_messages_rendering() {
 
   await ToolbarPanelHub.enableAppmenuButton();
 
-  const promisePanelOpen = new Promise(resolve =>
-    UITour.showMenu(window, "appMenu", resolve)
-  );
+  const mainView = document.getElementById("appMenu-mainView");
+  UITour.showMenu(window, "appMenu");
+  await BrowserTestUtils.waitForEvent(mainView, "ViewShown");
 
-  await promisePanelOpen;
-
-  Assert.ok(
-    document.getElementById("appMenu-mainView").hidden === false,
-    "Panel is visible"
-  );
+  Assert.equal(mainView.hidden, false, "Panel is visible");
 
   const whatsNewBtn = document.getElementById("appMenu-whatsnew-button");
-
-  Assert.ok(whatsNewBtn.hidden === false, "What's New is present");
+  Assert.equal(whatsNewBtn.hidden, false, "What's New is present");
 
   // Show the What's New Messages
   whatsNewBtn.click();
 
-  await BrowserTestUtils.waitForCondition(
+  const shownMessages = await BrowserTestUtils.waitForCondition(
     () =>
       document.getElementById("PanelUI-whatsNew-message-container") &&
       document.querySelectorAll(
         "#PanelUI-whatsNew-message-container .whatsNew-message"
-      ).length === msgs.length
+      ).length
   );
-
-  info(`${msgs.length} What's New messages rendered.`);
+  Assert.equal(
+    shownMessages,
+    msgs.length,
+    "Expected number of What's New messages rendered."
+  );
 
   UITour.hideMenu(window, "appMenu");
 });
