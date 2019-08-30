@@ -26,8 +26,9 @@ export class DSImage extends React.PureComponent {
       if (entry) {
         if (this.props.optimize) {
           this.setState({
-            containerWidth: entry.boundingClientRect.width,
-            containerHeight: entry.boundingClientRect.height,
+            // Thumbor doesn't handle subpixels and just errors out, so rounding...
+            containerWidth: Math.round(entry.boundingClientRect.width),
+            containerHeight: Math.round(entry.boundingClientRect.height),
           });
         }
 
@@ -113,7 +114,7 @@ export class DSImage extends React.PureComponent {
 
           img = (
             <img
-              alt=""
+              alt={this.props.alt_text}
               crossOrigin="anonymous"
               onError={this.onOptimizedImageError}
               src={source}
@@ -124,7 +125,7 @@ export class DSImage extends React.PureComponent {
       } else if (!this.state.nonOptimizedImageFailed) {
         img = (
           <img
-            alt=""
+            alt={this.props.alt_text}
             crossOrigin="anonymous"
             onError={this.onNonOptimizedImageError}
             src={this.props.source}
@@ -158,4 +159,5 @@ DSImage.defaultProps = {
   rawSource: null, // Unadulterated image URL to filter through Thumbor
   extraClassNames: null, // Additional classnames to append to component
   optimize: true, // Measure parent container to request exact sizes
+  alt_text: null,
 };
