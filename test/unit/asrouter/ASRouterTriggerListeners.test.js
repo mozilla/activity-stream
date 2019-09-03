@@ -56,10 +56,10 @@ describe("ASRouterTriggerListeners", () => {
 
   describe("frequentVisits", () => {
     let _triggerHandler;
-    beforeEach(async () => {
+    beforeEach(() => {
       _triggerHandler = sandbox.stub();
       sandbox.useFakeTimers();
-      await frequentVisitsListener.init(_triggerHandler, hosts);
+      frequentVisitsListener.init(_triggerHandler, hosts);
     });
     afterEach(() => {
       sandbox.clock.restore();
@@ -124,17 +124,17 @@ describe("ASRouterTriggerListeners", () => {
       afterEach(() => {
         frequentVisitsListener.uninit();
       });
-      it("should create a matchPatternSet", async () => {
-        await frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
+      it("should create a matchPatternSet", () => {
+        frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
 
         assert.calledOnce(window.MatchPatternSet);
         assert.calledWithExactly(window.MatchPatternSet, ["pattern"], {
           ignorePath: true,
         });
       });
-      it("should allow to add multiple patterns and dedupe", async () => {
-        await frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
-        await frequentVisitsListener.init(_triggerHandler, hosts, ["foo"]);
+      it("should allow to add multiple patterns and dedupe", () => {
+        frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
+        frequentVisitsListener.init(_triggerHandler, hosts, ["foo"]);
 
         assert.calledTwice(window.MatchPatternSet);
         assert.calledWithExactly(
@@ -153,8 +153,8 @@ describe("ASRouterTriggerListeners", () => {
     });
 
     describe("#init", () => {
-      beforeEach(async () => {
-        await openURLListener.init(triggerHandler, hosts);
+      beforeEach(() => {
+        openURLListener.init(triggerHandler, hosts);
       });
       afterEach(() => {
         openURLListener.uninit();
@@ -193,7 +193,7 @@ describe("ASRouterTriggerListeners", () => {
 
     describe("#uninit", () => {
       beforeEach(async () => {
-        await openURLListener.init(triggerHandler, hosts);
+        openURLListener.init(triggerHandler, hosts);
         // Ensure that the window enumerator will return the existing window for uninit as well
         resetEnumeratorStub([existingWindow]);
         openURLListener.uninit();
@@ -229,9 +229,9 @@ describe("ASRouterTriggerListeners", () => {
         frequentVisitsListener.uninit();
       });
 
-      it("should call the ._triggerHandler with the right arguments", async () => {
+      it("should call the ._triggerHandler with the right arguments", () => {
         const newTriggerHandler = sinon.stub();
-        await openURLListener.init(newTriggerHandler, hosts);
+        openURLListener.init(newTriggerHandler, hosts);
 
         const browser = {};
         const webProgress = { isTopLevel: true };
@@ -246,10 +246,10 @@ describe("ASRouterTriggerListeners", () => {
           param: { host: "www.mozilla.org", url: "www.mozilla.org" },
         });
       });
-      it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
+      it("should call triggerHandler for a redirect (openURL + frequentVisits)", () => {
         for (let trigger of [openURLListener, frequentVisitsListener]) {
           const newTriggerHandler = sinon.stub();
-          await trigger.init(newTriggerHandler, hosts);
+          trigger.init(newTriggerHandler, hosts);
 
           const browser = {};
           const webProgress = { isTopLevel: true };
@@ -272,9 +272,9 @@ describe("ASRouterTriggerListeners", () => {
           assert.calledOnce(newTriggerHandler);
         }
       });
-      it("should call triggerHandler with the right arguments (redirect)", async () => {
+      it("should call triggerHandler with the right arguments (redirect)", () => {
         const newTriggerHandler = sinon.stub();
-        await openURLListener.init(newTriggerHandler, hosts);
+        openURLListener.init(newTriggerHandler, hosts);
 
         const browser = {};
         const webProgress = { isTopLevel: true };
@@ -298,10 +298,10 @@ describe("ASRouterTriggerListeners", () => {
           param: { host: "www.mozilla.org", url: "www.mozilla.org" },
         });
       });
-      it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
+      it("should call triggerHandler for a redirect (openURL + frequentVisits)", () => {
         for (let trigger of [openURLListener, frequentVisitsListener]) {
           const newTriggerHandler = sinon.stub();
-          await trigger.init(newTriggerHandler, hosts);
+          trigger.init(newTriggerHandler, hosts);
 
           const browser = {};
           const webProgress = { isTopLevel: true };
@@ -324,9 +324,9 @@ describe("ASRouterTriggerListeners", () => {
           assert.calledOnce(newTriggerHandler);
         }
       });
-      it("should call triggerHandler with the right arguments (redirect)", async () => {
+      it("should call triggerHandler with the right arguments (redirect)", () => {
         const newTriggerHandler = sinon.stub();
-        await openURLListener.init(newTriggerHandler, hosts);
+        openURLListener.init(newTriggerHandler, hosts);
 
         const browser = {};
         const webProgress = { isTopLevel: true };
@@ -350,9 +350,9 @@ describe("ASRouterTriggerListeners", () => {
           param: { host: "www.mozilla.org", url: "www.mozilla.org" },
         });
       });
-      it("should fail for subdomains (not redirect)", async () => {
+      it("should fail for subdomains (not redirect)", () => {
         const newTriggerHandler = sinon.stub();
-        await openURLListener.init(newTriggerHandler, hosts);
+        openURLListener.init(newTriggerHandler, hosts);
 
         const browser = {};
         const webProgress = { isTopLevel: true };
