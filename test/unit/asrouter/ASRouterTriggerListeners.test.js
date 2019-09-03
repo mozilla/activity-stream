@@ -3,10 +3,10 @@ import { GlobalOverrider } from "test/unit/utils";
 
 describe("ASRouterTriggerListeners", () => {
   let sandbox;
-  let registerWindowNotificationStub;
-  let unregisterWindoNotificationStub;
+  let globals;
   let windowEnumeratorStub;
   let existingWindow;
+  let isWindowPrivateStub;
   const triggerHandler = () => {};
   const openURLListener = ASRouterTriggerListeners.get("openURL");
   const frequentVisitsListener = ASRouterTriggerListeners.get("frequentVisits");
@@ -18,21 +18,13 @@ describe("ASRouterTriggerListeners", () => {
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
-    registerWindowNotificationStub = sandbox.stub(
-      global.Services.ww,
-      "registerNotification"
-    );
-    unregisterWindoNotificationStub = sandbox.stub(
-      global.Services.ww,
-      "unregisterNotification"
-    );
+    globals = new GlobalOverrider();
     existingWindow = {
       gBrowser: {
         addTabsProgressListener: sandbox.stub(),
         removeTabsProgressListener: sandbox.stub(),
         currentURI: { host: "" },
       },
-      gBrowserInit: { delayedStartupFinished: true },
       addEventListener: sinon.stub(),
       removeEventListener: sinon.stub(),
     };
@@ -40,9 +32,26 @@ describe("ASRouterTriggerListeners", () => {
     resetEnumeratorStub([existingWindow]);
     sandbox.spy(openURLListener, "init");
     sandbox.spy(openURLListener, "uninit");
+    isWindowPrivateStub = sandbox.stub();
+    // Assume no window is private so that we execute the action
+    isWindowPrivateStub.returns(false);
+    globals.set("PrivateBrowsingUtils", {
+      isWindowPrivate: isWindowPrivateStub,
+    });
+    const ewUninit = new Map();
+    globals.set("EveryWindow", {
+      registerCallback: (id, init, uninit) => {
+        init(existingWindow);
+        ewUninit.set(id, uninit);
+      },
+      unregisterCallback: id => {
+        ewUninit.get(id)(existingWindow);
+      },
+    });
   });
   afterEach(() => {
     sandbox.restore();
+    globals.restore();
   });
 
   describe("frequentVisits", () => {
@@ -106,16 +115,13 @@ describe("ASRouterTriggerListeners", () => {
       assert.notCalled(stub);
     });
     describe("MatchPattern", () => {
-      let globals;
       beforeEach(() => {
-        globals = new GlobalOverrider();
         globals.set(
           "MatchPatternSet",
           sandbox.stub().callsFake(patterns => ({ patterns }))
         );
       });
       afterEach(() => {
-        globals.restore();
         frequentVisitsListener.uninit();
       });
       it("should create a matchPatternSet", async () => {
@@ -160,11 +166,6 @@ describe("ASRouterTriggerListeners", () => {
         assert.equal(openURLListener._triggerHandler, triggerHandler);
       });
 
-      it("should register an open-window notification", () => {
-        assert.calledOnce(registerWindowNotificationStub);
-        assert.calledWith(registerWindowNotificationStub, openURLListener);
-      });
-
       it("should add tab progress listeners to all existing browser windows", () => {
         assert.calledOnce(existingWindow.gBrowser.addTabsProgressListener);
         assert.calledWithExactly(
@@ -177,7 +178,6 @@ describe("ASRouterTriggerListeners", () => {
         const newHosts = ["www.example.com"];
         const newTriggerHandler = () => {};
         resetEnumeratorStub([existingWindow]);
-        registerWindowNotificationStub.reset();
         existingWindow.gBrowser.addTabsProgressListener.reset();
 
         openURLListener.init(newTriggerHandler, newHosts);
@@ -187,7 +187,6 @@ describe("ASRouterTriggerListeners", () => {
           new Set([...hosts, ...newHosts])
         );
         assert.equal(openURLListener._triggerHandler, newTriggerHandler);
-        assert.notCalled(registerWindowNotificationStub);
         assert.notCalled(existingWindow.gBrowser.addTabsProgressListener);
       });
     });
@@ -206,11 +205,6 @@ describe("ASRouterTriggerListeners", () => {
         assert.equal(openURLListener._triggerHandler, null);
       });
 
-      it("should remove an open-window notification", () => {
-        assert.calledOnce(unregisterWindoNotificationStub);
-        assert.calledWith(unregisterWindoNotificationStub, openURLListener);
-      });
-
       it("should remove tab progress listeners from all existing browser windows", () => {
         assert.calledOnce(existingWindow.gBrowser.removeTabsProgressListener);
         assert.calledWithExactly(
@@ -220,13 +214,11 @@ describe("ASRouterTriggerListeners", () => {
       });
 
       it("should do nothing if already uninitialised", () => {
-        unregisterWindoNotificationStub.reset();
         existingWindow.gBrowser.removeTabsProgressListener.reset();
         resetEnumeratorStub([existingWindow]);
 
         openURLListener.uninit();
         assert.notOk(openURLListener._initialized);
-        assert.notCalled(unregisterWindoNotificationStub);
         assert.notCalled(existingWindow.gBrowser.removeTabsProgressListener);
       });
     });
@@ -384,26 +376,6 @@ describe("ASRouterTriggerListeners", () => {
         );
         assert.calledOnce(aRequest.QueryInterface);
         assert.notCalled(newTriggerHandler);
-      });
-    });
-
-    describe("delayed startup finished", () => {
-      beforeEach(() => {
-        existingWindow.gBrowserInit.delayedStartupFinished = false;
-        sandbox
-          .stub(global.Services.obs, "addObserver")
-          .callsFake(fn =>
-            fn(existingWindow, "browser-delayed-startup-finished")
-          );
-      });
-      afterEach(() => {
-        openURLListener.uninit();
-      });
-
-      it("should wait for startup and then add the tabs listener", async () => {
-        await openURLListener.init(triggerHandler, hosts);
-
-        assert.calledOnce(existingWindow.gBrowser.addTabsProgressListener);
       });
     });
   });
