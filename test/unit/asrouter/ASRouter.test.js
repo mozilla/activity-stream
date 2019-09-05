@@ -141,6 +141,7 @@ describe("ASRouter", () => {
     FakeToolbarPanelHub = {
       init: sandbox.stub(),
       uninit: sandbox.stub(),
+      forceShowMessage: sandbox.stub(),
     };
     FakeToolbarBadgeHub = {
       init: sandbox.stub(),
@@ -465,10 +466,26 @@ describe("ASRouter", () => {
       sandbox.stub(CFRPageActions, "addRecommendation");
       target = { sendAsyncMessage: sandbox.stub() };
     });
+    it("should route whatsnew_panel_message message to the right hub", () => {
+      Router.routeMessageToTarget(
+        { template: "whatsnew_panel_message" },
+        target,
+        "",
+        true
+      );
+
+      assert.calledOnce(FakeToolbarPanelHub.forceShowMessage);
+      assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(CFRPageActions.addRecommendation);
+      assert.notCalled(CFRPageActions.forceRecommendation);
+      assert.notCalled(target.sendAsyncMessage);
+    });
     it("should route toolbar_badge message to the right hub", () => {
       Router.routeMessageToTarget({ template: "toolbar_badge" }, target);
 
       assert.calledOnce(FakeToolbarBadgeHub.registerBadgeNotificationListener);
+      assert.notCalled(FakeToolbarPanelHub.forceShowMessage);
       assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
       assert.notCalled(CFRPageActions.addRecommendation);
       assert.notCalled(CFRPageActions.forceRecommendation);
@@ -483,6 +500,7 @@ describe("ASRouter", () => {
       );
 
       assert.calledOnce(FakeBookmarkPanelHub._forceShowMessage);
+      assert.notCalled(FakeToolbarPanelHub.forceShowMessage);
       assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
       assert.notCalled(CFRPageActions.addRecommendation);
       assert.notCalled(CFRPageActions.forceRecommendation);
@@ -497,6 +515,7 @@ describe("ASRouter", () => {
       );
 
       assert.calledOnce(CFRPageActions.addRecommendation);
+      assert.notCalled(FakeToolbarPanelHub.forceShowMessage);
       assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
       assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
       assert.notCalled(CFRPageActions.forceRecommendation);
@@ -511,6 +530,7 @@ describe("ASRouter", () => {
       );
 
       assert.calledOnce(CFRPageActions.forceRecommendation);
+      assert.notCalled(FakeToolbarPanelHub.forceShowMessage);
       assert.notCalled(CFRPageActions.addRecommendation);
       assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);
       assert.notCalled(FakeToolbarBadgeHub.registerBadgeNotificationListener);
@@ -520,6 +540,7 @@ describe("ASRouter", () => {
       Router.routeMessageToTarget({ template: "snippets" }, target, {}, true);
 
       assert.calledOnce(target.sendAsyncMessage);
+      assert.notCalled(FakeToolbarPanelHub.forceShowMessage);
       assert.notCalled(CFRPageActions.forceRecommendation);
       assert.notCalled(CFRPageActions.addRecommendation);
       assert.notCalled(FakeBookmarkPanelHub._forceShowMessage);

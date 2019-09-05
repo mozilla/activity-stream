@@ -27,6 +27,7 @@ const APPMENU_BUTTON_ID = "appMenu-whatsnew-button";
 const PANEL_HEADER_SELECTOR = "#PanelUI-whatsNew-title > label";
 
 const BUTTON_STRING_ID = "cfr-whatsnew-button";
+const WHATS_NEW_PANEL_SELECTOR = "PanelUI-whatsNew-message-container";
 
 class _ToolbarPanelHub {
   constructor() {
@@ -534,20 +535,20 @@ class _ToolbarPanelHub {
     );
   }
 
+  /**
+   * @param {object} browser MessageChannel target argument as a response to a user action
+   * @param {object} message Message selected from devtools page
+   */
   forceShowMessage(browser, message) {
     const win = browser.browser.ownerGlobal;
     const doc = browser.browser.ownerDocument;
-    this._showAppmenuButton(win);
-    this.removeMessages(win, "PanelUI-whatsNew-message-container");
-    this.renderMessages(win, doc, "PanelUI-whatsNew-message-container", {
+    this.removeMessages(win, WHATS_NEW_PANEL_SELECTOR);
+    this.renderMessages(win, doc, WHATS_NEW_PANEL_SELECTOR, {
       force: true,
       messages: [message],
     });
     win.PanelUI.panel.addEventListener("popuphidden", event =>
-      this.removeMessages(
-        event.target.ownerGlobal,
-        "PanelUI-whatsNew-message-container"
-      )
+      this.removeMessages(event.target.ownerGlobal, WHATS_NEW_PANEL_SELECTOR)
     );
   }
 }
