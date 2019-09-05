@@ -1,7 +1,16 @@
+.ds-dismiss-ds-text-promo {
+  width: 744px;
+  margin: auto;
+
+  .ds-dismiss-button {
+    margin: 16px;
+  }
+}
+
 .ds-text-promo {
   display: flex;
-  max-width: 744px;
-  margin: 18px auto;
+  max-width: 640px;
+  margin: 18px 24px;
 
   .ds-image {
     width: 40px;
