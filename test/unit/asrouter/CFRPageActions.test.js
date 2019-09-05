@@ -801,7 +801,7 @@ describe("CFRPageActions", () => {
         );
       });
       it("should show the pageAction if a recommendation exists and it doesn't have a host defined", () => {
-        const recNoHost = { ...savedRec, host: null };
+        const recNoHost = { ...savedRec, host: undefined };
         CFRPageActions.RecommendationMap.set(fakeBrowser, recNoHost);
         CFRPageActions.updatePageActions(fakeBrowser);
         assert.calledOnce(PageAction.prototype.showAddressBarNotifier);
