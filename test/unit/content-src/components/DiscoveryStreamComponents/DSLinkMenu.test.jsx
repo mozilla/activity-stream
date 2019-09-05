@@ -47,7 +47,7 @@ describe("<DSLinkMenu>", () => {
       assert.equal(parentNode.className, "last-item active");
     });
 
-    it("Should add last-item to support resized window", async () => {
+    it("Should call rAF from nextAnimationFrame", () => {
       const fakeWindow = { requestAnimationFrame: sinon.stub() };
       wrapper = mount(<DSLinkMenu windowObj={fakeWindow} />);
 
