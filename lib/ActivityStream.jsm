@@ -461,6 +461,19 @@ const PREFS_CONFIG = new Map([
       }),
     },
   ],
+  [
+    "asrouter.providers.messaging-system",
+    {
+      title:
+        "Configuration for CFR Messaging System provider, used in testing only",
+      value: JSON.stringify({
+        id: "messaging-system",
+        enabled: false,
+        type: "remote-settings",
+        bucket: "messaging-system",
+      }),
+    },
+  ],
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   [
     "discoverystream.config",

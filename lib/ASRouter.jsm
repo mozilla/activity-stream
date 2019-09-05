@@ -529,7 +529,7 @@ class _ASRouter {
       });
     } else {
       // Update message providers and fetch new messages on pref change
-      this._loadLocalProviders();
+      this._loadTestProviders();
       this._updateMessageProviders();
       await this.loadMessagesFromAllProviders();
     }
@@ -745,7 +745,7 @@ class _ASRouter {
       handleUserAction: this.handleUserAction,
     });
 
-    this._loadLocalProviders();
+    this._loadTestProviders();
 
     // Instead of setupTrailhead, which adds experiments, just load override pref values
     await this.setFirstRunStateFromPref();
@@ -833,7 +833,7 @@ class _ASRouter {
     }
   }
 
-  _loadLocalProviders() {
+  _loadTestProviders() {
     // If we're in ASR debug mode add the local test providers
     if (ASRouterPreferences.devtoolsEnabled) {
       this._localProviders = {
@@ -841,6 +841,8 @@ class _ASRouter {
         SnippetsTestMessageProvider,
         PanelTestProvider,
       };
+      // Enable remote settings test provider
+      ASRouterPreferences.enableOrDisableProvider("messaging-system", true);
     }
   }
 
