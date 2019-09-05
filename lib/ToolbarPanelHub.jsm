@@ -154,8 +154,10 @@ class _ToolbarPanelHub {
   }
 
   // Render what's new messages into the panel.
-  async renderMessages(win, doc, containerId) {
-    const messages = (await this.messages).sort(this._sortWhatsNewMessages);
+  async renderMessages(win, doc, containerId, options = {}) {
+    const messages =
+      (options.force && options.messages) ||
+      (await this.messages).sort(this._sortWhatsNewMessages);
     const container = doc.getElementById(containerId);
 
     if (messages && !container.querySelector(".whatsNew-message")) {
@@ -188,6 +190,16 @@ class _ToolbarPanelHub {
     this.sendUserEventTelemetry(win, "IMPRESSION", eventId, {
       value: { view: mainview ? "toolbar_dropdown" : "application_menu" },
     });
+  }
+
+  removeMessages(win, containerId) {
+    const doc = win.document;
+    const messageNodes = doc
+      .getElementById(containerId)
+      .querySelectorAll(".whatsNew-message");
+    for (const messageNode of messageNodes) {
+      messageNode.remove();
+    }
   }
 
   /**
@@ -375,7 +387,7 @@ class _ToolbarPanelHub {
   // If `string_id` is present it means we are relying on fluent for translations.
   // Otherwise, we have a vanilla string.
   _setString(doc, el, stringObj) {
-    if (stringObj.string_id) {
+    if (stringObj && stringObj.string_id) {
       doc.l10n.setAttributes(
         el,
         stringObj.string_id,
@@ -390,7 +402,7 @@ class _ToolbarPanelHub {
   // If `string_id` is present it means we are relying on fluent for translations.
   // Otherwise, we have a vanilla string.
   _setTextAttribute(doc, el, attr, stringObj) {
-    if (stringObj.string_id) {
+    if (stringObj && stringObj.string_id) {
       doc.l10n.setAttributes(el, stringObj.string_id);
     } else {
       el.setAttribute(attr, stringObj);
@@ -519,6 +531,23 @@ class _ToolbarPanelHub {
       {
         once: true,
       }
+    );
+  }
+
+  forceShowMessage(browser, message) {
+    const win = browser.browser.ownerGlobal;
+    const doc = browser.browser.ownerDocument;
+    this._showAppmenuButton(win);
+    this.removeMessages(win, "PanelUI-whatsNew-message-container");
+    this.renderMessages(win, doc, "PanelUI-whatsNew-message-container", {
+      force: true,
+      messages: [message],
+    });
+    win.PanelUI.panel.addEventListener("popuphidden", event =>
+      this.removeMessages(
+        event.target.ownerGlobal,
+        "PanelUI-whatsNew-message-container"
+      )
     );
   }
 }
