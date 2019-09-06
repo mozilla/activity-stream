@@ -25,11 +25,6 @@ ChromeUtils.defineModuleGetter(
   "FileSource",
   "resource://gre/modules/L10nRegistry.jsm"
 );
-ChromeUtils.defineModuleGetter(
-  this,
-  "FluentBundle",
-  "resource://gre/modules/Fluent.jsm"
-);
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 const ANIMATION_BUTTON_ID = "cfr-notification-footer-animation-button";
@@ -98,7 +93,8 @@ class PageAction {
 
   /**
    * Creates a new DOMLocalization instance with the Fluent file from Remote Settings.
-   * Note that it still uses the packaged Fluent file as a fallback.
+   * Note that it still uses the packaged Fluent file as the fallback if the remote one
+   * is not available.
    */
   _createDOML10n() {
     async function* generateBundles(resourceIds) {
@@ -113,13 +109,21 @@ class PageAction {
       // `fetchFile` will return `false` and fall back to the packaged Fluent file.
       const resource = await fs.fetchFile(appLocale, "asrouter.ftl");
       if (resource) {
-        // Use a single locale array for the bundle from Remote Settings.
-        const bundle = new FluentBundle(appLocale);
-        bundle.addResource(resource);
-        yield bundle;
+        // Skip the local `asrouter.ftl` (i.e. the first resource) to favor the remote one.
+        // Other resources such as `branding.ftl`, `sync-brand.ftl`, and `branding/brand.ftl`
+        // still need to be packed into this bundle because, otherwise, we can't reference
+        // them across different Fluent bundles.
+        for await (let bundle of L10nRegistry.generateBundles(
+          [appLocale],
+          resourceIds.slice(1)
+        )) {
+          // Override the old string ID if any as it's the last resource.
+          bundle.addResource(resource, true);
+          yield bundle;
+        }
+      } else {
+        yield* L10nRegistry.generateBundles(appLocales, resourceIds);
       }
-      // Use the system locale array for all other local bundles.
-      yield* L10nRegistry.generateBundles(appLocales, resourceIds);
     }
 
     return new DOMLocalization(
