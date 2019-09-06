@@ -141,7 +141,7 @@ export class DSCard extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.idleCallbackId = window.requestIdleCallback(
+    this.idleCallbackId = this.props.windowObj.requestIdleCallback(
       this.onIdleCallback.bind(this)
     );
     if (this.placholderElement) {
@@ -154,6 +154,9 @@ export class DSCard extends React.PureComponent {
     // Remove observer on unmount
     if (this.observer && this.placholderElement) {
       this.observer.unobserve(this.placholderElement);
+    }
+    if (this.idleCallbackId) {
+      this.props.windowObj.cancelIdleCallback(this.idleCallbackId);
     }
   }
 
@@ -234,4 +237,9 @@ export class DSCard extends React.PureComponent {
     );
   }
 }
+
+DSCard.defaultProps = {
+  windowObj: window, // Added to support unit tests
+};
+
 export const PlaceholderDSCard = props => <DSCard placeholder={true} />;

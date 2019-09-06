@@ -266,6 +266,24 @@ describe("<DSCard>", () => {
       assert.isTrue(!!wrapper.instance().observer);
     });
   });
+  describe("DSCard with Idle Callback", () => {
+    let windowStub = {
+      requestIdleCallback: sinon.stub().returns(1),
+      cancelIdleCallback: sinon.stub(),
+    };
+    beforeEach(() => {
+      wrapper = shallow(<DSCard windowObj={windowStub} />);
+    });
+
+    it("should call requestIdleCallback on componentDidMount", () => {
+      assert.calledOnce(windowStub.requestIdleCallback);
+    });
+
+    it("should call cancelIdleCallback on componentWillUnmount", () => {
+      wrapper.instance().componentWillUnmount();
+      assert.calledOnce(windowStub.cancelIdleCallback);
+    });
+  });
 });
 
 describe("<PlaceholderDSCard> component", () => {
