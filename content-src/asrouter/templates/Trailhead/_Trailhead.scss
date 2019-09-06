@@ -100,7 +100,8 @@
         background-position-x: right;
       }
 
-      &.knowledge {
+      &.knowledge,
+      &.monitor {
         background-image: url('#{$image-path}trailhead/benefit-knowledge.png');
       }
 
@@ -110,6 +111,14 @@
 
       &.products {
         background-image: url('#{$image-path}trailhead/benefit-products.png');
+      }
+
+      &.sync {
+        background-image: url('#{$image-path}trailhead/benefit-sync.png');
+      }
+
+      &.lockwise {
+        background-image: url('#{$image-path}trailhead/benefit-lockwise.png');
       }
     }
 

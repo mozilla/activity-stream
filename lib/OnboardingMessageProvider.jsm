@@ -24,17 +24,41 @@ const L10N = new Localization([
   "browser/newtab/onboarding.ftl",
 ]);
 
+const TRAILHEAD_ONBOARDING_TEMPLATE = {
+  trigger: { id: "firstRun" },
+  template: "trailhead",
+  includeBundle: {
+    length: 3,
+    template: "onboarding",
+    trigger: { id: "showOnboarding" },
+  },
+};
+
+const TRAILHEAD_MODAL_VARIANT_CONTENT = {
+  className: "joinCohort",
+  benefits: ["sync", "monitor", "lockwise"].map(id => ({
+    id,
+    title: { string_id: `onboarding-benefit-${id}-title` },
+    text: { string_id: `onboarding-benefit-${id}-text` },
+  })),
+  learn: {
+    text: { string_id: "onboarding-welcome-modal-variant-learn-more" },
+    url: "https://www.mozilla.org/firefox/accounts/",
+  },
+  form: {
+    title: { string_id: "onboarding-modal-variant-form-header" },
+    text: { string_id: "onboarding-join-form-body" },
+    email: { string_id: "onboarding-join-form-email" },
+    button: { string_id: "onboarding-join-form-continue" },
+  },
+  skipButton: { string_id: "onboarding-start-browsing-button-label" },
+};
+
 const ONBOARDING_MESSAGES = () => [
   {
     id: "TRAILHEAD_1",
-    template: "trailhead",
-    trigger: { id: "firstRun" },
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
     utm_term: "trailhead-join",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
       className: "joinCohort",
       title: { string_id: "onboarding-welcome-body" },
@@ -58,15 +82,9 @@ const ONBOARDING_MESSAGES = () => [
   },
   {
     id: "TRAILHEAD_2",
-    template: "trailhead",
     targeting: "trailheadInterrupt == 'sync'",
-    trigger: { id: "firstRun" },
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
     utm_term: "trailhead-sync",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
       className: "syncCohort",
       title: { string_id: "onboarding-sync-welcome-header" },
@@ -87,21 +105,71 @@ const ONBOARDING_MESSAGES = () => [
   },
   {
     id: "TRAILHEAD_3",
-    template: "trailhead",
     targeting: "trailheadInterrupt == 'cards'",
-    trigger: { id: "firstRun" },
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
     utm_term: "trailhead-cards",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
   },
   {
     id: "TRAILHEAD_4",
     template: "trailhead",
     targeting: "trailheadInterrupt == 'nofirstrun'",
     trigger: { id: "firstRun" },
+  },
+  {
+    id: "TRAILHEAD_5",
+    targeting: "trailheadInterrupt == 'modal_control'",
+    utm_term: "trailhead-modal_control",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      className: "joinCohort",
+      title: { string_id: "onboarding-welcome-body" },
+      benefits: ["products", "knowledge", "privacy"].map(id => ({
+        id,
+        title: { string_id: `onboarding-benefit-${id}-title` },
+        text: { string_id: `onboarding-benefit-${id}-text` },
+      })),
+      learn: {
+        text: { string_id: "onboarding-welcome-learn-more" },
+        url: "https://www.mozilla.org/firefox/accounts/",
+      },
+      form: {
+        title: { string_id: "onboarding-join-form-header" },
+        text: { string_id: "onboarding-join-form-body" },
+        email: { string_id: "onboarding-join-form-email" },
+        button: { string_id: "onboarding-join-form-continue" },
+      },
+      skipButton: { string_id: "onboarding-start-browsing-button-label" },
+    },
+  },
+  {
+    id: "TRAILHEAD_6",
+    targeting: "trailheadInterrupt == 'modal_variant_a'",
+    utm_term: "trailhead-modal_variant_a",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      ...TRAILHEAD_MODAL_VARIANT_CONTENT,
+      title: { string_id: "onboarding-welcome-modal-variant-a-body" },
+    },
+  },
+  {
+    id: "TRAILHEAD_7",
+    targeting: "trailheadInterrupt == 'modal_variant_b'",
+    utm_term: "trailhead-modal_variant_b",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      ...TRAILHEAD_MODAL_VARIANT_CONTENT,
+      title: { string_id: "onboarding-welcome-modal-variant-b-body" },
+    },
+  },
+  {
+    id: "TRAILHEAD_8",
+    targeting: "trailheadInterrupt == 'modal_variant_c'",
+    utm_term: "trailhead-modal_variant_c",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      ...TRAILHEAD_MODAL_VARIANT_CONTENT,
+      title: { string_id: "onboarding-welcome-modal-variant-c-body" },
+    },
   },
   {
     id: "EXTENDED_TRIPLETS_1",

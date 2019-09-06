@@ -80,7 +80,7 @@ describe("#CachedTargetingGetter", () => {
       context,
     });
 
-    assert.equal(stub.callCount, 5);
+    assert.equal(stub.callCount, 9);
     const calls = stub.getCalls().map(call => call.args[0]);
     const lastCall = calls[calls.length - 1];
     assert.equal(lastCall.id, "TRAILHEAD_1");
