@@ -76,7 +76,7 @@ export class DSCard extends React.PureComponent {
 
     this.onLinkClick = this.onLinkClick.bind(this);
     this.setPlaceholderRef = element => {
-      this.placholderElement = element;
+      this.placeholderElement = element;
     };
 
     this.state = {
@@ -117,8 +117,8 @@ export class DSCard extends React.PureComponent {
       const entry = entries.find(e => e.isIntersecting);
 
       if (entry) {
-        if (this.placholderElement) {
-          this.observer.unobserve(this.placholderElement);
+        if (this.placeholderElement) {
+          this.observer.unobserve(this.placeholderElement);
         }
 
         // Stop observing since element has been seen
@@ -131,8 +131,8 @@ export class DSCard extends React.PureComponent {
 
   onIdleCallback() {
     if (!this.state.isSeen) {
-      if (this.observer && this.placholderElement) {
-        this.observer.unobserve(this.placholderElement);
+      if (this.observer && this.placeholderElement) {
+        this.observer.unobserve(this.placeholderElement);
       }
       this.setState({
         isSeen: true,
@@ -144,16 +144,16 @@ export class DSCard extends React.PureComponent {
     this.idleCallbackId = this.props.windowObj.requestIdleCallback(
       this.onIdleCallback.bind(this)
     );
-    if (this.placholderElement) {
+    if (this.placeholderElement) {
       this.observer = new IntersectionObserver(this.onSeen.bind(this));
-      this.observer.observe(this.placholderElement);
+      this.observer.observe(this.placeholderElement);
     }
   }
 
   componentWillUnmount() {
     // Remove observer on unmount
-    if (this.observer && this.placholderElement) {
-      this.observer.unobserve(this.placholderElement);
+    if (this.observer && this.placeholderElement) {
+      this.observer.unobserve(this.placeholderElement);
     }
     if (this.idleCallbackId) {
       this.props.windowObj.cancelIdleCallback(this.idleCallbackId);
