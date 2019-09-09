@@ -3135,8 +3135,7 @@ describe("ASRouter", () => {
 
   describe("#_onLocaleChanged", () => {
     it("should call _maybeUpdateL10nAttachment in the handler", async () => {
-      await createRouterAndInit();
-      sandbox.stub(Router, "_maybeUpdateL10nAttachment").resolves(null);
+      sandbox.spy(Router, "_maybeUpdateL10nAttachment");
       await Router._onLocaleChanged();
 
       assert.calledOnce(Router._maybeUpdateL10nAttachment);
@@ -3157,7 +3156,7 @@ describe("ASRouter", () => {
       };
       await createRouterAndInit([provider]);
       sandbox.spy(Router, "setState");
-      sandbox.stub(Router, "loadMessagesFromAllProviders").resolves(null);
+      sandbox.spy(Router, "loadMessagesFromAllProviders");
 
       await Router._maybeUpdateL10nAttachment();
 

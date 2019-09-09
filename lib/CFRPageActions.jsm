@@ -8,7 +8,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
-ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 
 ChromeUtils.defineModuleGetter(
   this,
@@ -25,6 +24,7 @@ ChromeUtils.defineModuleGetter(
   "FileSource",
   "resource://gre/modules/L10nRegistry.jsm"
 );
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 const ANIMATION_BUTTON_ID = "cfr-notification-footer-animation-button";
