@@ -240,7 +240,7 @@ describe("<DSCard>", () => {
       wrapper.instance().observer = {
         unobserve: sandbox.stub(),
       };
-      wrapper.instance().placholderElement = "element";
+      wrapper.instance().placeholderElement = "element";
 
       wrapper.instance().onSeen([
         {
@@ -258,7 +258,7 @@ describe("<DSCard>", () => {
 
     it("should setup proper placholder ref for isSeen", () => {
       wrapper.instance().setPlaceholderRef("element");
-      assert.equal(wrapper.instance().placholderElement, "element");
+      assert.equal(wrapper.instance().placeholderElement, "element");
     });
 
     it("should setup observer on componentDidMount", () => {
