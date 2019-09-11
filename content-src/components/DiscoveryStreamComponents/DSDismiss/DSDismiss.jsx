@@ -70,7 +70,9 @@ export class DSDismiss extends React.PureComponent {
           onMouseEnter={this.onHover}
           onMouseLeave={this.offHover}
         >
-          <span className="icon icon-dismiss" />
+          <span className="icon icon-dismiss">
+            <span className="sr-only">Dismiss</span>
+          </span>
         </button>
       </div>
     );
