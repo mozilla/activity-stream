@@ -422,7 +422,12 @@ const MessageLoaderUtils = {
     const lastUpdated = Date.now();
     return {
       messages: messages
-        .map(msg => ({ weight: 100, ...msg, provider: provider.id }))
+        .map(msg => ({
+          weight: 100,
+          groups: [...(msg.groups || []), provider.id],
+          ...msg,
+          provider: provider.id,
+        }))
         .filter(message => message.weight > 0),
       lastUpdated,
       errors: MessageLoaderUtils.errors,
@@ -526,6 +531,7 @@ class _ASRouter {
       trailheadInterrupt: "",
       trailheadTriplet: "",
       messages: [],
+      groups: [],
       errors: [],
       extendedTripletsInitialized: false,
       showExtendedTriplets: true,
@@ -674,19 +680,58 @@ class _ASRouter {
     });
   }
 
+  hasGroupsEnabled(groups = []) {
+    return this.state.groups
+      .filter(({ id }) => groups.includes(id))
+      .every(({ enabled }) => enabled);
+  }
+
   /**
    * loadMessagesFromAllProviders - Loads messages from all providers if they require updates.
    *                                Checks the .lastUpdated field on each provider to see if updates are needed
    * @memberof _ASRouter
    */
   async loadMessagesFromAllProviders() {
-    const needsUpdate = this.state.providers.filter(provider =>
+    let newState = { messages: [], providers: [], groups: [] };
+    const providersToUpdate = this.state.providers.filter(provider =>
       MessageLoaderUtils.shouldProviderUpdate(provider)
     );
+    // TODO: Need to move this code to a separate function that will
+    // update state before returning because otherwise
+    // message filtering will work off of stale info
+    const groupsProvider = providersToUpdate.find(
+      ({ id }) => id === "message-groups"
+    );
+    const needsUpdate = providersToUpdate.filter(
+      ({ id }) => id !== "message-groups"
+    );
+    if (groupsProvider) {
+      let {
+        messages,
+        lastUpdated,
+        errors,
+      } = await MessageLoaderUtils.loadMessagesForProvider(groupsProvider, {
+        storage: this._storage,
+        dispatchToAS: this.dispatchToAS,
+      });
+      const groups = messages.map(group => {
+        return {
+          ...group,
+          enabled:
+            group.enabled &&
+            Array.isArray(group.userPreferences) &&
+            group.userPreferences.every(ASRouterPreferences.getUserPreference),
+        };
+      });
+      newState.providers = [{ ...groupsProvider, lastUpdated, errors }];
+      newState.messages = [...messages];
+      newState.groups = groups;
+    }
     // Don't do extra work if we don't need any updates
     if (needsUpdate.length) {
-      let newState = { messages: [], providers: [] };
-      for (const provider of this.state.providers) {
+      for (const provider of this.state.providers.filter(
+        ({ id }) => id !== "message-groups"
+      )) {
         if (needsUpdate.includes(provider)) {
           let {
             messages,
@@ -696,11 +741,8 @@ class _ASRouter {
             storage: this._storage,
             dispatchToAS: this.dispatchToAS,
           });
-          messages = messages.filter(
-            ({ content }) =>
-              !content ||
-              !content.category ||
-              ASRouterPreferences.getUserPreference(content.category)
+          messages = messages.filter(({ groups }) =>
+            this.hasGroupsEnabled(groups)
           );
           newState.providers.push({ ...provider, lastUpdated, errors });
           newState.messages = [...newState.messages, ...messages];

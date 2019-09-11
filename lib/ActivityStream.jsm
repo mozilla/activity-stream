@@ -461,6 +461,18 @@ const PREFS_CONFIG = new Map([
       }),
     },
   ],
+  [
+    "asrouter.providers.message-groups",
+    {
+      title: "message groups provider",
+      value: JSON.stringify({
+        id: "message-groups",
+        enabled: true,
+        type: "remote-settings",
+        bucket: "message-groups",
+      }),
+    },
+  ],
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   [
     "discoverystream.campaign.blocks",
