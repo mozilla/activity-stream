@@ -892,7 +892,7 @@ describe("DiscoveryStreamFeed", () => {
         first: Date.now() - recsExpireTime * 1000,
         third: Date.now(),
       };
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
 
       const result = feed.rotate(
         feedResponse.recommendations,
@@ -1107,7 +1107,7 @@ describe("DiscoveryStreamFeed", () => {
       const fakeImpressions = {
         seen: [Date.now() - 1],
       };
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
 
       const { data: result, filtered } = feed.frequencyCapSpocs(fakeSpocs);
 
@@ -1224,16 +1224,14 @@ describe("DiscoveryStreamFeed", () => {
 
   describe("#recordCampaignImpression", () => {
     it("should return false if time based cap is hit", () => {
-      sandbox.stub(feed, "readImpressionsPref").returns({});
-      sandbox.stub(feed, "writeImpressionsPref").returns();
+      sandbox.stub(feed, "readDataPref").returns({});
+      sandbox.stub(feed, "writeDataPref").returns();
 
       feed.recordCampaignImpression("seen");
 
-      assert.calledWith(
-        feed.writeImpressionsPref,
-        SPOC_IMPRESSION_TRACKING_PREF,
-        { seen: [0] }
-      );
+      assert.calledWith(feed.writeDataPref, SPOC_IMPRESSION_TRACKING_PREF, {
+        seen: [0],
+      });
     });
   });
 
@@ -1267,39 +1265,35 @@ describe("DiscoveryStreamFeed", () => {
         "campaign-2": [Date.now() - 1],
         "campaign-3": [Date.now() - 1],
       };
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
-      sandbox.stub(feed, "writeImpressionsPref").returns();
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
+      sandbox.stub(feed, "writeDataPref").returns();
 
       feed.cleanUpCampaignImpressionPref(fakeSpocs);
 
-      assert.calledWith(
-        feed.writeImpressionsPref,
-        SPOC_IMPRESSION_TRACKING_PREF,
-        { "campaign-2": [-1] }
-      );
+      assert.calledWith(feed.writeDataPref, SPOC_IMPRESSION_TRACKING_PREF, {
+        "campaign-2": [-1],
+      });
     });
   });
 
   describe("#recordTopRecImpressions", () => {
     it("should add a rec id to the rec impression pref", () => {
-      sandbox.stub(feed, "readImpressionsPref").returns({});
-      sandbox.stub(feed, "writeImpressionsPref");
+      sandbox.stub(feed, "readDataPref").returns({});
+      sandbox.stub(feed, "writeDataPref");
 
       feed.recordTopRecImpressions("rec");
 
-      assert.calledWith(
-        feed.writeImpressionsPref,
-        REC_IMPRESSION_TRACKING_PREF,
-        { rec: 0 }
-      );
+      assert.calledWith(feed.writeDataPref, REC_IMPRESSION_TRACKING_PREF, {
+        rec: 0,
+      });
     });
     it("should not add an impression if it already exists", () => {
-      sandbox.stub(feed, "readImpressionsPref").returns({ rec: 4 });
-      sandbox.stub(feed, "writeImpressionsPref");
+      sandbox.stub(feed, "readDataPref").returns({ rec: 4 });
+      sandbox.stub(feed, "writeDataPref");
 
       feed.recordTopRecImpressions("rec");
 
-      assert.notCalled(feed.writeImpressionsPref);
+      assert.notCalled(feed.writeDataPref);
     });
   });
 
@@ -1336,20 +1330,19 @@ describe("DiscoveryStreamFeed", () => {
         rec3: Date.now() - 1,
         rec5: Date.now() - 1,
       };
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
-      sandbox.stub(feed, "writeImpressionsPref").returns();
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
+      sandbox.stub(feed, "writeDataPref").returns();
 
       feed.cleanUpTopRecImpressionPref(newFeeds);
 
-      assert.calledWith(
-        feed.writeImpressionsPref,
-        REC_IMPRESSION_TRACKING_PREF,
-        { rec2: -1, rec3: -1 }
-      );
+      assert.calledWith(feed.writeDataPref, REC_IMPRESSION_TRACKING_PREF, {
+        rec2: -1,
+        rec3: -1,
+      });
     });
   });
 
-  describe("#writeImpressionsPref", () => {
+  describe("#writeDataPref", () => {
     it("should call Services.prefs.setStringPref", () => {
       sandbox.spy(feed.store, "dispatch");
       const fakeImpressions = {
@@ -1357,7 +1350,7 @@ describe("DiscoveryStreamFeed", () => {
         bar: [Date.now() - 1],
       };
 
-      feed.writeImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF, fakeImpressions);
+      feed.writeDataPref(SPOC_IMPRESSION_TRACKING_PREF, fakeImpressions);
 
       assert.calledWithMatch(feed.store.dispatch, {
         data: {
@@ -1369,7 +1362,7 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
-  describe("#readImpressionsPref", () => {
+  describe("#readDataPref", () => {
     it("should return what's in Services.prefs.getStringPref", () => {
       const fakeImpressions = {
         foo: [Date.now() - 1],
@@ -1377,7 +1370,7 @@ describe("DiscoveryStreamFeed", () => {
       };
       setPref(SPOC_IMPRESSION_TRACKING_PREF, fakeImpressions);
 
-      const result = feed.readImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF);
+      const result = feed.readDataPref(SPOC_IMPRESSION_TRACKING_PREF);
 
       assert.deepEqual(result, fakeImpressions);
     });
@@ -1463,7 +1456,7 @@ describe("DiscoveryStreamFeed", () => {
       ];
 
       sandbox.stub(feed, "recordCampaignImpression").returns();
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
       sandbox.spy(feed.store, "dispatch");
 
       await feed.onAction({
@@ -1484,7 +1477,7 @@ describe("DiscoveryStreamFeed", () => {
       Object.defineProperty(feed, "showSpocs", { get: () => true });
       const fakeImpressions = {};
       sandbox.stub(feed, "recordCampaignImpression").returns();
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
       sandbox.spy(feed.store, "dispatch");
 
       await feed.onAction({
@@ -1499,7 +1492,7 @@ describe("DiscoveryStreamFeed", () => {
       Object.defineProperty(feed, "showSpocs", { get: () => true });
       const fakeImpressions = {};
       sandbox.stub(feed, "recordCampaignImpression").returns();
-      sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
+      sandbox.stub(feed, "readDataPref").returns(fakeImpressions);
       sandbox.spy(feed.store, "dispatch");
       sandbox.spy(feed, "frequencyCapSpocs");
 
@@ -1725,7 +1718,7 @@ describe("DiscoveryStreamFeed", () => {
       assert.calledOnce(feed.resetCache);
     });
     it("should dispatch DISCOVERY_STREAM_LAYOUT_RESET from DISCOVERY_STREAM_CONFIG_CHANGE", async () => {
-      sandbox.stub(feed, "resetImpressionPrefs");
+      sandbox.stub(feed, "resetDataPrefs");
       sandbox.stub(feed, "resetCache").resolves();
       sandbox.stub(feed, "enable").resolves();
       setPref(CONFIG_PREF_NAME, { enabled: true });
