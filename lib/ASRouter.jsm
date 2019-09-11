@@ -688,7 +688,7 @@ class _ASRouter {
       const unseenListeners = new Set(ASRouterTriggerListeners.keys());
       for (const { trigger } of newState.messages) {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
-          await ASRouterTriggerListeners.get(trigger.id).init(
+          ASRouterTriggerListeners.get(trigger.id).init(
             this._triggerHandler,
             trigger.params,
             trigger.patterns
