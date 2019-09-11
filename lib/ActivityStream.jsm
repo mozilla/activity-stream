@@ -469,7 +469,7 @@ const PREFS_CONFIG = new Map([
         id: "message-groups",
         enabled: true,
         type: "remote-settings",
-        bucket: "message-groups",
+        bucket: "message-groups2",
       }),
     },
   ],

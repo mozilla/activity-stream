@@ -687,51 +687,53 @@ class _ASRouter {
   }
 
   /**
+   * Fetch all message groups and update Router.state.groups
+   * @param provider RS messages provider for message groups
+   */
+  async loadAllMessageGroups(provider) {
+    if (!provider) {
+      return;
+    }
+    let { messages } = await MessageLoaderUtils.loadMessagesForProvider(
+      provider,
+      {
+        storage: this._storage,
+        dispatchToAS: this.dispatchToAS,
+      }
+    );
+    const groups = messages.map(group => {
+      return {
+        ...group,
+        enabled:
+          group.enabled &&
+          Array.isArray(group.userPreferences) &&
+          group.userPreferences.every(ASRouterPreferences.getUserPreference),
+      };
+    });
+    this.setState({ groups });
+  }
+
+  /**
    * loadMessagesFromAllProviders - Loads messages from all providers if they require updates.
    *                                Checks the .lastUpdated field on each provider to see if updates are needed
    * @memberof _ASRouter
    */
   async loadMessagesFromAllProviders() {
-    let newState = { messages: [], providers: [], groups: [] };
-    const providersToUpdate = this.state.providers.filter(provider =>
+    const needsUpdate = this.state.providers.filter(provider =>
       MessageLoaderUtils.shouldProviderUpdate(provider)
     );
     // TODO: Need to move this code to a separate function that will
     // update state before returning because otherwise
     // message filtering will work off of stale info
-    const groupsProvider = providersToUpdate.find(
-      ({ id }) => id === "message-groups"
+    // Need to block on group state being updated in order to
+    // correctly filter out disabled messages
+    await this.loadAllMessageGroups(
+      needsUpdate.find(({ id }) => id === "message-groups")
     );
-    const needsUpdate = providersToUpdate.filter(
-      ({ id }) => id !== "message-groups"
-    );
-    if (groupsProvider) {
-      let {
-        messages,
-        lastUpdated,
-        errors,
-      } = await MessageLoaderUtils.loadMessagesForProvider(groupsProvider, {
-        storage: this._storage,
-        dispatchToAS: this.dispatchToAS,
-      });
-      const groups = messages.map(group => {
-        return {
-          ...group,
-          enabled:
-            group.enabled &&
-            Array.isArray(group.userPreferences) &&
-            group.userPreferences.every(ASRouterPreferences.getUserPreference),
-        };
-      });
-      newState.providers = [{ ...groupsProvider, lastUpdated, errors }];
-      newState.messages = [...messages];
-      newState.groups = groups;
-    }
     // Don't do extra work if we don't need any updates
     if (needsUpdate.length) {
-      for (const provider of this.state.providers.filter(
-        ({ id }) => id !== "message-groups"
-      )) {
+      let newState = { messages: [], providers: [] };
+      for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
           let {
             messages,
