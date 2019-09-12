@@ -11,7 +11,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
   EveryWindow: "resource:///modules/EveryWindow.jsm",
-  ASRouterTargeting: "resource://activity-stream/lib/ASRouterTargeting.jsm",
 });
 
 const FEW_MINUTES = 15 * 60 * 1000; // 15 mins
@@ -86,57 +85,28 @@ this.ASRouterTriggerListeners = new Map([
       _triggerHandler: null,
       _hosts: new Set(),
 
-      async init(triggerHandler) {
+      init(triggerHandler) {
         if (!this._initialized) {
-          EveryWindow.registerCallback(
-            this.id,
-            win => {
-              if (!isPrivateWindow(win)) {
-                win.gBrowser.addTabsProgressListener(this);
-              }
-            },
-            win => {
-              if (!isPrivateWindow(win)) {
-                win.gBrowser.removeTabsProgressListener(this);
-              }
-            }
-          );
-
+          Services.obs.addObserver(this, "bookmark-icon-updated");
           this._triggerHandler = triggerHandler;
           this._initialized = true;
         }
-
-        // Match on recently added bookmarks
-        // Async added for tests only for `assert`s after `init` is finished
-        const bookmarks = await ASRouterTargeting.Environment.recentBookmarks;
-        if (bookmarks) {
-          bookmarks.forEach(({ url }) => this._hosts.add(url));
-        }
       },
 
-      onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
-        // Some websites trigger redirect events after they finish loading even
-        // though the location remains the same. This results in onLocationChange
-        // events to be fired twice.
-        const isSameDocument = !!(
-          aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT
-        );
-        if (aWebProgress.isTopLevel && !isSameDocument) {
-          const match = checkURLMatch(
-            aLocationURI,
-            { hosts: this._hosts, matchPatternSet: this._matchPatternSet },
-            aRequest
-          );
-          if (match) {
-            this._triggerHandler(aBrowser, { id: this.id });
+      observe(subject, topic, data) {
+        if (topic === "bookmark-icon-updated" && data === "starred") {
+          const browser = Services.wm.getMostRecentBrowserWindow();
+          if (browser) {
+            this._triggerHandler(browser.gBrowser.selectedBrowser, {
+              id: this.id,
+            });
           }
         }
       },
 
       uninit() {
         if (this._initialized) {
-          EveryWindow.unregisterCallback(this.id);
-
+          Services.obs.removeObserver(this, "bookmark-icon-updated");
           this._initialized = false;
           this._triggerHandler = null;
           this._hosts = new Set();
