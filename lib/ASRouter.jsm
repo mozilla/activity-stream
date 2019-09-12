@@ -87,7 +87,6 @@ const MAX_MESSAGE_LIFETIME_CAP = 100;
 
 const LOCAL_MESSAGE_PROVIDERS = {
   OnboardingMessageProvider,
-  CFRMessageProvider,
 };
 const STARTPAGE_VERSION = "6";
 
