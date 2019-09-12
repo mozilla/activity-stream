@@ -132,6 +132,16 @@ this.ASRouterTriggerListeners = new Map([
           }
         }
       },
+
+      uninit() {
+        if (this._initialized) {
+          EveryWindow.unregisterCallback(this.id);
+
+          this._initialized = false;
+          this._triggerHandler = null;
+          this._hosts = new Set();
+        }
+      },
     },
   ],
   [
