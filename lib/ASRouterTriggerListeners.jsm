@@ -84,17 +84,18 @@ this.ASRouterTriggerListeners = new Map([
       _initialized: false,
       _triggerHandler: null,
       _hosts: new Set(),
+      bookmarkEvent: "bookmark-icon-updated",
 
       init(triggerHandler) {
         if (!this._initialized) {
-          Services.obs.addObserver(this, "bookmark-icon-updated");
+          Services.obs.addObserver(this, this.bookmarkEvent);
           this._triggerHandler = triggerHandler;
           this._initialized = true;
         }
       },
 
       observe(subject, topic, data) {
-        if (topic === "bookmark-icon-updated" && data === "starred") {
+        if (topic === this.bookmarkEvent && data === "starred") {
           const browser = Services.wm.getMostRecentBrowserWindow();
           if (browser) {
             this._triggerHandler(browser.gBrowser.selectedBrowser, {
@@ -106,7 +107,7 @@ this.ASRouterTriggerListeners = new Map([
 
       uninit() {
         if (this._initialized) {
-          Services.obs.removeObserver(this, "bookmark-icon-updated");
+          Services.obs.removeObserver(this, this.bookmarkEvent);
           this._initialized = false;
           this._triggerHandler = null;
           this._hosts = new Set();
