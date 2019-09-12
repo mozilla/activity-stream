@@ -10,6 +10,7 @@ describe("ASRouterTriggerListeners", () => {
   const triggerHandler = () => {};
   const openURLListener = ASRouterTriggerListeners.get("openURL");
   const frequentVisitsListener = ASRouterTriggerListeners.get("frequentVisits");
+  const bookmarkedURLListener = ASRouterTriggerListeners.get("openBookmarkedURL");
   const hosts = ["www.mozilla.com", "www.mozilla.org"];
 
   function resetEnumeratorStub(windows) {
@@ -52,6 +53,65 @@ describe("ASRouterTriggerListeners", () => {
   afterEach(() => {
     sandbox.restore();
     globals.restore();
+  });
+
+  describe("openBookmarkedURL", () => {
+    let ASRouterTargetingStub;
+    describe("#init", () => {
+      beforeEach(() => {
+        ASRouterTargetingStub = {
+          Environment: {
+            get recentBookmarks() {
+              return [];
+            },
+          },
+        };
+
+        globals.set("ASRouterTargeting", ASRouterTargetingStub);
+      });
+      afterEach(() => {
+        bookmarkedURLListener.uninit();
+      });
+      it("should set hosts to the recentBookmarks", async () => {
+        const fakeURLs = [{ url: "foo" }, { url: "bar" }];
+        const stub = sandbox.stub().resolves(fakeURLs);
+        sandbox
+          .stub(ASRouterTargetingStub.Environment, "recentBookmarks")
+          .get(stub);
+
+        await bookmarkedURLListener.init(sandbox.stub());
+
+        assert.calledOnce(stub);
+        assert.isTrue(bookmarkedURLListener._hosts.has("foo"));
+        assert.isTrue(bookmarkedURLListener._hosts.has("bar"));
+      });
+      it("should provide id to triggerHandler", async () => {
+        const newTriggerHandler = sinon.stub();
+        const fakeURLs = [{ url: "foo" }, { url: "bar" }];
+        const stub = sandbox.stub().resolves(fakeURLs);
+        sandbox
+          .stub(ASRouterTargetingStub.Environment, "recentBookmarks")
+          .get(stub);
+        await bookmarkedURLListener.init(newTriggerHandler);
+
+        const browser = {};
+        const webProgress = { isTopLevel: true };
+        const location = "foo";
+        bookmarkedURLListener.onLocationChange(
+          browser,
+          webProgress,
+          undefined,
+          {
+            host: location,
+            spec: location,
+          }
+        );
+        assert.calledOnce(newTriggerHandler);
+        assert.calledWithExactly(newTriggerHandler, browser, {
+          id: bookmarkedURLListener.id,
+        });
+      });
+    });
   });
 
   describe("frequentVisits", () => {

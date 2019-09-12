@@ -86,7 +86,7 @@ this.ASRouterTriggerListeners = new Map([
       _triggerHandler: null,
       _hosts: new Set(),
 
-      init(triggerHandler) {
+      async init(triggerHandler) {
         if (!this._initialized) {
           EveryWindow.registerCallback(
             this.id,
@@ -107,11 +107,11 @@ this.ASRouterTriggerListeners = new Map([
         }
 
         // Match on recently added bookmarks
-        ASRouterTargeting.Environment.recentBookmarks.then(bookmarks => {
-          if (bookmarks) {
-            bookmarks.forEach(({ url }) => this._hosts.add(url));
-          }
-        });
+        // Async added for tests only for `assert`s after `init` is finished
+        const bookmarks = await ASRouterTargeting.Environment.recentBookmarks;
+        if (bookmarks) {
+          bookmarks.forEach(({ url }) => this._hosts.add(url));
+        }
       },
 
       onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
