@@ -82,6 +82,16 @@ ChromeUtils.defineModuleGetter(
   "Sampling",
   "resource://gre/modules/components-utils/Sampling.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "KintoHttpClient",
+  "resource://services-common/kinto-http-client.js"
+);
+ChromeUtils.defineModuleGetter(
+  this,
+  "Downloader",
+  "resource://services-settings/Attachments.jsm"
+);
 
 const TRAILHEAD_CONFIG = {
   OVERRIDE_PREF: "trailhead.firstrun.branches",
@@ -120,6 +130,18 @@ const LOCAL_MESSAGE_PROVIDERS = {
   CFRMessageProvider,
 };
 const STARTPAGE_VERSION = "6";
+
+// Remote Settings
+const RS_SERVER_PREF = "services.settings.server";
+const RS_MAIN_BUCKET = "main";
+const RS_COLLECTION_L10N = "ms-language-packs"; // "ms" stands for Messaging System
+const RS_PROVIDERS_WITH_L10N = ["cfr", "cfr-fxa"];
+const RS_FLUENT_VERSION = "v1";
+const RS_FLUENT_RECORD_PREFIX = `cfr-${RS_FLUENT_VERSION}`;
+const RS_DOWNLOAD_MAX_RETRIES = 2;
+
+// To observe the app locale change notification.
+const TOPIC_INTL_LOCALE_CHANGED = "intl:app-locales-changed";
 
 /**
  * chooseBranch<T> -  Choose an item from a list of "branches" pseudorandomly using a seed / ratio configuration
@@ -275,6 +297,17 @@ const MessageLoaderUtils = {
   /**
    * _remoteSettingsLoader - Loads messages for a RemoteSettings provider
    *
+   * Note:
+   * 1). Both "cfr" and "cfr-fxa" require the Fluent file for l10n, so there is
+   * another file downloading phase for those two providers after their messages
+   * are successfully fetched from Remote Settings. Currently, they share the same
+   * attachment of the record "${RS_FLUENT_RECORD_PREFIX}-${locale}" in the
+   * "ms-language-packs" collection. E.g. for "en-US" with version "v1",
+   * the Fluent file is attched to the record with ID "cfr-v1-en-US".
+   *
+   * 2). The Remote Settings downloader is able to detect the duplicate download
+   * requests for the same attachment and ignore the redundent requests automatically.
+   *
    * @param {obj} provider An AS router provider
    * @param {string} provider.id The id of the provider
    * @param {string} provider.bucket The name of the Remote Settings bucket
@@ -294,6 +327,32 @@ const MessageLoaderUtils = {
             provider.id,
             options.dispatchToAS
           );
+        } else if (RS_PROVIDERS_WITH_L10N.includes(provider.id)) {
+          const locale = Services.locale.appLocaleAsLangTag;
+          const recordId = `${RS_FLUENT_RECORD_PREFIX}-${locale}`;
+          const kinto = new KintoHttpClient(
+            Services.prefs.getStringPref(RS_SERVER_PREF)
+          );
+          const record = await kinto
+            .bucket(RS_MAIN_BUCKET)
+            .collection(RS_COLLECTION_L10N)
+            .getRecord(recordId);
+          if (record && record.data) {
+            const downloader = new Downloader(
+              RS_MAIN_BUCKET,
+              RS_COLLECTION_L10N
+            );
+            // Await here in order to capture the exceptions for reporting.
+            await downloader.download(record.data, {
+              retries: RS_DOWNLOAD_MAX_RETRIES,
+            });
+          } else {
+            MessageLoaderUtils._handleRemoteSettingsUndesiredEvent(
+              "ASR_RS_NO_MESSAGES",
+              RS_COLLECTION_L10N,
+              options.dispatchToAS
+            );
+          }
         }
       } catch (e) {
         MessageLoaderUtils._handleRemoteSettingsUndesiredEvent(
@@ -497,6 +556,7 @@ class _ASRouter {
       errors: [],
       extendedTripletsInitialized: false,
       showExtendedTriplets: true,
+      localeInUse: Services.locale.appLocaleAsLangTag,
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
@@ -508,6 +568,7 @@ class _ASRouter {
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
     this.dispatch = this.dispatch.bind(this);
+    this._onLocaleChanged = this._onLocaleChanged.bind(this);
   }
 
   async onPrefChange(prefName) {
@@ -688,7 +749,7 @@ class _ASRouter {
       const unseenListeners = new Set(ASRouterTriggerListeners.keys());
       for (const { trigger } of newState.messages) {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
-          await ASRouterTriggerListeners.get(trigger.id).init(
+          ASRouterTriggerListeners.get(trigger.id).init(
             this._triggerHandler,
             trigger.params,
             trigger.patterns
@@ -706,6 +767,33 @@ class _ASRouter {
       await this.setState(this._removePreviewEndpoint(newState));
       await this.cleanupImpressions();
     }
+  }
+
+  async _maybeUpdateL10nAttachment() {
+    const { localeInUse } = this.state.localeInUse;
+    const newLocale = Services.locale.appLocaleAsLangTag;
+    if (newLocale !== localeInUse) {
+      const providers = [...this.state.providers];
+      let needsUpdate = false;
+      providers.forEach(provider => {
+        if (RS_PROVIDERS_WITH_L10N.includes(provider.id)) {
+          // Force to refresh the messages as well as the attachment.
+          provider.lastUpdated = undefined;
+          needsUpdate = true;
+        }
+      });
+      if (needsUpdate) {
+        await this.setState({
+          localeInUse: newLocale,
+          providers,
+        });
+        await this.loadMessagesFromAllProviders();
+      }
+    }
+  }
+
+  async _onLocaleChanged(subject, topic, data) {
+    await this._maybeUpdateL10nAttachment();
   }
 
   /**
@@ -781,6 +869,7 @@ class _ASRouter {
       })
     );
 
+    Services.obs.addObserver(this._onLocaleChanged, TOPIC_INTL_LOCALE_CHANGED);
     // sets .initialized to true and resolves .waitForInitialized promise
     this._finishInitializing();
   }
@@ -808,6 +897,10 @@ class _ASRouter {
     for (const listener of ASRouterTriggerListeners.values()) {
       listener.uninit();
     }
+    Services.obs.removeObserver(
+      this._onLocaleChanged,
+      TOPIC_INTL_LOCALE_CHANGED
+    );
     // If we added any CFR recommendations, they need to be removed
     CFRPageActions.clearRecommendations();
     this._resetInitialization();
