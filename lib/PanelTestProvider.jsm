@@ -151,8 +151,8 @@ const MESSAGES = () => [
         primary: {
           label: { string_id: "cfr-doorhanger-sync-bookmarks-ok-button" },
           action: {
-            type: "INSTALL_ADDON_FROM_URL",
-            data: { url: null },
+            type: "OPEN_PREFERENCES_PAGE",
+            data: { category: "sync" },
           },
         },
         secondary: [
@@ -177,11 +177,9 @@ const MESSAGES = () => [
         ],
       },
     },
-    frequency: { lifetime: 3 },
-    targeting: `true`,
+    targeting: "true",
     trigger: {
-      id: "openURL",
-      patterns: ["*://*/*"],
+      id: "openBookmarkedURL",
     },
   },
 ];

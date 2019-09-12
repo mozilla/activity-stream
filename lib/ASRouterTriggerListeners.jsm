@@ -4,17 +4,15 @@
 "use strict";
 
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "EveryWindow",
-  "resource:///modules/EveryWindow.jsm"
-);
+XPCOMUtils.defineLazyModuleGetters(this, {
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+  EveryWindow: "resource:///modules/EveryWindow.jsm",
+  ASRouterTargeting: "resource://activity-stream/lib/ASRouterTargeting.jsm",
+});
 
 const FEW_MINUTES = 15 * 60 * 1000; // 15 mins
 const MATCH_PATTERN_OPTIONS = { ignorePath: true };
@@ -80,6 +78,62 @@ function checkURLMatch(aLocationURI, { hosts, matchPatternSet }, aRequest) {
  * have idempotent `init` and `uninit` methods.
  */
 this.ASRouterTriggerListeners = new Map([
+  [
+    "openBookmarkedURL",
+    {
+      id: "openBookmarkedURL",
+      _initialized: false,
+      _triggerHandler: null,
+      _hosts: new Set(),
+
+      init(triggerHandler) {
+        if (!this._initialized) {
+          EveryWindow.registerCallback(
+            this.id,
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.gBrowser.addTabsProgressListener(this);
+              }
+            },
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.gBrowser.removeTabsProgressListener(this);
+              }
+            }
+          );
+
+          this._triggerHandler = triggerHandler;
+          this._initialized = true;
+        }
+
+        // Match on recently added bookmarks
+        ASRouterTargeting.Environment.recentBookmarks.then(bookmarks => {
+          if (bookmarks) {
+            bookmarks.forEach(({ url }) => this._hosts.add(url));
+          }
+        });
+      },
+
+      onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
+        // Some websites trigger redirect events after they finish loading even
+        // though the location remains the same. This results in onLocationChange
+        // events to be fired twice.
+        const isSameDocument = !!(
+          aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT
+        );
+        if (aWebProgress.isTopLevel && !isSameDocument) {
+          const match = checkURLMatch(
+            aLocationURI,
+            { hosts: this._hosts, matchPatternSet: this._matchPatternSet },
+            aRequest
+          );
+          if (match) {
+            this._triggerHandler(aBrowser, { id: this.id });
+          }
+        }
+      },
+    },
+  ],
   [
     "frequentVisits",
     {
