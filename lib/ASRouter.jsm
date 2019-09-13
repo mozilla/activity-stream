@@ -1900,6 +1900,10 @@ class _ASRouter {
           csp: null,
         });
         break;
+      case ra.OPEN_PROTECTION_PANEL:
+        let { gProtectionsHandler } = target.browser.ownerGlobal;
+        gProtectionsHandler.showProtectionsPopup({});
+        break;
     }
   }
 
