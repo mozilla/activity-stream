@@ -4,17 +4,14 @@
 "use strict";
 
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "EveryWindow",
-  "resource:///modules/EveryWindow.jsm"
-);
+XPCOMUtils.defineLazyModuleGetters(this, {
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+  EveryWindow: "resource:///modules/EveryWindow.jsm",
+});
 
 const FEW_MINUTES = 15 * 60 * 1000; // 15 mins
 const MATCH_PATTERN_OPTIONS = { ignorePath: true };
@@ -80,6 +77,44 @@ function checkURLMatch(aLocationURI, { hosts, matchPatternSet }, aRequest) {
  * have idempotent `init` and `uninit` methods.
  */
 this.ASRouterTriggerListeners = new Map([
+  [
+    "openBookmarkedURL",
+    {
+      id: "openBookmarkedURL",
+      _initialized: false,
+      _triggerHandler: null,
+      _hosts: new Set(),
+      bookmarkEvent: "bookmark-icon-updated",
+
+      init(triggerHandler) {
+        if (!this._initialized) {
+          Services.obs.addObserver(this, this.bookmarkEvent);
+          this._triggerHandler = triggerHandler;
+          this._initialized = true;
+        }
+      },
+
+      observe(subject, topic, data) {
+        if (topic === this.bookmarkEvent && data === "starred") {
+          const browser = Services.wm.getMostRecentBrowserWindow();
+          if (browser) {
+            this._triggerHandler(browser.gBrowser.selectedBrowser, {
+              id: this.id,
+            });
+          }
+        }
+      },
+
+      uninit() {
+        if (this._initialized) {
+          Services.obs.removeObserver(this, this.bookmarkEvent);
+          this._initialized = false;
+          this._triggerHandler = null;
+          this._hosts = new Set();
+        }
+      },
+    },
+  ],
   [
     "frequentVisits",
     {

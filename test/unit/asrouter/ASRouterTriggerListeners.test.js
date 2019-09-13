@@ -4,17 +4,15 @@ import { GlobalOverrider } from "test/unit/utils";
 describe("ASRouterTriggerListeners", () => {
   let sandbox;
   let globals;
-  let windowEnumeratorStub;
   let existingWindow;
   let isWindowPrivateStub;
   const triggerHandler = () => {};
   const openURLListener = ASRouterTriggerListeners.get("openURL");
   const frequentVisitsListener = ASRouterTriggerListeners.get("frequentVisits");
+  const bookmarkedURLListener = ASRouterTriggerListeners.get(
+    "openBookmarkedURL"
+  );
   const hosts = ["www.mozilla.com", "www.mozilla.org"];
-
-  function resetEnumeratorStub(windows) {
-    windowEnumeratorStub.withArgs("navigator:browser").returns(windows);
-  }
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -28,8 +26,6 @@ describe("ASRouterTriggerListeners", () => {
       addEventListener: sinon.stub(),
       removeEventListener: sinon.stub(),
     };
-    windowEnumeratorStub = sandbox.stub(global.Services.wm, "getEnumerator");
-    resetEnumeratorStub([existingWindow]);
     sandbox.spy(openURLListener, "init");
     sandbox.spy(openURLListener, "uninit");
     isWindowPrivateStub = sandbox.stub();
@@ -52,6 +48,47 @@ describe("ASRouterTriggerListeners", () => {
   afterEach(() => {
     sandbox.restore();
     globals.restore();
+  });
+
+  describe("openBookmarkedURL", () => {
+    let observerStub;
+    describe("#init", () => {
+      beforeEach(() => {
+        observerStub = sandbox.stub(global.Services.obs, "addObserver");
+        sandbox
+          .stub(global.Services.wm, "getMostRecentBrowserWindow")
+          .returns({ gBrowser: { selectedBrowser: {} } });
+      });
+      afterEach(() => {
+        bookmarkedURLListener.uninit();
+      });
+      it("should set hosts to the recentBookmarks", async () => {
+        await bookmarkedURLListener.init(sandbox.stub());
+
+        assert.calledOnce(observerStub);
+        assert.calledWithExactly(
+          observerStub,
+          bookmarkedURLListener,
+          "bookmark-icon-updated"
+        );
+      });
+      it("should provide id to triggerHandler", async () => {
+        const newTriggerHandler = sinon.stub();
+        const subject = {};
+        await bookmarkedURLListener.init(newTriggerHandler);
+
+        bookmarkedURLListener.observe(
+          subject,
+          "bookmark-icon-updated",
+          "starred"
+        );
+
+        assert.calledOnce(newTriggerHandler);
+        assert.calledWithExactly(newTriggerHandler, subject, {
+          id: bookmarkedURLListener.id,
+        });
+      });
+    });
   });
 
   describe("frequentVisits", () => {
@@ -177,7 +214,6 @@ describe("ASRouterTriggerListeners", () => {
       it("if already initialised, should only update the trigger handler and add the new hosts", () => {
         const newHosts = ["www.example.com"];
         const newTriggerHandler = () => {};
-        resetEnumeratorStub([existingWindow]);
         existingWindow.gBrowser.addTabsProgressListener.reset();
 
         openURLListener.init(newTriggerHandler, newHosts);
@@ -194,8 +230,6 @@ describe("ASRouterTriggerListeners", () => {
     describe("#uninit", () => {
       beforeEach(async () => {
         openURLListener.init(triggerHandler, hosts);
-        // Ensure that the window enumerator will return the existing window for uninit as well
-        resetEnumeratorStub([existingWindow]);
         openURLListener.uninit();
       });
 
@@ -215,7 +249,6 @@ describe("ASRouterTriggerListeners", () => {
 
       it("should do nothing if already uninitialised", () => {
         existingWindow.gBrowser.removeTabsProgressListener.reset();
-        resetEnumeratorStub([existingWindow]);
 
         openURLListener.uninit();
         assert.notOk(openURLListener._initialized);

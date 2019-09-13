@@ -18,7 +18,10 @@ import {
   PARENT_TO_CHILD_MESSAGE_NAME,
 } from "./constants";
 import { actionCreators as ac } from "common/Actions.jsm";
-import { ASRouterPreferences } from "lib/ASRouterPreferences.jsm";
+import {
+  ASRouterPreferences,
+  TARGETING_PREFERENCES,
+} from "lib/ASRouterPreferences.jsm";
 import { ASRouterTriggerListeners } from "lib/ASRouterTriggerListeners.jsm";
 import { CFRPageActions } from "lib/CFRPageActions.jsm";
 import { GlobalOverrider } from "test/unit/utils";
@@ -148,6 +151,11 @@ describe("ASRouter", () => {
       registerBadgeNotificationListener: sandbox.stub(),
     };
     globals.set({
+      ASRouterPreferences,
+      TARGETING_PREFERENCES,
+      ASRouterTargeting,
+      ASRouterTriggerListeners,
+      QueryCache,
       AttributionCode: fakeAttributionCode,
       // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
       // importing these modules into the global scope ourselves.

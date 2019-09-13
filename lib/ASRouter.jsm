@@ -20,12 +20,26 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
   ToolbarBadgeHub: "resource://activity-stream/lib/ToolbarBadgeHub.jsm",
   ToolbarPanelHub: "resource://activity-stream/lib/ToolbarPanelHub.jsm",
+  ASRouterTargeting: "resource://activity-stream/lib/ASRouterTargeting.jsm",
+  QueryCache: "resource://activity-stream/lib/ASRouterTargeting.jsm",
+  ASRouterPreferences: "resource://activity-stream/lib/ASRouterPreferences.jsm",
+  TARGETING_PREFERENCES:
+    "resource://activity-stream/lib/ASRouterPreferences.jsm",
+  ASRouterTriggerListeners:
+    "resource://activity-stream/lib/ASRouterTriggerListeners.jsm",
+  TelemetryEnvironment: "resource://gre/modules/TelemetryEnvironment.jsm",
+  ClientEnvironment: "resource://normandy/lib/ClientEnvironment.jsm",
+  Sampling: "resource://gre/modules/components-utils/Sampling.jsm",
+  CFRMessageProvider: "resource://activity-stream/lib/CFRMessageProvider.jsm",
+  KintoHttpClient: "resource://services-common/kinto-http-client.js",
+  Downloader: "resource://services-settings/Attachments.jsm",
 });
 const {
   ASRouterActions: ra,
   actionTypes: at,
   actionCreators: ac,
 } = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
+
 const { CFRMessageProvider } = ChromeUtils.import(
   "resource://activity-stream/lib/CFRMessageProvider.jsm"
 );
@@ -40,57 +54,6 @@ const { CFRPageActions } = ChromeUtils.import(
 );
 const { AttributionCode } = ChromeUtils.import(
   "resource:///modules/AttributionCode.jsm"
-);
-
-ChromeUtils.defineModuleGetter(
-  this,
-  "ASRouterPreferences",
-  "resource://activity-stream/lib/ASRouterPreferences.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "TARGETING_PREFERENCES",
-  "resource://activity-stream/lib/ASRouterPreferences.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "ASRouterTargeting",
-  "resource://activity-stream/lib/ASRouterTargeting.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "QueryCache",
-  "resource://activity-stream/lib/ASRouterTargeting.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "ASRouterTriggerListeners",
-  "resource://activity-stream/lib/ASRouterTriggerListeners.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "TelemetryEnvironment",
-  "resource://gre/modules/TelemetryEnvironment.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "ClientEnvironment",
-  "resource://normandy/lib/ClientEnvironment.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "Sampling",
-  "resource://gre/modules/components-utils/Sampling.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "KintoHttpClient",
-  "resource://services-common/kinto-http-client.js"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "Downloader",
-  "resource://services-settings/Attachments.jsm"
 );
 
 const TRAILHEAD_CONFIG = {
