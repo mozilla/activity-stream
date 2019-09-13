@@ -384,22 +384,25 @@ this.ASRouterTriggerListeners = new Map([
       _sessionPageLoad: 0,
       onLocationChange: null,
 
-      async init(triggerHandler, params, patterns) {
+      init(triggerHandler, params, patterns) {
         params.forEach(p => this._events.push(p));
 
         if (!this._initialized) {
           Services.obs.addObserver(this, "SiteProtection:ContentBlockingEvent");
-
           this.onLocationChange = this._onLocationChange.bind(this);
-
-          // Add listeners to all existing browser windows
-          for (let win of Services.wm.getEnumerator("navigator:browser")) {
-            if (isPrivateWindow(win)) {
-              continue;
+          EveryWindow.registerCallback(
+            this.id,
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.gBrowser.addTabsProgressListener(this);
+              }
+            },
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.gBrowser.removeTabsProgressListener(this);
+              }
             }
-            await checkStartupFinished(win);
-            win.gBrowser.addTabsProgressListener(this);
-          }
+          );
 
           this._initialized = true;
         }
