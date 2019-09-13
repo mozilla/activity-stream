@@ -54,6 +54,20 @@ const TRAILHEAD_MODAL_VARIANT_CONTENT = {
   skipButton: { string_id: "onboarding-start-browsing-button-label" },
 };
 
+const TRAILHEAD_FULL_PAGE_CONTENT = {
+  title: { string_id: "onboarding-welcome-body" },
+  learn: {
+    text: { string_id: "onboarding-welcome-learn-more" },
+    url: "https://www.mozilla.org/firefox/accounts/",
+  },
+  form: {
+    title: { string_id: "onboarding-welcome-form-header" },
+    text: { string_id: "onboarding-join-form-body" },
+    email: { string_id: "onboarding-fullpage-form-email" },
+    button: { string_id: "onboarding-join-form-continue" },
+  },
+};
+
 const JOIN_CONTENT = {
   className: "joinCohort",
   title: { string_id: "onboarding-welcome-body" },
@@ -233,7 +247,7 @@ const ONBOARDING_MESSAGES = () => [
     order: 2,
     content: {
       title: { string_id: "onboarding-firefox-monitor-title" },
-      text: { string_id: "onboarding-firefox-monitor-text" },
+      text: { string_id: "onboarding-firefox-monitor-text2" },
       icon: "ffmonitor",
       primary_button: {
         label: { string_id: "onboarding-firefox-monitor-button" },
@@ -396,6 +410,37 @@ const ONBOARDING_MESSAGES = () => [
     },
     targeting: "trailheadTriplet == 'payoff'",
     trigger: { id: "showOnboarding" },
+  },
+  {
+    id: "FULL_PAGE_1",
+    template: "full_page_interrupt",
+    targeting: "trailheadInterrupt == 'full_page_d'",
+    trigger: { id: "firstRun" },
+    utm_term: "trailhead-full_page_d",
+    includeBundle: {
+      length: 3,
+      template: "onboarding",
+      trigger: { id: "showOnboarding" },
+    },
+    content: {
+      ...TRAILHEAD_FULL_PAGE_CONTENT,
+    },
+  },
+  {
+    id: "FULL_PAGE_2",
+    template: "full_page_interrupt",
+    targeting: "trailheadInterrupt == 'full_page_e'",
+    trigger: { id: "firstRun" },
+    utm_term: "trailhead-full_page_e",
+    includeBundle: {
+      length: 3,
+      template: "onboarding",
+      trigger: { id: "showOnboarding" },
+    },
+    content: {
+      className: "fullPageCardsAtTop",
+      ...TRAILHEAD_FULL_PAGE_CONTENT,
+    },
   },
   {
     id: "RETURN_TO_AMO_1",

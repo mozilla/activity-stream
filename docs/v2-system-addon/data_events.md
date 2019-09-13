@@ -446,7 +446,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
 ```js
 {
-  "event": ["SUBMIT_EMAIL" | "SKIPPED_SIGNIN"],
+  "event": ["SUBMIT_EMAIL" | "SUBMIT_SIGNIN" | "SKIPPED_SIGNIN"],
   "value": {
     "has_flow_params": false,
   }
