@@ -526,7 +526,6 @@ class _ASRouter {
       messageBlockList: [],
       providerBlockList: [],
       messageImpressions: {},
-      providerImpressions: {},
       trailheadInitialized: false,
       trailheadInterrupt: "",
       trailheadTriplet: "",
@@ -1323,16 +1322,8 @@ class _ASRouter {
 
   // Work out if a message can be shown based on its and its provider's frequency caps.
   isBelowFrequencyCaps(message) {
-    const {
-      providers,
-      messageImpressions,
-      providerImpressions,
-      groupImpressions,
-    } = this.state;
-
-    const provider = providers.find(p => p.id === message.provider);
+    const { messageImpressions, groupImpressions } = this.state;
     const impressionsForMessage = messageImpressions[message.id];
-    const impressionsForProvider = providerImpressions[message.provider];
 
     return (
       this._isBelowItemFrequencyCap(
@@ -1340,7 +1331,6 @@ class _ASRouter {
         impressionsForMessage,
         MAX_MESSAGE_LIFETIME_CAP
       ) &&
-      this._isBelowItemFrequencyCap(provider, impressionsForProvider) &&
       message.groups.every(messageGroup =>
         this._isBelowItemFrequencyCap(
           this.state.groups[messageGroup],
@@ -1577,29 +1567,18 @@ class _ASRouter {
   }
 
   async addImpression(message) {
-    const provider = this.state.providers.find(p => p.id === message.provider);
     const groupsWithFrequency = this.state.groups.filter(
       ({ frequency, id }) => frequency && message.groups.includes(id)
     );
     // We only need to store impressions for messages that have frequency, or
     // that have providers that have frequency
-    if (
-      message.frequency ||
-      (provider && provider.frequency) ||
-      groupsWithFrequency.length
-    ) {
+    if (message.frequency || groupsWithFrequency.length) {
       const time = Date.now();
       await this.setState(state => {
         const messageImpressions = this._addImpressionForItem(
           state,
           message,
           "messageImpressions",
-          time
-        );
-        const providerImpressions = this._addImpressionForItem(
-          state,
-          provider,
-          "providerImpressions",
           time
         );
         let { groupImpressions } = this.state;
@@ -1610,7 +1589,7 @@ class _ASRouter {
             time
           );
         }
-        return { messageImpressions, providerImpressions, groupImpressions };
+        return { messageImpressions, groupImpressions };
       });
     }
   }
@@ -1675,12 +1654,12 @@ class _ASRouter {
         state.messages,
         "messageImpressions"
       );
-      const providerImpressions = this._cleanupImpressionsForItems(
+      this._cleanupImpressionsForItems(
         state,
         state.providers,
         "providerImpressions"
       );
-      return { messageImpressions, providerImpressions };
+      return { messageImpressions };
     });
   }
 
@@ -1805,11 +1784,11 @@ class _ASRouter {
 
     await this.setState(state => {
       const providerBlockList = [...state.providerBlockList, ...idsToBlock];
-      // When a provider is blocked, its impressions should be cleared as well
-      const providerImpressions = { ...state.providerImpressions };
-      idsToBlock.forEach(id => delete providerImpressions[id]);
+      // When a provider is blocked, its group impressions should be cleared as well
+      const groupImpressions = { ...state.groupImpressions };
+      idsToBlock.forEach(id => delete groupImpressions[id]);
       this._storage.set("providerBlockList", providerBlockList);
-      return { providerBlockList, providerImpressions };
+      return { providerBlockList, groupImpressions };
     });
   }
 
