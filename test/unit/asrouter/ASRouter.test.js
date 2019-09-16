@@ -217,6 +217,17 @@ describe("ASRouter", () => {
 
       assert.deepEqual(Router.state.messageBlockList, ["foo"]);
     });
+    it("should migrate provider impressions to group impressions", async () => {
+      providerImpressions = { foo: [1, 2, 3] };
+      Router = new _ASRouter();
+      await Router.init(channel, createFakeStorage(), dispatchStub);
+
+      assert.property(Router.state.groupImpressions, "foo");
+      assert.deepEqual(
+        Router.state.groupImpressions.foo,
+        providerImpressions.foo
+      );
+    });
     it("should initialize all the hub providers", async () => {
       // ASRouter init called in `beforeEach` block above
 
@@ -820,6 +831,40 @@ describe("ASRouter", () => {
         meta: { from: "ActivityStream:Content", to: "ActivityStream:Main" },
         type: "AS_ROUTER_TELEMETRY_USER_EVENT",
       });
+    });
+    it("should filter out messages that are part of a group that is not enabled", async () => {
+      await createRouterAndInit([
+        {
+          id: "remotey",
+          type: "remote",
+          url: "http://fake.com/endpoint",
+          enabled: true,
+          updateCycleInMs: 300,
+        },
+        {
+          id: "alocalprovider",
+          type: "local",
+          enabled: true,
+          messages: FAKE_LOCAL_MESSAGES,
+        },
+      ]);
+      const NEW_MESSAGES = [{ id: "new_123", groups: ["bar"] }];
+      const spy = sandbox.spy(Router, "hasGroupsEnabled");
+      sandbox.stub(Router, "loadAllMessageGroups").resolves();
+      await Router.setState({ groups: [{ id: "bar", enabled: false }] });
+      fetchStub.withArgs("http://fake.com/endpoint").resolves({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ messages: NEW_MESSAGES }),
+        headers: FAKE_RESPONSE_HEADERS,
+      });
+
+      clock.tick(301);
+      await Router.loadMessagesFromAllProviders();
+
+      assert.calledOnce(spy);
+      assert.calledWithExactly(spy, ["bar", "remotey"]);
+      assert.isUndefined(Router.state.messages.find(m => m.id === "new_123"));
     });
   });
 
@@ -3346,7 +3391,6 @@ describe("ASRouter", () => {
       assert.notCalled(Router.loadMessagesFromAllProviders);
     });
   });
-
   describe("#observe", () => {
     it("should reload l10n for CFRPageActions when the `USE_REMOTE_L10N_PREF` pref is changed", () => {
       sandbox.spy(CFRPageActions, "reloadL10n");
@@ -3361,6 +3405,51 @@ describe("ASRouter", () => {
       Router.observe("", "", "foo");
 
       assert.notCalled(CFRPageActions.reloadL10n);
+    });
+  });
+  describe("#loadAllMessageGroups", () => {
+    it("should group local providers and message providers", async () => {
+      const groupsProvider = { id: "groups-provider" };
+      const messageGroups = [
+        { id: "group-1", enabled: true, userPreferences: [] },
+      ];
+      const stub = sandbox
+        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .withArgs(groupsProvider, sinon.match.object)
+        .returns({ messages: messageGroups });
+
+      await Router.setState({
+        providers: [{ id: "provider-group", enabled: true }],
+      });
+
+      await Router.loadAllMessageGroups(groupsProvider);
+
+      assert.calledOnce(stub);
+      assert.lengthOf(Router.state.groups, 2);
+    });
+    it("should group local providers and message providers", async () => {
+      const groupsProvider = { id: "groups-provider" };
+      const messageGroups = [
+        { id: "group-1", enabled: true, userPreferences: ["foo"] },
+      ];
+      sandbox
+        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .withArgs(groupsProvider, sinon.match.object)
+        .returns({ messages: messageGroups });
+      const stub = sandbox
+        .stub(ASRouterPreferences, "getUserPreference")
+        .withArgs("foo")
+        .returns(false);
+
+      await Router.setState({
+        providers: [{ id: "provider-group", enabled: false }],
+      });
+
+      await Router.loadAllMessageGroups(groupsProvider);
+
+      assert.calledOnce(stub);
+      assert.lengthOf(Router.state.groups, 2);
+      assert.isTrue(Router.state.groups.every(group => !group.enabled));
     });
   });
 });
