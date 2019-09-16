@@ -424,8 +424,8 @@ const MessageLoaderUtils = {
       messages: messages
         .map(msg => ({
           weight: 100,
-          groups: [...(msg.groups || []), provider.id],
           ...msg,
+          groups: [...(msg.groups || []), provider.id],
           provider: provider.id,
         }))
         .filter(message => message.weight > 0),
@@ -1787,8 +1787,22 @@ class _ASRouter {
       // When a provider is blocked, its group impressions should be cleared as well
       const groupImpressions = { ...state.groupImpressions };
       idsToBlock.forEach(id => delete groupImpressions[id]);
+      this._storage.set("groupImpressions", groupImpressions);
       this._storage.set("providerBlockList", providerBlockList);
       return { providerBlockList, groupImpressions };
+    });
+  }
+
+  async unblockProviderById(idOrIds) {
+    const idsToUnblock = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+
+    await this.setState(state => {
+      const providerBlockList = [...state.providerBlockList];
+      idsToUnblock.forEach(id => {
+        providerBlockList.splice(providerBlockList.indexOf(id), 1);
+      });
+      this._storage.set("providerBlockList", providerBlockList);
+      return { providerBlockList };
     });
   }
 
@@ -2160,15 +2174,7 @@ class _ASRouter {
         this.unblockMessageById(action.data.id);
         break;
       case "UNBLOCK_PROVIDER_BY_ID":
-        await this.setState(state => {
-          const providerBlockList = [...state.providerBlockList];
-          providerBlockList.splice(
-            providerBlockList.indexOf(action.data.id),
-            1
-          );
-          this._storage.set("providerBlockList", providerBlockList);
-          return { providerBlockList };
-        });
+        this.unblockProviderById(action.data);
         break;
       case "UNBLOCK_BUNDLE":
         await this.setState(state => {
@@ -2205,9 +2211,11 @@ class _ASRouter {
         QueryCache.expireAll();
         break;
       case "ENABLE_PROVIDER":
+        await this.unblockProviderById(action.data);
         ASRouterPreferences.enableOrDisableProvider(action.data, true);
         break;
       case "DISABLE_PROVIDER":
+        await this.blockProviderById(action.data);
         ASRouterPreferences.enableOrDisableProvider(action.data, false);
         break;
       case "RESET_PROVIDER_PREF":
