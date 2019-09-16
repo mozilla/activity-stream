@@ -701,10 +701,15 @@ class _ASRouter {
         dispatchToAS: this.dispatchToAS,
       }
     );
-    const providerGroups = this.state.providers.map(({ id }) => ({
-      id,
-      enabled: true,
-    }));
+    const providerGroups = this.state.providers.map(
+      ({ id, frequency, enabled }) => ({
+        id,
+        // This local group contains in a group all its own messages
+        groups: [id],
+        frequency,
+        enabled,
+      })
+    );
     const messageGroups = messages.map(group => {
       return {
         ...group,
@@ -717,7 +722,7 @@ class _ASRouter {
     // Groups consist of automatically generated groups based on each message provider
     // merged with message defined groups fetched from Remote Settings.
     // A message defined group can override a provider group is it has the same name.
-    await this.setState({ groups: { ...providerGroups, ...messageGroups } });
+    await this.setState({ groups: [...providerGroups, ...messageGroups] });
   }
 
   /**
@@ -878,10 +883,20 @@ class _ASRouter {
       (await this._storage.get("providerBlockList")) || [];
     const messageImpressions =
       (await this._storage.get("messageImpressions")) || {};
-    const providerImpressions =
-      (await this._storage.get("providerImpressions")) || {};
     const groupImpressions =
       (await this._storage.get("groupImpressions")) || {};
+
+    // Merge any existing provider impressions into the corresponding group
+    // Don't keep providerImpressions in state anymore
+    const providerImpressions =
+      (await this._storage.get("providerImpressions")) || {};
+    for (const provider of Object.keys(providerImpressions)) {
+      groupImpressions[provider] = [
+        ...(groupImpressions[provider] || []),
+        ...providerImpressions[provider],
+      ];
+    }
+
     const previousSessionEnd =
       (await this._storage.get("previousSessionEnd")) || 0;
     await this.setState({
@@ -889,7 +904,6 @@ class _ASRouter {
       providerBlockList,
       groupImpressions,
       messageImpressions,
-      providerImpressions,
       previousSessionEnd,
     });
     this._updateMessageProviders();
@@ -1603,13 +1617,15 @@ class _ASRouter {
 
   // Easier to get all impressions from
   _addImpressionForGroups(groupImpressions, groupId, time) {
-    let impressions = { ...groupImpressions[groupId] };
-    impressions = [...(impressions || [])].push(time);
-    const newGroupImpressions = { ...groupImpressions, groupId: impressions };
+    const impressions = [...(groupImpressions[groupId] || [])];
+    impressions.push(time);
+    const newGroupImpressions = { ...groupImpressions };
+    newGroupImpressions[groupId] = impressions;
     this._storage.set("groupImpressions", newGroupImpressions);
     return newGroupImpressions;
   }
 
+  // TODO: refactor for message impressions only (no providerImpressions)
   // Helper for addImpression - calculate the updated impressions object for the given
   //                            item, then store it and return it
   _addImpressionForItem(state, item, impressionsString, time) {
