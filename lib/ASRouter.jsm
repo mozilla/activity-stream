@@ -1333,7 +1333,7 @@ class _ASRouter {
       ) &&
       message.groups.every(messageGroup =>
         this._isBelowItemFrequencyCap(
-          this.state.groups[messageGroup],
+          this.state.groups.find(({ id }) => id === messageGroup),
           groupImpressions[messageGroup]
         )
       )
