@@ -1583,25 +1583,16 @@ class _ASRouter {
         );
         let { groupImpressions } = this.state;
         for (const group of groupsWithFrequency) {
-          groupImpressions = this._addImpressionForGroups(
-            groupImpressions,
-            group.id,
+          groupImpressions = this._addImpressionForItem(
+            state,
+            group,
+            "groupImpressions",
             time
           );
         }
         return { messageImpressions, groupImpressions };
       });
     }
-  }
-
-  // Easier to get all impressions from
-  _addImpressionForGroups(groupImpressions, groupId, time) {
-    const impressions = [...(groupImpressions[groupId] || [])];
-    impressions.push(time);
-    const newGroupImpressions = { ...groupImpressions };
-    newGroupImpressions[groupId] = impressions;
-    this._storage.set("groupImpressions", newGroupImpressions);
-    return newGroupImpressions;
   }
 
   // TODO: refactor for message impressions only (no providerImpressions)
