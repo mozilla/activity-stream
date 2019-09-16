@@ -701,7 +701,11 @@ class _ASRouter {
         dispatchToAS: this.dispatchToAS,
       }
     );
-    const groups = messages.map(group => {
+    const providerGroups = this.state.providers.map(({ id }) => ({
+      id,
+      enabled: true,
+    }));
+    const messageGroups = messages.map(group => {
       return {
         ...group,
         enabled:
@@ -710,7 +714,10 @@ class _ASRouter {
           group.userPreferences.every(ASRouterPreferences.getUserPreference),
       };
     });
-    this.setState({ groups });
+    // Groups consist of automatically generated groups based on each message provider
+    // merged with message defined groups fetched from Remote Settings.
+    // A message defined group can override a provider group is it has the same name.
+    await this.setState({ groups: { ...providerGroups, ...messageGroups } });
   }
 
   /**
@@ -873,11 +880,14 @@ class _ASRouter {
       (await this._storage.get("messageImpressions")) || {};
     const providerImpressions =
       (await this._storage.get("providerImpressions")) || {};
+    const groupImpressions =
+      (await this._storage.get("groupImpressions")) || {};
     const previousSessionEnd =
       (await this._storage.get("previousSessionEnd")) || 0;
     await this.setState({
       messageBlockList,
       providerBlockList,
+      groupImpressions,
       messageImpressions,
       providerImpressions,
       previousSessionEnd,
@@ -1299,7 +1309,12 @@ class _ASRouter {
 
   // Work out if a message can be shown based on its and its provider's frequency caps.
   isBelowFrequencyCaps(message) {
-    const { providers, messageImpressions, providerImpressions } = this.state;
+    const {
+      providers,
+      messageImpressions,
+      providerImpressions,
+      groupImpressions,
+    } = this.state;
 
     const provider = providers.find(p => p.id === message.provider);
     const impressionsForMessage = messageImpressions[message.id];
@@ -1310,7 +1325,14 @@ class _ASRouter {
         message,
         impressionsForMessage,
         MAX_MESSAGE_LIFETIME_CAP
-      ) && this._isBelowItemFrequencyCap(provider, impressionsForProvider)
+      ) &&
+      this._isBelowItemFrequencyCap(provider, impressionsForProvider) &&
+      message.groups.every(messageGroup =>
+        this._isBelowItemFrequencyCap(
+          this.state.groups[messageGroup],
+          groupImpressions[messageGroup]
+        )
+      )
     );
   }
 
@@ -1542,9 +1564,16 @@ class _ASRouter {
 
   async addImpression(message) {
     const provider = this.state.providers.find(p => p.id === message.provider);
+    const groupsWithFrequency = this.state.groups.filter(
+      ({ frequency, id }) => frequency && message.groups.includes(id)
+    );
     // We only need to store impressions for messages that have frequency, or
     // that have providers that have frequency
-    if (message.frequency || (provider && provider.frequency)) {
+    if (
+      message.frequency ||
+      (provider && provider.frequency) ||
+      groupsWithFrequency.length
+    ) {
       const time = Date.now();
       await this.setState(state => {
         const messageImpressions = this._addImpressionForItem(
@@ -1559,9 +1588,26 @@ class _ASRouter {
           "providerImpressions",
           time
         );
-        return { messageImpressions, providerImpressions };
+        let { groupImpressions } = this.state;
+        for (const group of groupsWithFrequency) {
+          groupImpressions = this._addImpressionForGroups(
+            groupImpressions,
+            group.id,
+            time
+          );
+        }
+        return { messageImpressions, providerImpressions, groupImpressions };
       });
     }
+  }
+
+  // Easier to get all impressions from
+  _addImpressionForGroups(groupImpressions, groupId, time) {
+    let impressions = { ...groupImpressions[groupId] };
+    impressions = [...(impressions || [])].push(time);
+    const newGroupImpressions = { ...groupImpressions, groupId: impressions };
+    this._storage.set("groupImpressions", newGroupImpressions);
+    return newGroupImpressions;
   }
 
   // Helper for addImpression - calculate the updated impressions object for the given
