@@ -2447,14 +2447,6 @@ describe("ASRouter", () => {
   });
 
   describe("impressions", () => {
-    async function addProviderWithFrequency(id, frequency) {
-      await Router.setState(state => {
-        const newProvider = { id, frequency };
-        const providers = [...state.providers, newProvider];
-        return { providers };
-      });
-    }
-
     async function addGroupWithFrequency(id, frequency) {
       await Router.setState(state => {
         const newGroup = { id, frequency };
