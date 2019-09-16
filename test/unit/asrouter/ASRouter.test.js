@@ -944,8 +944,8 @@ describe("ASRouter", () => {
       // Block all messages except the first
       await Router.setState(() => ({
         messages: [
-          { id: "foo", provider: "snippets" },
-          { id: "bar", provider: "snippets" },
+          { id: "foo", provider: "snippets", groups: ["snippets"] },
+          { id: "bar", provider: "snippets", groups: ["snippets"] },
         ],
         messageBlockList: ["foo"],
       }));
@@ -958,8 +958,13 @@ describe("ASRouter", () => {
       // Block all messages except the first
       await Router.setState(() => ({
         messages: [
-          { id: "foo", provider: "snippets", campaign: "foocampaign" },
-          { id: "bar", provider: "snippets" },
+          {
+            id: "foo",
+            provider: "snippets",
+            campaign: "foocampaign",
+            groups: ["snippets"],
+          },
+          { id: "bar", provider: "snippets", groups: ["snippets"] },
         ],
         messageBlockList: ["foocampaign"],
       }));
@@ -1158,7 +1163,7 @@ describe("ASRouter", () => {
     describe("#onMessage: NEWTAB_MESSAGE_REQUEST", () => {
       it("should set state.lastMessageId to a message id", async () => {
         await Router.setState({
-          messages: [{ id: "foo", provider: "snippets" }],
+          messages: [{ id: "foo", provider: "snippets", groups: ["snippets"] }],
         });
         await Router.onMessage(
           fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" })
@@ -1169,7 +1174,7 @@ describe("ASRouter", () => {
       it("should send a message back to the to the target", async () => {
         // force the only message to be a regular message so getRandomItemFromArray picks it
         await Router.setState({
-          messages: [{ id: "foo", provider: "snippets" }],
+          messages: [{ id: "foo", provider: "snippets", groups: ["snippets"] }],
         });
         const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
         await Router.onMessage(msg);
@@ -1189,6 +1194,7 @@ describe("ASRouter", () => {
           messages: [
             {
               id: "foo1",
+              groups: ["snippets"],
               provider: "snippets",
               template: "simple_template",
               bundled: 1,
@@ -1219,6 +1225,7 @@ describe("ASRouter", () => {
         sandbox.stub(Router, "_findProvider").returns(null);
         const firstMessage = {
           id: "foo2",
+          groups: ["snippets"],
           provider: "snippets",
           template: "simple_template",
           bundled: 2,
@@ -1227,6 +1234,7 @@ describe("ASRouter", () => {
         };
         const secondMessage = {
           id: "foo1",
+          groups: ["snippets"],
           provider: "snippets",
           template: "simple_template",
           bundled: 2,
@@ -1297,6 +1305,7 @@ describe("ASRouter", () => {
           messages: [
             {
               id: "foo1",
+              groups: ["snippets"],
               provider: "snippets",
               template: "simple_template",
               bundled: 2,
@@ -1685,7 +1694,7 @@ describe("ASRouter", () => {
         );
       });
       it("should return the preview message if that's available and remove it from Router.state", async () => {
-        const expectedObj = { provider: "preview" };
+        const expectedObj = { provider: "preview", groups: ["preview"] };
         Router.setState({ messages: [expectedObj] });
 
         await Router.sendNewTabMessage(channel, { endpoint: "foo.com" });
@@ -1790,6 +1799,7 @@ describe("ASRouter", () => {
         const messages = [
           {
             id: "foo1",
+            groups: ["default"],
             template: "simple_template",
             bundled: 1,
             trigger: { id: "foo" },
@@ -1814,6 +1824,7 @@ describe("ASRouter", () => {
         let messages = [
           {
             id: "foo1",
+            groups: ["bundled"],
             template: "simple_template",
             bundled: 2,
             trigger: { id: "foo" },
@@ -1821,6 +1832,7 @@ describe("ASRouter", () => {
           },
           {
             id: "foo2",
+            groups: ["bundled"],
             template: "simple_template",
             bundled: 2,
             trigger: { id: "bar" },
@@ -1828,6 +1840,7 @@ describe("ASRouter", () => {
           },
           {
             id: "foo3",
+            groups: ["bundled"],
             template: "simple_template",
             bundled: 2,
             trigger: { id: "foo" },
@@ -1863,6 +1876,7 @@ describe("ASRouter", () => {
         let messages = [
           {
             id: "trailhead",
+            groups: ["onboarding"],
             template: "trailhead",
             includeBundle: {
               length: 2,
@@ -1874,6 +1888,7 @@ describe("ASRouter", () => {
           },
           {
             id: "foo2",
+            groups: ["onboarding"],
             template: "foo",
             bundled: 2,
             trigger: { id: "foo" },
@@ -1881,6 +1896,7 @@ describe("ASRouter", () => {
           },
           {
             id: "foo3",
+            groups: ["onboarding"],
             template: "foo",
             bundled: 2,
             trigger: { id: "foo" },
@@ -2394,6 +2410,14 @@ describe("ASRouter", () => {
       });
     }
 
+    async function addGroupWithFrequency(id, frequency) {
+      await Router.setState(state => {
+        const newGroup = { id, frequency };
+        const groups = [...state.groups, newGroup];
+        return { groups };
+      });
+    }
+
     describe("frequency normalisation", () => {
       beforeEach(async () => {
         const messages = [
@@ -2450,30 +2474,30 @@ describe("ASRouter", () => {
       });
       it("should add a provider impression and update _storage with the current time if the message's provider has frequency caps", async () => {
         clock.tick(42);
-        await addProviderWithFrequency("foo", { lifetime: 5 });
+        await addGroupWithFrequency("foo", { lifetime: 5 });
         const msg = fakeAsyncMessage({
           type: "IMPRESSION",
-          data: { id: "bar", provider: "foo" },
+          data: { id: "bar", provider: "foo", groups: ["foo"] },
         });
         await Router.onMessage(msg);
-        assert.isArray(Router.state.providerImpressions.foo);
-        assert.deepEqual(Router.state.providerImpressions.foo, [42]);
-        assert.calledWith(Router._storage.set, "providerImpressions", {
+        assert.isArray(Router.state.groupImpressions.foo);
+        assert.deepEqual(Router.state.groupImpressions.foo, [42]);
+        assert.calledWith(Router._storage.set, "groupImpressions", {
           foo: [42],
         });
       });
-      it("should not add a provider impression if the message's provider doesn't have frequency caps", async () => {
+      it("should not add a group impression if the message's group doesn't have frequency caps", async () => {
         // Note that storage.set is called during initialization, so it needs to be reset
         Router._storage.set.reset();
         clock.tick(42);
-        // Add "foo" provider with no frequency
-        await addProviderWithFrequency("foo", null);
+        // Add "foo" group with no frequency
+        await addGroupWithFrequency("foo", null);
         const msg = fakeAsyncMessage({
           type: "IMPRESSION",
-          data: { id: "bar", provider: "foo" },
+          data: { id: "bar", provider: "foo", groups: ["foo"] },
         });
         await Router.onMessage(msg);
-        assert.notProperty(Router.state.providerImpressions, "foo");
+        assert.notProperty(Router.state.groupImpressions, "foo");
         assert.notCalled(Router._storage.set);
       });
       it("should only send impressions for one message", async () => {
@@ -2524,33 +2548,29 @@ describe("ASRouter", () => {
 
         const MAX_MESSAGE_LIFETIME_CAP = 100; // Defined in ASRouter
         const fooMessageImpressions = [0, 1];
-        const barProviderImpressions = [0, 1, 2];
+        const barGroupImpressions = [0, 1, 2];
 
         const message = {
           id: "foo",
           provider: "bar",
+          groups: ["bar"],
           frequency: { lifetime: 3 },
         };
-        const provider = { id: "bar", frequency: { lifetime: 5 } };
+        const groups = [{ id: "bar", frequency: { lifetime: 5 } }];
 
         await Router.setState(state => {
           // Add provider
-          const providers = [...state.providers, provider];
+          const providers = [...state.providers];
           // Add fooMessageImpressions
           // eslint-disable-next-line no-shadow
           const messageImpressions = Object.assign(
             {},
             state.messageImpressions
           );
+          const groupImpressions = Object.assign({}, state.providerImpressions);
+          groupImpressions.bar = barGroupImpressions;
           messageImpressions.foo = fooMessageImpressions;
-          // Add barProviderImpressions
-          // eslint-disable-next-line no-shadow
-          const providerImpressions = Object.assign(
-            {},
-            state.providerImpressions
-          );
-          providerImpressions.bar = barProviderImpressions;
-          return { providers, messageImpressions, providerImpressions };
+          return { providers, messageImpressions, groups, groupImpressions };
         });
 
         await Router.isBelowFrequencyCaps(message);
@@ -2564,8 +2584,8 @@ describe("ASRouter", () => {
         );
         assert.calledWithExactly(
           Router._isBelowItemFrequencyCap,
-          provider,
-          barProviderImpressions
+          groups[0],
+          barGroupImpressions
         );
       });
     });
@@ -2837,7 +2857,14 @@ describe("ASRouter", () => {
         .stub(global.FilterExpressions, "eval")
         .returns(Promise.reject(new Error("fake error")));
       await Router.setState({
-        messages: [{ id: "foo", provider: "snippets", targeting: "foo2.[[(" }],
+        messages: [
+          {
+            id: "foo",
+            provider: "snippets",
+            targeting: "foo2.[[(",
+            groups: ["snippets"],
+          },
+        ],
       });
       const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
       dispatchStub.reset();

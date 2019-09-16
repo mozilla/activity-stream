@@ -487,9 +487,8 @@ const CFR_MESSAGES = [
     trigger: { id: "openURL", params: REDDIT_ENHANCEMENT_PARAMS.open_urls },
   },
   {
-    id: "PIN_TAB_2",
+    id: "PIN_TAB",
     template: "cfr_doorhanger",
-    groups: ["test-group-2"],
     content: {
       layout: "message_and_animation",
       category: "cfrFeatures",
