@@ -1012,7 +1012,7 @@ describe("Reducers", () => {
 
       const newState = DiscoveryStream(oldState, deleteAction);
 
-      assert.isTrue(newState.spocs.data.spocs.length === 1);
+      assert.equal(newState.spocs.data.spocs.length, 1);
     });
     it("should handle no data from DISCOVERY_STREAM_SPOCS_UPDATE", () => {
       const data = null;
