@@ -480,6 +480,7 @@ describe("PingCentre", () => {
   describe("#sendStructuredIngestionPing()", () => {
     let prefStub;
     let getStub;
+    const compressed_string = "Sompe gzip compressed string";
 
     beforeEach(() => {
       FakePrefs.prototype.prefs = {};
@@ -493,6 +494,9 @@ describe("PingCentre", () => {
       getStub = sinon
         .stub(global.Services.prefs, "getStringPref")
         .returns(FAKE_BROWSER_SEARCH_REGION);
+      sandbox.stub(PingCentre, "_gzipCompressString").callsFake(() => {
+        return compressed_string;
+      });
 
       tSender = new PingCentre({
         topic: "activity-stream",
@@ -517,7 +521,7 @@ describe("PingCentre", () => {
       assert.notCalled(fetchStub);
     });
 
-    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch", async () => {
+    it("should POST given ping data compressed to telemetry.ping.endpoint pref w/fetch", async () => {
       fetchStub.resolves(fakeFetchSuccessResponse);
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 
@@ -537,8 +541,12 @@ describe("PingCentre", () => {
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl, {
         method: "POST",
-        body: JSON.stringify(EXPECTED_RESULT),
+        body: compressed_string,
         credentials: "omit",
+        headers: new Headers({
+          "Content-Type": "application/json",
+          "Content-Encoding": "gzip",
+        }),
       });
     });
 

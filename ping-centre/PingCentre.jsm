@@ -365,8 +365,41 @@ class PingCentre {
       });
   }
 
+  static _gzipCompressString(string) {
+    let observer = {
+      buffer: "",
+      onStreamComplete(loader, context, status, length, result) {
+        this.buffer += String.fromCharCode(...result);
+      },
+    };
+
+    let scs = Cc["@mozilla.org/streamConverters;1"].getService(
+      Ci.nsIStreamConverterService
+    );
+    let listener = Cc["@mozilla.org/network/stream-loader;1"].createInstance(
+      Ci.nsIStreamLoader
+    );
+    listener.init(observer);
+    let converter = scs.asyncConvertData(
+      "uncompressed",
+      "gzip",
+      listener,
+      null
+    );
+    let stringStream = Cc[
+      "@mozilla.org/io/string-input-stream;1"
+    ].createInstance(Ci.nsIStringInputStream);
+    stringStream.data = string;
+    converter.onStartRequest(null, null);
+    converter.onDataAvailable(null, stringStream, 0, string.length);
+    converter.onStopRequest(null, null, null);
+    return observer.buffer;
+  }
+
   /**
    * Sends a ping to the Structured Ingestion telemetry pipeline.
+   *
+   * The payload would be compressed using gzip.
    *
    * @param {Object} data     The payload to be sent.
    * @param {String} endpoint The destination endpoint. Note that Structured Ingestion
@@ -381,17 +414,22 @@ class PingCentre {
     }
 
     const payload = await this._createStructuredIngestionPing(data, options);
+    const payload_string = JSON.stringify(payload);
 
     if (this.logging) {
       Services.console.logStringMessage(
-        `TELEMETRY PING (STRUCTURED INGESTION): ${JSON.stringify(payload)}\n`
+        `TELEMETRY PING (STRUCTURED INGESTION): ${payload_string}\n`
       );
     }
 
     return fetch(endpoint, {
       method: "POST",
-      body: JSON.stringify(payload),
       credentials: "omit",
+      headers: new Headers({
+        "Content-Type": "application/json; charset=UTF-8",
+        "Content-Encoding": "gzip",
+      }),
+      body: PingCentre._gzipCompressString(payload_string),
     })
       .then(response => {
         if (!response.ok) {
