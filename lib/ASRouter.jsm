@@ -1784,7 +1784,7 @@ class _ASRouter {
     };
     const newGroupImpressions = { ...this.state.groupImpressions };
     delete newGroupImpressions[id];
-    await this.setState(({ groups, groupImpressions }) => ({
+    await this.setState(({ groups }) => ({
       groups: [...groups.filter(group => group.id !== id), newGroupState],
       groupImpressions: newGroupImpressions,
     }));

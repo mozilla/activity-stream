@@ -2307,6 +2307,20 @@ describe("ASRouter", () => {
         assert.calledWith(ASRouterPreferences.setUserPreference, "foo", true);
       });
     });
+    describe("#onMessage: SET_GROUP_STATE", () => {
+      it("should call setGroupState", async () => {
+        const msg = fakeAsyncMessage({
+          type: "SET_GROUP_STATE",
+          data: { id: "foo", value: true },
+        });
+        sandbox.stub(Router, "setGroupState");
+
+        await Router.onMessage(msg);
+
+        assert.calledOnce(Router.setGroupState);
+        assert.calledWithExactly(Router.setGroupState, msg.data.data);
+      });
+    });
     describe("#onMessage: EVALUATE_JEXL_EXPRESSION", () => {
       it("should call evaluateExpression", async () => {
         const msg = fakeAsyncMessage({
@@ -3442,6 +3456,31 @@ describe("ASRouter", () => {
       assert.calledOnce(stub);
       assert.lengthOf(Router.state.groups, 2);
       assert.isTrue(Router.state.groups.every(group => !group.enabled));
+    });
+  });
+  describe("#setGroupState", () => {
+    beforeEach(() => {
+      sandbox.stub(Router, "loadMessagesFromAllProviders");
+    });
+    it("should clear group impressions", async () => {
+      await Router.setState({
+        groups: [{ id: "foo", enabled: true }, { id: "bar", enabled: true }],
+        groupImpressions: { foo: [1], bar: [2] },
+      });
+
+      await Router.setGroupState({ id: "foo", value: false });
+
+      assert.equal(
+        Router.state.groups.find(({ enabled }) => enabled).id,
+        "bar"
+      );
+      assert.equal(
+        Router.state.groups.find(({ enabled }) => !enabled).id,
+        "foo"
+      );
+      assert.notProperty(Router.state.groupImpressions, "foo");
+      assert.property(Router.state.groupImpressions, "bar");
+      assert.calledOnce(Router.loadMessagesFromAllProviders);
     });
   });
 });
