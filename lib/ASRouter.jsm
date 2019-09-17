@@ -701,13 +701,19 @@ class _ASRouter {
       }
     );
     const providerGroups = this.state.providers.map(
-      ({ id, frequency, enabled }) => ({
-        id,
-        // This local group contains in a group all its own messages
-        groups: [id],
-        frequency,
-        enabled,
-      })
+      ({ id, frequency = null, enabled, type }) => {
+        const group = {
+          id,
+          // This local group contains in a group all its own messages
+          groups: [id],
+          enabled,
+          type,
+        };
+        if (frequency) {
+          group.frequency = frequency;
+        }
+        return group;
+      }
     );
     const messageGroups = messages.map(group => {
       return {
