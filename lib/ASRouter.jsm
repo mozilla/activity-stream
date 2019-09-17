@@ -1398,6 +1398,11 @@ class _ASRouter {
    */
   routeMessageToTarget(message, target, trigger, force = false) {
     switch (message.template) {
+      case "whatsnew_panel_message":
+        if (force) {
+          ToolbarPanelHub.forceShowMessage(target, message);
+        }
+        break;
       case "cfr_doorhanger":
         if (force) {
           CFRPageActions.forceRecommendation(target, message, this.dispatch);
