@@ -1172,8 +1172,10 @@ export class ASRouterAdminInner extends React.PureComponent {
                       />
                     </td>
                     <td>
-                      {this.state.groupImpressions[id] &&
+                      {frequency &&
+                        this.state.groupImpressions[id] &&
                         this.state.groupImpressions[id].length}
+                      {!frequency && !this.state.groupImpressions[id] && "n/a"}
                     </td>
                     <td>{JSON.stringify(frequency, null, 2)}</td>
                   </Row>
