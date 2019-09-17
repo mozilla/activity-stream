@@ -37,8 +37,6 @@ onboarding-cards-dismiss =
 onboarding-sync-welcome-header = Take { -brand-product-name } with You
 onboarding-sync-welcome-content = Get your bookmarks, history, passwords and other settings on all your devices.
 onboarding-sync-welcome-learn-more-link = Learn more about Firefox Accounts
-onboarding-sync-form-invalid-input = Valid email required
-onboarding-sync-legal-notice = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
 
 onboarding-sync-form-input =
     .placeholder = Email

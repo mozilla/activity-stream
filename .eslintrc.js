@@ -45,7 +45,6 @@ module.exports = {
         "content-src/asrouter/templates/OnboardingMessage/**",
         "content-src/asrouter/templates/FirstRun/**",
         "content-src/asrouter/templates/Trailhead/**",
-        "content-src/asrouter/templates/StartupOverlay/StartupOverlay.jsx",
         "content-src/components/TopSites/**",
         "content-src/components/MoreRecommendations/MoreRecommendations.jsx",
         "content-src/components/CollapsibleSection/CollapsibleSection.jsx",
