@@ -733,11 +733,6 @@ class _ASRouter {
     const needsUpdate = this.state.providers.filter(provider =>
       MessageLoaderUtils.shouldProviderUpdate(provider)
     );
-    // TODO: Need to move this code to a separate function that will
-    // update state before returning because otherwise
-    // message filtering will work off of stale info
-    // Need to block on group state being updated in order to
-    // correctly filter out disabled messages
     await this.loadAllMessageGroups(
       needsUpdate.find(({ id }) => id === "message-groups")
     );
@@ -1595,7 +1590,6 @@ class _ASRouter {
     }
   }
 
-  // TODO: refactor for message impressions only (no providerImpressions)
   // Helper for addImpression - calculate the updated impressions object for the given
   //                            item, then store it and return it
   _addImpressionForItem(state, item, impressionsString, time) {
@@ -1775,25 +1769,11 @@ class _ASRouter {
 
     await this.setState(state => {
       const providerBlockList = [...state.providerBlockList, ...idsToBlock];
-      // When a provider is blocked, its group impressions should be cleared as well
-      const groupImpressions = { ...state.groupImpressions };
-      idsToBlock.forEach(id => delete groupImpressions[id]);
-      this._storage.set("groupImpressions", groupImpressions);
+      // When a provider is blocked, its impressions should be cleared as well
+      const providerImpressions = { ...state.providerImpressions };
+      idsToBlock.forEach(id => delete providerImpressions[id]);
       this._storage.set("providerBlockList", providerBlockList);
-      return { providerBlockList, groupImpressions };
-    });
-  }
-
-  async unblockProviderById(idOrIds) {
-    const idsToUnblock = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
-
-    await this.setState(state => {
-      const providerBlockList = [...state.providerBlockList];
-      idsToUnblock.forEach(id => {
-        providerBlockList.splice(providerBlockList.indexOf(id), 1);
-      });
-      this._storage.set("providerBlockList", providerBlockList);
-      return { providerBlockList };
+      return { providerBlockList, providerImpressions };
     });
   }
 
@@ -2165,7 +2145,15 @@ class _ASRouter {
         this.unblockMessageById(action.data.id);
         break;
       case "UNBLOCK_PROVIDER_BY_ID":
-        this.unblockProviderById(action.data);
+        await this.setState(state => {
+          const providerBlockList = [...state.providerBlockList];
+          providerBlockList.splice(
+            providerBlockList.indexOf(action.data.id),
+            1
+          );
+          this._storage.set("providerBlockList", providerBlockList);
+          return { providerBlockList };
+        });
         break;
       case "UNBLOCK_BUNDLE":
         await this.setState(state => {
@@ -2202,11 +2190,9 @@ class _ASRouter {
         QueryCache.expireAll();
         break;
       case "ENABLE_PROVIDER":
-        await this.unblockProviderById(action.data);
         ASRouterPreferences.enableOrDisableProvider(action.data, true);
         break;
       case "DISABLE_PROVIDER":
-        await this.blockProviderById(action.data);
         ASRouterPreferences.enableOrDisableProvider(action.data, false);
         break;
       case "RESET_PROVIDER_PREF":

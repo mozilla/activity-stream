@@ -19,7 +19,6 @@ const DEFAULT_STATE = {
   _devtoolsPref: DEVTOOLS_PREF,
 };
 
-// TODO: replace with lazy pref getter
 const USER_PREFERENCES = {
   snippets: "browser.newtabpage.activity-stream.feeds.snippets",
   cfrAddons: "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
