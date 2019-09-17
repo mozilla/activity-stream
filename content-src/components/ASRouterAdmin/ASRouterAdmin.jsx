@@ -454,6 +454,13 @@ export class ASRouterAdminInner extends React.PureComponent {
     ASRouterUtils.sendMessage({ type: "RESET_PROVIDER_PREF" });
   }
 
+  toggleGroups(id, value) {
+    ASRouterUtils.sendMessage({
+      type: "SET_GROUP_STATE",
+      data: { id, value },
+    });
+  }
+
   handleExpressionEval() {
     const context = {};
     for (const param of Object.keys(this.state.stringTargetingParameters)) {
@@ -1142,6 +1149,38 @@ export class ASRouterAdminInner extends React.PureComponent {
             {this.renderAttributionParamers()}
           </React.Fragment>
         );
+      case "groups":
+        return (
+          <React.Fragment>
+            <h2>Message Groups</h2>
+            <table>
+              <thead>
+                <tr className="message-item">
+                  <td>Enabled</td>
+                  <td>Impressions count</td>
+                  <td>Custom frequency</td>
+                </tr>
+              </thead>
+              {this.state.groups &&
+                this.state.groups.map(({ id, enabled, frequency }, index) => (
+                  <Row key={id}>
+                    <td>
+                      <TogglePrefCheckbox
+                        checked={enabled}
+                        pref={id}
+                        onChange={this.toggleGroups}
+                      />
+                    </td>
+                    <td>
+                      {this.state.groupImpressions[id] &&
+                        this.state.groupImpressions[id].length}
+                    </td>
+                    <td>{JSON.stringify(frequency, null, 2)}</td>
+                  </Row>
+                ))}
+            </table>
+          </React.Fragment>
+        );
       case "pocket":
         return (
           <React.Fragment>
@@ -1206,6 +1245,9 @@ export class ASRouterAdminInner extends React.PureComponent {
             </li>
             <li>
               <a href="#devtools-targeting">Targeting</a>
+            </li>
+            <li>
+              <a href="#devtools-groups">Message Groups</a>
             </li>
             <li>
               <a href="#devtools-pocket">Pocket</a>

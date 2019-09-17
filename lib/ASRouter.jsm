@@ -1777,6 +1777,20 @@ class _ASRouter {
     });
   }
 
+  async setGroupState({ id, value }) {
+    const newGroupState = {
+      ...this.state.groups.find(group => group.id === id),
+      enabled: value,
+    };
+    const newGroupImpressions = { ...this.state.groupImpressions };
+    delete newGroupImpressions[id];
+    await this.setState(({ groups, groupImpressions }) => ({
+      groups: [...groups.filter(group => group.id !== id), newGroupState],
+      groupImpressions: newGroupImpressions,
+    }));
+    await this.loadMessagesFromAllProviders();
+  }
+
   _validPreviewEndpoint(url) {
     try {
       const endpoint = new URL(url);
@@ -2203,6 +2217,9 @@ class _ASRouter {
           action.data.id,
           action.data.value
         );
+        break;
+      case "SET_GROUP_STATE":
+        await this.setGroupState(action.data);
         break;
       case "EVALUATE_JEXL_EXPRESSION":
         this.evaluateExpression(target, action.data);
