@@ -1793,19 +1793,12 @@ class _ASRouter {
    * the information in indexedDB
    * @param id {string} - identifier for group
    */
-  async blockGroupById(id) {
+  blockGroupById(id) {
     if (!id) {
       return false;
     }
     const groupsBlockList = [...this.state.groupsBlockList, id];
-
     this._storage.set("groupsBlockList", groupsBlockList);
-    await this.blockMessageById(
-      this.state.messages
-        .filter(({ groups }) => groups.includes(id))
-        .map(message => message.id)
-    );
-
     return this.setGroupState({ id, value: false });
   }
 
@@ -1814,34 +1807,14 @@ class _ASRouter {
    * the information in indexedDB
    * @param id {string} - identifier for group
    */
-  async unblockGroupById(id) {
+  unblockGroupById(id) {
     if (!id) {
       return false;
     }
     const groupsBlockList = [
       ...this.state.groupsBlockList.filter(groupId => groupId !== id),
     ];
-
-    // Persist the updated block list
     this._storage.set("groupsBlockList", groupsBlockList);
-    // Unblock messages that are part of the group
-    await this.unblockMessageById(
-      this.state.messageBlockList
-        .map(messageId => this.state.messages.find(m => m.id === messageId))
-        .filter(message => {
-          if (!message) {
-            return false;
-          }
-          // All messages currently blocked that are part of this group
-          // and are not part of any other blocked group
-          return (
-            message.groups.includes(id) &&
-            message.groups.every(group => !groupsBlockList.includes(group))
-          );
-        })
-        .map(message => message.id)
-    );
-
     return this.setGroupState({ id, value: true });
   }
 

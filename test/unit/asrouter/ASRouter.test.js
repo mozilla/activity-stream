@@ -3529,6 +3529,42 @@ describe("ASRouter", () => {
         assert.jsonSchema(group, MessageGroupSchema);
       });
     });
+    it("should disable groups that are in the groupsBlockList", async () => {
+      const groupsProvider = { id: "groups-provider" };
+      const messageGroups = [
+        {
+          id: "group-1",
+          enabled: true,
+          userPreferences: [],
+          type: "remote-settings",
+        },
+      ];
+      const stub = sandbox
+        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .withArgs(groupsProvider, sinon.match.object)
+        .returns({ messages: messageGroups });
+
+      await Router.setState({
+        groupsBlockList: ["group-1", "provider-group"],
+        providers: [
+          {
+            id: "provider-group",
+            enabled: true,
+            type: "local",
+            frequency: { lifetime: 3 },
+          },
+        ],
+      });
+
+      await Router.loadAllMessageGroups(groupsProvider);
+
+      assert.calledOnce(stub);
+      assert.lengthOf(Router.state.groups, 2);
+      assert.isTrue(Router.state.groups.every(group => !group.enabled));
+      Router.state.groups.forEach(group => {
+        assert.jsonSchema(group, MessageGroupSchema);
+      });
+    });
   });
   describe("#setGroupState", () => {
     it("should clear group impressions", async () => {
@@ -3560,8 +3596,6 @@ describe("ASRouter", () => {
     });
     it("should save to storage the updated blocked list", async () => {
       await Router.setState({ groupsBlockList: [1, 2] });
-      // Prevent further calls to storage
-      sandbox.stub(Router, "blockMessageById");
 
       await Router.blockGroupById(3);
 
@@ -3571,17 +3605,6 @@ describe("ASRouter", () => {
         2,
         3,
       ]);
-    });
-    it("should block messages associated with the group", async () => {
-      await Router.setState({
-        messages: [{ id: "to_block", groups: ["blocked_group"] }],
-      });
-      sandbox.stub(Router, "blockMessageById");
-
-      await Router.blockGroupById("blocked_group");
-
-      assert.calledOnce(Router.blockMessageById);
-      assert.calledWithExactly(Router.blockMessageById, ["to_block"]);
     });
     it("should call set group state", async () => {
       await Router.blockGroupById("block");
@@ -3602,7 +3625,6 @@ describe("ASRouter", () => {
     });
     it("should save to storage the updated blocked list", async () => {
       await Router.setState({ groupsBlockList: ["block_1", "block_2"] });
-      sandbox.stub(Router, "unblockMessageById");
 
       await Router.unblockGroupById("block_2");
 
@@ -3611,23 +3633,14 @@ describe("ASRouter", () => {
         "block_1",
       ]);
     });
-    it("should unblock messages associated with the group", async () => {
-      await Router.setState({
-        messageBlockList: ["foo1", "foo3", "non_existent"],
-        groupsBlockList: ["blocked_1", "blocked_2"],
-        messages: [
-          { id: "foo1", groups: ["blocked_1", "blocked_2"] },
-          { id: "foo2", groups: ["random3"] },
-          { id: "foo3", groups: ["blocked_2"] },
-        ],
+    it("should call set group state", async () => {
+      await Router.unblockGroupById("unblock");
+
+      assert.calledOnce(Router.setGroupState);
+      assert.calledWithExactly(Router.setGroupState, {
+        id: "unblock",
+        value: true,
       });
-      sandbox.stub(Router, "unblockMessageById");
-
-      await Router.unblockGroupById("blocked_2");
-
-      assert.calledOnce(Router.unblockMessageById);
-      assert.calledWithExactly(Router.unblockMessageById, ["foo3"]);
     });
-    it("should call set group state", () => {});
   });
 });
