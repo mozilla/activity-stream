@@ -480,7 +480,6 @@ describe("PingCentre", () => {
   describe("#sendStructuredIngestionPing()", () => {
     let prefStub;
     let getStub;
-    const compressed_string = "Sompe gzip compressed string";
 
     beforeEach(() => {
       FakePrefs.prototype.prefs = {};
@@ -494,9 +493,7 @@ describe("PingCentre", () => {
       getStub = sinon
         .stub(global.Services.prefs, "getStringPref")
         .returns(FAKE_BROWSER_SEARCH_REGION);
-      sandbox.stub(PingCentre, "_gzipCompressString").callsFake(() => {
-        return compressed_string;
-      });
+      sandbox.stub(PingCentre, "_sendInGzip").resolves();
 
       tSender = new PingCentre({
         topic: "activity-stream",
@@ -518,11 +515,10 @@ describe("PingCentre", () => {
 
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 
-      assert.notCalled(fetchStub);
+      assert.notCalled(PingCentre._sendInGzip);
     });
 
     it("should POST given ping data compressed to telemetry.ping.endpoint pref w/fetch", async () => {
-      fetchStub.resolves(fakeFetchSuccessResponse);
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 
       const EXPECTED_SHIELD_STRING =
@@ -538,28 +534,16 @@ describe("PingCentre", () => {
       );
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
 
-      assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, fakeEndpointUrl, {
-        method: "POST",
-        body: compressed_string,
-        credentials: "omit",
-        headers: new Headers({
-          "Content-Type": "application/json",
-          "Content-Encoding": "gzip",
-        }),
-      });
+      assert.calledOnce(PingCentre._sendInGzip);
+      assert.calledWithExactly(
+        PingCentre._sendInGzip,
+        fakeEndpointUrl,
+        JSON.stringify(EXPECTED_RESULT)
+      );
     });
 
-    it("should log HTTP failures using Cu.reportError", async () => {
-      fetchStub.resolves(fakeFetchHttpErrorResponse);
-
-      await tSender.sendStructuredIngestionPing(fakePingJSON);
-
-      assert.called(Cu.reportError);
-    });
-
-    it("should log an error using Cu.reportError if fetch rejects", async () => {
-      fetchStub.rejects("Oh noes!");
+    it("should log an error using Cu.reportError if send rejects", async () => {
+      PingCentre._sendInGzip.rejects({ type: "Oh noes!" });
 
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 

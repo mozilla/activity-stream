@@ -28,12 +28,18 @@ ChromeUtils.defineModuleGetter(
   "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "ServiceRequest",
+  "resource://gre/modules/ServiceRequest.jsm"
+);
 
 const PREF_BRANCH = "browser.ping-centre.";
 
 const TELEMETRY_PREF = `${PREF_BRANCH}telemetry`;
 const LOGGING_PREF = `${PREF_BRANCH}log`;
 const PRODUCTION_ENDPOINT_PREF = `${PREF_BRANCH}production.endpoint`;
+const STRUCTURED_INGESTION_SEND_TIMEOUT = 30 * 1000; // 30 seconds
 
 const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 const BROWSER_SEARCH_REGION_PREF = "browser.search.region";
@@ -369,7 +375,7 @@ class PingCentre {
     let observer = {
       buffer: "",
       onStreamComplete(loader, context, status, length, result) {
-        this.buffer += String.fromCharCode(...result);
+        this.buffer = String.fromCharCode(...result);
       },
     };
 
@@ -396,6 +402,40 @@ class PingCentre {
     return observer.buffer;
   }
 
+  static _sendInGzip(endpoint, payload) {
+    return new Promise((resolve, reject) => {
+      let request = new ServiceRequest({ mozAnon: true });
+      request.mozBackgroundRequest = true;
+      request.timeout = STRUCTURED_INGESTION_SEND_TIMEOUT;
+
+      request.open("POST", endpoint, true);
+      request.overrideMimeType("text/plain");
+      request.setRequestHeader(
+        "Content-Type",
+        "application/json; charset=UTF-8"
+      );
+      request.setRequestHeader("Content-Encoding", "gzip");
+      request.setRequestHeader("Date", new Date().toUTCString());
+
+      request.onload = event => {
+        if (request.status !== 200) {
+          reject(event);
+        } else {
+          resolve(event);
+        }
+      };
+      request.onerror = reject;
+      request.onabort = reject;
+      request.ontimeout = reject;
+
+      let payloadStream = Cc[
+        "@mozilla.org/io/string-input-stream;1"
+      ].createInstance(Ci.nsIStringInputStream);
+      payloadStream.data = PingCentre._gzipCompressString(payload);
+      request.sendInputStream(payloadStream);
+    });
+  }
+
   /**
    * Sends a ping to the Structured Ingestion telemetry pipeline.
    *
@@ -413,36 +453,20 @@ class PingCentre {
       return Promise.resolve();
     }
 
-    const payload = await this._createStructuredIngestionPing(data, options);
-    const payload_string = JSON.stringify(payload);
+    const ping = await this._createStructuredIngestionPing(data, options);
+    const payload = JSON.stringify(ping);
 
     if (this.logging) {
       Services.console.logStringMessage(
-        `TELEMETRY PING (STRUCTURED INGESTION): ${payload_string}\n`
+        `TELEMETRY PING (STRUCTURED INGESTION): ${payload}\n`
       );
     }
 
-    return fetch(endpoint, {
-      method: "POST",
-      credentials: "omit",
-      headers: new Headers({
-        "Content-Type": "application/json; charset=UTF-8",
-        "Content-Encoding": "gzip",
-      }),
-      body: PingCentre._gzipCompressString(payload_string),
-    })
-      .then(response => {
-        if (!response.ok) {
-          Cu.reportError(
-            `Structured Ingestion ping failure with HTTP response code: ${
-              response.status
-            }`
-          );
-        }
-      })
-      .catch(e => {
-        Cu.reportError(`Structured Ingestion ping failure with error: ${e}`);
-      });
+    return PingCentre._sendInGzip(endpoint, payload).catch(event => {
+      Cu.reportError(
+        `Structured Ingestion ping failure with error: ${event.type}`
+      );
+    });
   }
 
   uninit() {
