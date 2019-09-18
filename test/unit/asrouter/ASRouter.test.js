@@ -2309,6 +2309,9 @@ describe("ASRouter", () => {
       });
     });
     describe("#onMessage: SET_GROUP_STATE", () => {
+      beforeEach(() => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
+      });
       it("should call setGroupState", async () => {
         const msg = fakeAsyncMessage({
           type: "SET_GROUP_STATE",
@@ -2320,6 +2323,43 @@ describe("ASRouter", () => {
 
         assert.calledOnce(Router.setGroupState);
         assert.calledWithExactly(Router.setGroupState, msg.data.data);
+        assert.calledOnce(Router.loadMessagesFromAllProviders);
+      });
+    });
+    describe("#onMessage: BLOCK_GROUP_BY_ID", () => {
+      beforeEach(() => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
+      });
+      it("should call blockGroupById", async () => {
+        const msg = fakeAsyncMessage({
+          type: "BLOCK_GROUP_BY_ID",
+          data: { id: "foo" },
+        });
+        sandbox.stub(Router, "blockGroupById");
+
+        await Router.onMessage(msg);
+
+        assert.calledOnce(Router.blockGroupById);
+        assert.calledWithExactly(Router.blockGroupById, msg.data.data.id);
+        assert.calledOnce(Router.loadMessagesFromAllProviders);
+      });
+    });
+    describe("#onMessage: UNBLOCK_GROUP_BY_ID", () => {
+      beforeEach(() => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
+      });
+      it("should call unblockGroupById", async () => {
+        const msg = fakeAsyncMessage({
+          type: "UNBLOCK_GROUP_BY_ID",
+          data: { id: "foo" },
+        });
+        sandbox.stub(Router, "unblockGroupById");
+
+        await Router.onMessage(msg);
+
+        assert.calledOnce(Router.unblockGroupById);
+        assert.calledWithExactly(Router.unblockGroupById, msg.data.data.id);
+        assert.calledOnce(Router.loadMessagesFromAllProviders);
       });
     });
     describe("#onMessage: EVALUATE_JEXL_EXPRESSION", () => {
@@ -3491,9 +3531,6 @@ describe("ASRouter", () => {
     });
   });
   describe("#setGroupState", () => {
-    beforeEach(() => {
-      sandbox.stub(Router, "loadMessagesFromAllProviders");
-    });
     it("should clear group impressions", async () => {
       await Router.setState({
         groups: [{ id: "foo", enabled: true }, { id: "bar", enabled: true }],
@@ -3512,7 +3549,85 @@ describe("ASRouter", () => {
       );
       assert.notProperty(Router.state.groupImpressions, "foo");
       assert.property(Router.state.groupImpressions, "bar");
-      assert.calledOnce(Router.loadMessagesFromAllProviders);
     });
+  });
+  describe("#blockGroupById", () => {
+    beforeEach(() => {
+      sandbox.stub(Router, "setGroupState");
+    });
+    it("should do anything if called incorrectly", async () => {
+      assert.isFalse(await Router.blockGroupById());
+    });
+    it("should save to storage the updated blocked list", async () => {
+      await Router.setState({ groupsBlockList: [1, 2] });
+      // Prevent further calls to storage
+      sandbox.stub(Router, "blockMessageById");
+
+      await Router.blockGroupById(3);
+
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "groupsBlockList", [
+        1,
+        2,
+        3,
+      ]);
+    });
+    it("should block messages associated with the group", async () => {
+      await Router.setState({
+        messages: [{ id: "to_block", groups: ["blocked_group"] }],
+      });
+      sandbox.stub(Router, "blockMessageById");
+
+      await Router.blockGroupById("blocked_group");
+
+      assert.calledOnce(Router.blockMessageById);
+      assert.calledWithExactly(Router.blockMessageById, ["to_block"]);
+    });
+    it("should call set group state", async () => {
+      await Router.blockGroupById("block");
+
+      assert.calledOnce(Router.setGroupState);
+      assert.calledWithExactly(Router.setGroupState, {
+        id: "block",
+        value: false,
+      });
+    });
+  });
+  describe("#unblockGroupById", () => {
+    beforeEach(() => {
+      sandbox.stub(Router, "setGroupState");
+    });
+    it("should do anything if called incorrectly", async () => {
+      assert.isFalse(await Router.unblockGroupById());
+    });
+    it("should save to storage the updated blocked list", async () => {
+      await Router.setState({ groupsBlockList: ["block_1", "block_2"] });
+      sandbox.stub(Router, "unblockMessageById");
+
+      await Router.unblockGroupById("block_2");
+
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "groupsBlockList", [
+        "block_1",
+      ]);
+    });
+    it("should unblock messages associated with the group", async () => {
+      await Router.setState({
+        messageBlockList: ["foo1", "foo3", "non_existent"],
+        groupsBlockList: ["blocked_1", "blocked_2"],
+        messages: [
+          { id: "foo1", groups: ["blocked_1", "blocked_2"] },
+          { id: "foo2", groups: ["random3"] },
+          { id: "foo3", groups: ["blocked_2"] },
+        ],
+      });
+      sandbox.stub(Router, "unblockMessageById");
+
+      await Router.unblockGroupById("blocked_2");
+
+      assert.calledOnce(Router.unblockMessageById);
+      assert.calledWithExactly(Router.unblockMessageById, ["foo3"]);
+    });
+    it("should call set group state", () => {});
   });
 });

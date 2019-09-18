@@ -704,9 +704,11 @@ class _ASRouter {
       ({ id, frequency = null, enabled, type }) => {
         const group = {
           id,
-          // This local group contains in a group all its own messages
+          // This provider defines a single group with the same name as it's `id`
+          // All messages coming from this provider will belong to this group
           groups: [id],
-          enabled,
+          // Provider is enabled if pref config is true and is not in the block list
+          enabled: enabled && !this.state.groupsBlockList.includes(id),
           type,
         };
         if (frequency) {
@@ -720,6 +722,8 @@ class _ASRouter {
         ...group,
         enabled:
           group.enabled &&
+          // Enabled if the group is not preset in the block list
+          !this.state.groupsBlockList.includes(group.id) &&
           Array.isArray(group.userPreferences) &&
           group.userPreferences.every(ASRouterPreferences.getUserPreference),
       };
@@ -885,6 +889,10 @@ class _ASRouter {
       (await this._storage.get("messageImpressions")) || {};
     const groupImpressions =
       (await this._storage.get("groupImpressions")) || {};
+    // Combine the existing providersBlockList into the groupsBlockList
+    const groupsBlockList = (
+      (await this._storage.get("groupsBlockList")) || []
+    ).concat(providerBlockList);
 
     // Merge any existing provider impressions into the corresponding group
     // Don't keep providerImpressions in state anymore
@@ -901,6 +909,7 @@ class _ASRouter {
       (await this._storage.get("previousSessionEnd")) || 0;
     await this.setState({
       messageBlockList,
+      groupsBlockList,
       providerBlockList,
       groupImpressions,
       messageImpressions,
@@ -1759,15 +1768,81 @@ class _ASRouter {
     });
   }
 
-  unblockMessageById(id) {
+  unblockMessageById(idOrIds) {
+    const idsToUnblock = Array.isArray(idOrIds) ? idOrIds : [idOrIds];
+
     return this.setState(state => {
       const messageBlockList = [...state.messageBlockList];
-      const message = state.messages.find(m => m.id === id);
-      const idToUnblock = message && message.campaign ? message.campaign : id;
-      messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
+      idsToUnblock
+        .map(id => state.messages.find(m => m.id === id))
+        // Remove all `id`s (or `campaign`s for snippets) from the message
+        // block list
+        .forEach(message => {
+          const idToUnblock =
+            message && message.campaign ? message.campaign : message.id;
+          messageBlockList.splice(messageBlockList.indexOf(idToUnblock), 1);
+        });
+
       this._storage.set("messageBlockList", messageBlockList);
       return { messageBlockList };
     });
+  }
+
+  /**
+   * Sets `group.enabled` to false, blocks associated messages and persists
+   * the information in indexedDB
+   * @param id {string} - identifier for group
+   */
+  async blockGroupById(id) {
+    if (!id) {
+      return false;
+    }
+    const groupsBlockList = [...this.state.groupsBlockList, id];
+
+    this._storage.set("groupsBlockList", groupsBlockList);
+    await this.blockMessageById(
+      this.state.messages
+        .filter(({ groups }) => groups.includes(id))
+        .map(message => message.id)
+    );
+
+    return this.setGroupState({ id, value: false });
+  }
+
+  /**
+   * Sets `group.enabled` to true, unblocks associated messages and persists
+   * the information in indexedDB
+   * @param id {string} - identifier for group
+   */
+  async unblockGroupById(id) {
+    if (!id) {
+      return false;
+    }
+    const groupsBlockList = [
+      ...this.state.groupsBlockList.filter(groupId => groupId !== id),
+    ];
+
+    // Persist the updated block list
+    this._storage.set("groupsBlockList", groupsBlockList);
+    // Unblock messages that are part of the group
+    await this.unblockMessageById(
+      this.state.messageBlockList
+        .map(messageId => this.state.messages.find(m => m.id === messageId))
+        .filter(message => {
+          if (!message) {
+            return false;
+          }
+          // All messages currently blocked that are part of this group
+          // and are not part of any other blocked group
+          return (
+            message.groups.includes(id) &&
+            message.groups.every(group => !groupsBlockList.includes(group))
+          );
+        })
+        .map(message => message.id)
+    );
+
+    return this.setGroupState({ id, value: true });
   }
 
   async blockProviderById(idOrIds) {
@@ -1783,18 +1858,17 @@ class _ASRouter {
     });
   }
 
-  async setGroupState({ id, value }) {
+  setGroupState({ id, value }) {
     const newGroupState = {
       ...this.state.groups.find(group => group.id === id),
       enabled: value,
     };
     const newGroupImpressions = { ...this.state.groupImpressions };
     delete newGroupImpressions[id];
-    await this.setState(({ groups }) => ({
+    return this.setState(({ groups }) => ({
       groups: [...groups.filter(group => group.id !== id), newGroupState],
       groupImpressions: newGroupImpressions,
     }));
-    await this.loadMessagesFromAllProviders();
   }
 
   _validPreviewEndpoint(url) {
@@ -2226,6 +2300,15 @@ class _ASRouter {
         break;
       case "SET_GROUP_STATE":
         await this.setGroupState(action.data);
+        await this.loadMessagesFromAllProviders();
+        break;
+      case "BLOCK_GROUP_BY_ID":
+        await this.blockGroupById(action.data.id);
+        await this.loadMessagesFromAllProviders();
+        break;
+      case "UNBLOCK_GROUP_BY_ID":
+        await this.unblockGroupById(action.data.id);
+        await this.loadMessagesFromAllProviders();
         break;
       case "EVALUATE_JEXL_EXPRESSION":
         this.evaluateExpression(target, action.data);
