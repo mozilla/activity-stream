@@ -1235,6 +1235,21 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
+  describe("#recordBlockCampaignId", () => {
+    it("should call writeDataPref with new campaign id added", () => {
+      sandbox.stub(feed, "readDataPref").returns(["1234"]);
+      sandbox.stub(feed, "writeDataPref").returns();
+
+      feed.recordBlockCampaignId("5678");
+
+      assert.calledOnce(feed.readDataPref);
+      assert.calledWith(feed.writeDataPref, "discoverystream.campaign.blocks", [
+        "1234",
+        "5678",
+      ]);
+    });
+  });
+
   describe("#cleanUpCampaignImpressionPref", () => {
     it("should remove campaign-3 because it is no longer being used", async () => {
       const fakeSpocs = {
@@ -1612,6 +1627,21 @@ describe("DiscoveryStreamFeed", () => {
         feed.store.dispatch.thirdCall.args[0].type,
         "DISCOVERY_STREAM_SPOC_BLOCKED"
       );
+    });
+  });
+
+  describe("#onAction: BLOCK_URL", () => {
+    it("should call recordBlockCampaignId whith BLOCK_URL", async () => {
+      sandbox.stub(feed, "recordBlockCampaignId").returns();
+
+      await feed.onAction({
+        type: at.BLOCK_URL,
+        data: {
+          campaign_id: "1234",
+        },
+      });
+
+      assert.calledWith(feed.recordBlockCampaignId, "1234");
     });
   });
 
