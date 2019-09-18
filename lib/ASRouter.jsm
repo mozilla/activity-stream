@@ -524,6 +524,7 @@ class _ASRouter {
       lastMessageId: null,
       providers: [],
       messageBlockList: [],
+      groupsBlockList: [],
       providerBlockList: [],
       messageImpressions: {},
       trailheadInitialized: false,
@@ -1483,7 +1484,8 @@ class _ASRouter {
       item =>
         !state.messageBlockList.includes(item.id) &&
         (!item.campaign || !state.messageBlockList.includes(item.campaign)) &&
-        !state.providerBlockList.includes(item.provider)
+        !state.providerBlockList.includes(item.provider) &&
+        item.groups.every(groupId => !state.groupsBlockList.includes(groupId))
     );
   }
 

@@ -401,8 +401,13 @@ describe("ASRouter", () => {
         id: "1",
         campaign: "foocampaign",
         targeting: "true",
+        groups: ["snippets"],
       };
-      const messageNotTargeted = { id: "2", campaign: "foocampaign" };
+      const messageNotTargeted = {
+        id: "2",
+        campaign: "foocampaign",
+        groups: ["snippets"],
+      };
       await Router.setState({
         messages: [messageTargeted, messageNotTargeted],
       });
@@ -1000,6 +1005,21 @@ describe("ASRouter", () => {
       });
       assert.equal(result.id, "bar");
     });
+    it("should not return a message from a blocked group", async () => {
+      // Block all messages except the first
+      await Router.setState(() => ({
+        groupsBlockList: ["blockedG"],
+        messages: [
+          { id: "foo", provider: "snippets", groups: ["snippets"] },
+          { id: "bar", provider: "snippets", groups: ["snippets", "blockedG"] },
+        ],
+        messageBlockList: ["foo"],
+      }));
+      const result = await Router.handleMessageRequest({
+        provider: "snippets",
+      });
+      assert.isNull(result);
+    });
     it("should not return a message from a blocked campaign", async () => {
       // Block all messages except the first
       await Router.setState(() => ({
@@ -1044,11 +1064,13 @@ describe("ASRouter", () => {
         id: "1",
         campaign: "foocampaign",
         trigger: { id: "foo" },
+        groups: ["snippets"],
       };
       const message2 = {
         id: "2",
         campaign: "foocampaign",
         trigger: { id: "bar" },
+        groups: ["snippets"],
       };
       await Router.setState({ messages: [message2, message1] });
       // Just return the first message provided as arg
@@ -1064,12 +1086,14 @@ describe("ASRouter", () => {
         campaign: "foocampaign",
         template: "badge",
         trigger: { id: "foo" },
+        groups: ["badge"],
       };
       const message2 = {
         id: "2",
         campaign: "foocampaign",
         template: "snippet",
         trigger: { id: "foo" },
+        groups: ["snippets"],
       };
       await Router.setState({ messages: [message2, message1] });
       // Just return the first message provided as arg
@@ -1094,15 +1118,18 @@ describe("ASRouter", () => {
         id: "1",
         template: "whatsnew_panel_message",
         trigger: { id: "whatsNewPanelOpened" },
+        groups: ["whats_new"],
       };
       const message2 = {
         id: "2",
         template: "whatsnew_panel_message",
         trigger: { id: "whatsNewPanelOpened" },
+        groups: ["whats_new"],
       };
       const message3 = {
         id: "3",
         template: "badge",
+        groups: ["whats_new"],
       };
       sandbox
         .stub(Router, "_findAllMessages")
@@ -1126,11 +1153,13 @@ describe("ASRouter", () => {
         id: "1",
         campaign: "foocampaign",
         trigger: { id: "foo" },
+        groups: ["snippets"],
       };
       const message2 = {
         id: "2",
         campaign: "foocampaign",
         trigger: { id: "bar" },
+        groups: ["snippets"],
       };
       await Router.setState({ messages: [message2, message1] });
       // Just return the first message provided as arg
@@ -1316,6 +1345,7 @@ describe("ASRouter", () => {
               template: "simple_template",
               bundled: 2,
               content: { title: "Foo1", body: "Foo123-1" },
+              groups: ["bundle"],
             },
           ],
         });
@@ -1337,6 +1367,7 @@ describe("ASRouter", () => {
               template: "simple_template",
               bundled: 1,
               content: { title: "Foo1", body: "Foo123-1" },
+              groups: ["snippets"],
             },
           ],
         });
