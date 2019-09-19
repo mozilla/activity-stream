@@ -83,6 +83,7 @@ newtab-menu-delete-history = Delete from History
 newtab-menu-save-to-pocket = Save to { -pocket-brand-name }
 newtab-menu-delete-pocket = Delete from { -pocket-brand-name }
 newtab-menu-archive-pocket = Archive in { -pocket-brand-name }
+newtab-menu-show-privacy-info = Our sponsors & your privacy
 
 # Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = Remove Bookmark

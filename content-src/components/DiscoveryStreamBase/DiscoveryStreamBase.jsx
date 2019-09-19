@@ -328,6 +328,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Render a DS-style TopSites then the rest if any in a collapsible section
     return (
       <React.Fragment>
+
+        <div>PRIVACY MODAL {`${this.props.DiscoveryStream.isPrivacyInfoModalVisible ? `ON` : `OFF`}`}</div>
+
         {topSites &&
           this.renderLayout([
             {
