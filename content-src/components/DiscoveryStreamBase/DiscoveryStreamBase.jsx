@@ -8,12 +8,12 @@ import { CollapsibleSection } from "content-src/components/CollapsibleSection/Co
 import { connect } from "react-redux";
 import { DSDismiss } from "content-src/components/DiscoveryStreamComponents/DSDismiss/DSDismiss";
 import { DSMessage } from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
+import { DSPrivacyModal } from "content-src/components/DiscoveryStreamComponents/DSPrivacyModal/DSPrivacyModal";
 import { DSTextPromo } from "content-src/components/DiscoveryStreamComponents/DSTextPromo/DSTextPromo";
 import { Hero } from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import { Highlights } from "content-src/components/DiscoveryStreamComponents/Highlights/Highlights";
 import { HorizontalRule } from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
 import { List } from "content-src/components/DiscoveryStreamComponents/List/List";
-import { ModalOverlayWrapper } from "content-src/asrouter/components/ModalOverlay/ModalOverlay";
 import { Navigation } from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
 import React from "react";
 import { SectionTitle } from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
@@ -329,27 +329,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Render a DS-style TopSites then the rest if any in a collapsible section
     return (
       <React.Fragment>
-
-        <div>PRIVACY MODAL {`${this.props.DiscoveryStream.isPrivacyInfoModalVisible ? `ON` : `OFF`}`}</div>
-
-        {this.props.DiscoveryStream.isPrivacyInfoModalVisible &&
-          <ModalOverlayWrapper
-            onClose={this.closeModal}
-          >
-            <h3 data-l10n-id="newtab-privacy-modal-header"></h3>
-            <p data-l10n-id="newtab-privacy-modal-paragraph"></p>
-            <a data-l10n-id="newtab-privacy-modal-link" href="#TODO"></a>
-            <section className="actions">
-              <button
-                className="done"
-                type="submit"
-                onClick={this.onSaveButtonClick}
-                data-l10n-id="newtab-privacy-modal-done"
-              />
-            </section>
-          </ModalOverlayWrapper>
-        }
-
+        {this.props.DiscoveryStream.isPrivacyInfoModalVisible && <DSPrivacyModal/>}
         {topSites &&
           this.renderLayout([
             {
