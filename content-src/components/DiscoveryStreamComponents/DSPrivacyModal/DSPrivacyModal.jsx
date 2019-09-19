@@ -13,36 +13,13 @@ export class DSPrivacyModal extends React.PureComponent {
     this.closeModal = this.closeModal.bind(this);
   }
 
-  // onLinkClick() {
-  //   if (this.props.dispatch) {
-  //     this.props.dispatch(
-  //       ac.UserEvent({
-  //         event: "CLICK",
-  //         source: this.props.type.toUpperCase(),
-  //         action_position: this.props.pos,
-  //       })
-  //     );
-
-  //     this.props.dispatch(
-  //       ac.ImpressionStats({
-  //         source: this.props.type.toUpperCase(),
-  //         click: 0,
-  //         tiles: [
-  //           {
-  //             id: this.props.id,
-  //             pos: this.props.pos,
-  //             ...(this.props.shim && this.props.shim.click
-  //               ? { shim: this.props.shim.click }
-  //               : {}),
-  //           },
-  //         ],
-  //       })
-  //     );
-  //   }
-  // }
-
   closeModal() {
     console.log(`closeModal()`);
+
+    this.props.dispatch({
+      type:`HIDE_PRIVACY_INFO`,
+      data: {},
+    });
   }
 
   render() {
