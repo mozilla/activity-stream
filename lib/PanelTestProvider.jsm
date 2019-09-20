@@ -68,6 +68,7 @@ const MESSAGES = () => [
     template: "whatsnew_panel_message",
     order: 3,
     content: {
+      bucket_id: "WHATS_NEW_70_1",
       published_date: 1560969794394,
       title: "Protection Is Our Focus",
       icon_url:
@@ -86,6 +87,7 @@ const MESSAGES = () => [
     template: "whatsnew_panel_message",
     order: 1,
     content: {
+      bucket_id: "WHATS_NEW_70_1",
       published_date: 1560969794394,
       title: "Another thing new in Firefox 70",
       body:
@@ -102,6 +104,7 @@ const MESSAGES = () => [
     template: "whatsnew_panel_message",
     order: 1,
     content: {
+      bucket_id: "WHATS_NEW_69_1",
       published_date: 1557346235089,
       title: "Something new in Firefox 69",
       body:
@@ -118,6 +121,7 @@ const MESSAGES = () => [
     template: "whatsnew_panel_message",
     order: 2,
     content: {
+      bucket_id: "WHATS_NEW_70_3",
       published_date: 1560969794394,
       layout: "tracking-protections",
       title: { string_id: "cfr-whatsnew-tracking-blocked-title" },
