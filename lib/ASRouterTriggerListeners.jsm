@@ -78,6 +78,75 @@ function checkURLMatch(aLocationURI, { hosts, matchPatternSet }, aRequest) {
  */
 this.ASRouterTriggerListeners = new Map([
   [
+    "openArticleURL",
+    {
+      id: "openArticleURL",
+      _initialized: false,
+      _triggerHandler: null,
+      _hosts: new Set(),
+      _matchPatternSet: null,
+      readerModeEvent: "Reader:UpdateReaderButton",
+
+      init(triggerHandler, hosts = [], patterns) {
+        if (!this._initialized) {
+          this.onMessage = this.onMessage.bind(this);
+          const win = Services.wm.getMostRecentBrowserWindow();
+          if (win) {
+            win.messageManager.addMessageListener(
+              this.readerModeEvent,
+              this.onMessage
+            );
+          }
+          this._triggerHandler = triggerHandler;
+          this._initialized = true;
+        }
+        if (patterns) {
+          if (this._matchPatternSet) {
+            this._matchPatternSet = new MatchPatternSet(
+              new Set([...this._matchPatternSet.patterns, ...patterns]),
+              MATCH_PATTERN_OPTIONS
+            );
+          } else {
+            this._matchPatternSet = new MatchPatternSet(
+              patterns,
+              MATCH_PATTERN_OPTIONS
+            );
+          }
+        }
+        if (this._hosts) {
+          hosts.forEach(h => this._hosts.add(h));
+        }
+      },
+
+      onMessage({ data, target }) {
+        if (data && data.isArticle) {
+          const match = checkURLMatch(target.currentURI, {
+            hosts: this._hosts,
+            matchPatternSet: this._matchPatternSet,
+          });
+          if (match) {
+            this._triggerHandler(target, { id: this.id, param: match });
+          }
+        }
+      },
+
+      uninit() {
+        if (this._initialized) {
+          const win = Services.wm.getMostRecentBrowserWindow();
+          if (win) {
+            win.messageManager.removeMessageListener(
+              this.readerModeEvent,
+              this.onMessage
+            );
+          }
+          this._initialized = false;
+          this._triggerHandler = null;
+          this._hosts = new Set();
+        }
+      },
+    },
+  ],
+  [
     "openBookmarkedURL",
     {
       id: "openBookmarkedURL",
