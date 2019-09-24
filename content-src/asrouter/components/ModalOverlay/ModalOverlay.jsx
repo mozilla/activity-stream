@@ -51,7 +51,6 @@ export class ModalOverlayWrapper extends React.PureComponent {
       <React.Fragment>
         <div
           className="modalOverlayOuter active"
-          onClick={props.onClose}
           onKeyDown={this.onKeyDown}
           role="presentation"
         />
