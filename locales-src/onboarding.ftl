@@ -20,8 +20,8 @@ onboarding-welcome-body = You’ve got the browser.<br/>Meet the rest of { -bran
 onboarding-welcome-learn-more = Learn more about the benefits.
 
 onboarding-welcome-modal-variant-a-body = You’ve got the browser.<br/>Now get the most out of { -brand-product-name }.
-onboarding-welcome-modal-variant-b-body = Supercharge your browser's privacy protection.
-onboarding-welcome-modal-variant-c-body = You’ve got the browser. Let's add more privacy protection.
+onboarding-welcome-modal-variant-b-body = Supercharge your browser’s privacy protection.
+onboarding-welcome-modal-variant-c-body = You’ve got the browser. Let’s add more privacy protection.
 onboarding-welcome-modal-variant-learn-more = Learn about the { -brand-product-name } family of products.
 onboarding-modal-variant-form-header = Start Here
 
