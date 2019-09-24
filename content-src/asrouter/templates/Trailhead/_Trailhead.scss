@@ -478,3 +478,19 @@
     transform: translateY(0);
   }
 }
+
+.firstrun-title {
+  background: url('chrome://branding/content/about-logo.png') top left no-repeat;
+  background-size: 90px 90px;
+  margin: 40px 0 10px;
+  padding-top: 110px;
+
+  @media screen and (max-width: 790px) {
+    background: url('chrome://branding/content/about-logo.png') top center no-repeat;
+    background-size: 90px 90px;
+  }
+
+  &:dir(rtl) {
+    background-position: top right;
+  }
+}
