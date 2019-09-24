@@ -1,7 +1,7 @@
 import { _ToolbarBadgeHub } from "lib/ToolbarBadgeHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
-import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
+import { _ToolbarPanelHub, ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 
 describe("ToolbarBadgeHub", () => {
   let sandbox;
@@ -12,6 +12,7 @@ describe("ToolbarBadgeHub", () => {
   let fxaMessage;
   let whatsnewMessage;
   let fakeElement;
+  let fakeWindow;
   let globals;
   let everyWindowStub;
   let clearTimeoutStub;
@@ -40,6 +41,7 @@ describe("ToolbarBadgeHub", () => {
         add: sandbox.stub(),
         remove: sandbox.stub(),
       },
+      getAttribute: sandbox.stub(),
       setAttribute: sandbox.stub(),
       removeAttribute: sandbox.stub(),
       querySelector: sandbox.stub(),
@@ -47,6 +49,7 @@ describe("ToolbarBadgeHub", () => {
     };
     // Share the same element when selecting child nodes
     fakeElement.querySelector.returns(fakeElement);
+    fakeElement.parentNode = fakeElement;
     everyWindowStub = {
       registerCallback: sandbox.stub(),
       unregisterCallback: sandbox.stub(),
@@ -54,7 +57,11 @@ describe("ToolbarBadgeHub", () => {
     clearTimeoutStub = sandbox.stub();
     setTimeoutStub = sandbox.stub();
     setIntervalStub = sandbox.stub();
-    const fakeWindow = {
+    fakeWindow = {
+      gNavToolbox: {
+        addEventListener: sandbox.stub(),
+        removeEventListener: sandbox.stub(),
+      },
       ownerGlobal: {
         gBrowser: {
           selectedBrowser: "browser",
@@ -68,6 +75,8 @@ describe("ToolbarBadgeHub", () => {
     setStringPrefStub = sandbox.stub();
     requestIdleCallbackStub = sandbox.stub().callsFake(fn => fn());
     globals.set({
+      _ToolbarPanelHub,
+      ToolbarPanelHub,
       requestIdleCallback: requestIdleCallbackStub,
       EveryWindow: everyWindowStub,
       PrivateBrowsingUtils: { isBrowserPrivate: isBrowserPrivateStub },
@@ -296,21 +305,66 @@ describe("ToolbarBadgeHub", () => {
         uninitFn,
       ] = everyWindowStub.registerCallback.firstCall.args;
 
-      initFn(window);
+      initFn(fakeWindow);
       // Test that it doesn't try to add a second notification
-      initFn(window);
+      initFn(fakeWindow);
 
       assert.calledOnce(instance.addToolbarNotification);
       assert.calledWithExactly(
         instance.addToolbarNotification,
-        window,
+        fakeWindow,
         msg_no_delay
       );
 
-      uninitFn(window);
+      uninitFn(fakeWindow);
 
       assert.calledOnce(instance.removeToolbarNotification);
       assert.calledWithExactly(instance.removeToolbarNotification, fakeElement);
+    });
+    it("should register event listeners for customize mode", () => {
+      sandbox.spy(instance, "setInCustomizeModeListeners");
+      fakeElement.getAttribute.withArgs("removable").returns("false");
+
+      instance.registerBadgeNotificationListener(msg_no_delay);
+
+      const [, initFn] = everyWindowStub.registerCallback.firstCall.args;
+
+      initFn(fakeWindow);
+
+      assert.calledOnce(instance.setInCustomizeModeListeners);
+      assert.calledTwice(fakeWindow.gNavToolbox.addEventListener);
+      assert.calledWith(
+        fakeWindow.gNavToolbox.addEventListener,
+        "customizationready",
+        sinon.match.func
+      );
+      assert.calledWith(
+        fakeWindow.gNavToolbox.addEventListener,
+        "customizationending",
+        sinon.match.func
+      );
+    });
+    it("should register event listeners for customize mode", () => {
+      sandbox.spy(instance, "setInCustomizeModeListeners");
+      fakeElement.getAttribute.withArgs("removable").returns("false");
+
+      instance.registerBadgeNotificationListener(msg_no_delay);
+
+      const [, , unInitFn] = everyWindowStub.registerCallback.firstCall.args;
+
+      unInitFn(fakeWindow);
+
+      assert.calledTwice(fakeWindow.gNavToolbox.removeEventListener);
+      assert.calledWith(
+        fakeWindow.gNavToolbox.removeEventListener,
+        "customizationready",
+        sinon.match.func
+      );
+      assert.calledWith(
+        fakeWindow.gNavToolbox.removeEventListener,
+        "customizationending",
+        sinon.match.func
+      );
     });
     it("should send an impression", async () => {
       sandbox.stub(instance, "sendUserEventTelemetry");
@@ -338,6 +392,27 @@ describe("ToolbarBadgeHub", () => {
 
       assert.notCalled(everyWindowStub.registerCallback);
       assert.calledOnce(stub);
+    });
+  });
+  describe("setInCustomizeModeListeners", () => {
+    it("should show and hide the what's new button", () => {
+      instance.setInCustomizeModeListeners(fakeWindow);
+
+      const [, hideCb] = fakeWindow.gNavToolbox.addEventListener.firstCall.args;
+      const [
+        ,
+        showCb,
+      ] = fakeWindow.gNavToolbox.addEventListener.secondCall.args;
+
+      hideCb({ target: fakeElement });
+
+      assert.calledOnce(fakeElement.setAttribute);
+      assert.calledWithExactly(fakeElement.setAttribute, "hidden", true);
+
+      showCb({ target: fakeElement });
+
+      assert.calledTwice(fakeElement.setAttribute);
+      assert.calledWithExactly(fakeElement.setAttribute, "hidden", false);
     });
   });
   describe("executeAction", () => {

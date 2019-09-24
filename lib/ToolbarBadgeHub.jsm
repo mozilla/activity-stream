@@ -3,57 +3,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "EveryWindow",
-  "resource:///modules/EveryWindow.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "ToolbarPanelHub",
-  "resource://activity-stream/lib/ToolbarPanelHub.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "Services",
-  "resource://gre/modules/Services.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "setTimeout",
-  "resource://gre/modules/Timer.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "clearTimeout",
-  "resource://gre/modules/Timer.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "Services",
-  "resource://gre/modules/Services.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "setInterval",
-  "resource://gre/modules/Timer.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "clearInterval",
-  "resource://gre/modules/Timer.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "requestIdleCallback",
-  "resource://gre/modules/Timer.jsm"
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
 );
 
+XPCOMUtils.defineLazyModuleGetters(this, {
+  EveryWindow: "resource:///modules/EveryWindow.jsm",
+  Services: "resource://gre/modules/Services.jsm",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+  ToolbarPanelHub: "resource://activity-stream/lib/ToolbarPanelHub.jsm",
+});
+
+const {
+  setTimeout,
+  clearTimeout,
+  setInterval,
+  clearInterval,
+  requestIdleCallback,
+} = ChromeUtils.import("resource://gre/modules/Timer.jsm");
+
+const WHATS_NEW_SELECTOR = "#whats-new-menu-button";
 // Frequency at which to check for new messages
 const SYSTEM_TICK_INTERVAL = 5 * 60 * 1000;
 let notificationsByWindow = new WeakMap();
@@ -236,6 +205,42 @@ class _ToolbarBadgeHub {
     toolbarButton.removeAttribute("badged");
   }
 
+  _hideInCustomizeMode(event) {
+    const whatsNewButton = event.target.querySelector(WHATS_NEW_SELECTOR);
+    if (whatsNewButton) {
+      whatsNewButton.setAttribute("hidden", true);
+    }
+  }
+
+  _showAfterCustomizeMode(event) {
+    const whatsNewButton = event.target.querySelector(WHATS_NEW_SELECTOR);
+    if (whatsNewButton) {
+      whatsNewButton.setAttribute("hidden", false);
+    }
+  }
+
+  setInCustomizeModeListeners(win) {
+    win.gNavToolbox.addEventListener(
+      "customizationready",
+      this._hideInCustomizeMode
+    );
+    win.gNavToolbox.addEventListener(
+      "customizationending",
+      this._showAfterCustomizeMode
+    );
+  }
+
+  removeInCustomizeModeListeners(win) {
+    win.gNavToolbox.removeEventListener(
+      "customizationready",
+      this._hideInCustomizeMode
+    );
+    win.gNavToolbox.removeEventListener(
+      "customizationending",
+      this._showAfterCustomizeMode
+    );
+  }
+
   addToolbarNotification(win, message) {
     const document = win.browser.ownerDocument;
     if (message.content.action) {
@@ -282,6 +287,11 @@ class _ToolbarBadgeHub {
         }
         const el = this.addToolbarNotification(win, message);
         notificationsByWindow.set(win, el);
+        // The What's New toolbarbutton is not customizable and it also breaks
+        // the layout of Customize mode
+        if (el.parentNode.getAttribute("removable") === "false") {
+          this.setInCustomizeModeListeners(win);
+        }
       },
       win => {
         const el = notificationsByWindow.get(win);
@@ -289,6 +299,7 @@ class _ToolbarBadgeHub {
           this.removeToolbarNotification(el);
         }
         notificationsByWindow.delete(win);
+        this.removeInCustomizeModeListeners(win);
       }
     );
   }
