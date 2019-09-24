@@ -77,7 +77,7 @@ onboarding-benefit-sync-title = { -sync-brand-short-name }
 onboarding-benefit-sync-text = Take your bookmarks, passwords, history, and more everywhere you use { -brand-product-name }.
 
 onboarding-benefit-monitor-title = { -monitor-brand-short-name }
-onboarding-benefit-monitor-text = Get notified when your personal info is in a data breach.
+onboarding-benefit-monitor-text = Get notified when your personal info is in a known data breach.
 
 onboarding-benefit-lockwise-title = { -lockwise-brand-short-name }
 onboarding-benefit-lockwise-text = Manage passwords that are protected and portable.
