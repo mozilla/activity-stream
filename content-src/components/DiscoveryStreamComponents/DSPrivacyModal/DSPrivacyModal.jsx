@@ -26,10 +26,13 @@ export class DSPrivacyModal extends React.PureComponent {
     return (
       <ModalOverlayWrapper
         onClose={this.closeModal}
+        innerClassName="ds-privacy-modal"
       >
-        <h3 data-l10n-id="newtab-privacy-modal-header"></h3>
-        <p data-l10n-id="newtab-privacy-modal-paragraph"></p>
-        <a data-l10n-id="newtab-privacy-modal-link" href="#TODO"></a>
+        <div className="privacy-notice">
+          <h3 data-l10n-id="newtab-privacy-modal-header"></h3>
+          <p data-l10n-id="newtab-privacy-modal-paragraph"></p>
+          <a data-l10n-id="newtab-privacy-modal-link" href="#TODO"></a>
+        </div>
         <section className="actions">
           <button
             className="done"
