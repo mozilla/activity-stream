@@ -493,14 +493,7 @@ this.ASRouterTriggerListeners = new Map([
             this,
             "SiteProtection:ContentBlockingEvent"
           );
-
-          for (let win of Services.wm.getEnumerator("navigator:browser")) {
-            if (isPrivateWindow(win)) {
-              continue;
-            }
-            win.gBrowser.removeTabsProgressListener(this);
-          }
-
+          EveryWindow.unregisterCallback(this.id);
           this.onLocationChange = null;
           this._initialized = false;
         }
