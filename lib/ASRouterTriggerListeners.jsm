@@ -89,26 +89,8 @@ this.ASRouterTriggerListeners = new Map([
 
       init(triggerHandler, hosts, patterns) {
         if (!this._initialized) {
-          this.onMessage = this.onMessage.bind(this);
-          EveryWindow.registerCallback(
-            this.id,
-            win => {
-              if (!isPrivateWindow(win)) {
-                win.messageManager.addMessageListener(
-                  this.readerModeEvent,
-                  this.onMessage
-                );
-              }
-            },
-            win => {
-              if (!isPrivateWindow(win)) {
-                win.messageManager.removeMessageListener(
-                  this.readerModeEvent,
-                  this.onMessage
-                );
-              }
-            }
-          );
+          this.receiveMessage = this.receiveMessage.bind(this);
+          Services.mm.addMessageListener(this.readerModeEvent, this);
           this._triggerHandler = triggerHandler;
           this._initialized = true;
         }
@@ -130,7 +112,7 @@ this.ASRouterTriggerListeners = new Map([
         }
       },
 
-      onMessage({ data, target }) {
+      receiveMessage({ data, target }) {
         if (data && data.isArticle) {
           const match = checkURLMatch(target.currentURI, {
             hosts: this._hosts,
@@ -144,7 +126,7 @@ this.ASRouterTriggerListeners = new Map([
 
       uninit() {
         if (this._initialized) {
-          EveryWindow.unregisterCallback(this.id);
+          Services.mm.removeMessageListener(this.readerModeEvent, this);
           this._initialized = false;
           this._triggerHandler = null;
           this._hosts = new Set();
