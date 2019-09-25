@@ -204,22 +204,32 @@ class _ToolbarPanelHub {
   }
 
   /**
-   * Attach click event listener defined in message payload
+   * Dispatch the action defined in the message and user telemetry event.
+   */
+  _dispatchUserAction(win, message) {
+    this._handleUserAction({
+      target: win,
+      data: {
+        type: message.content.cta_type,
+        data: {
+          args: message.content.cta_url,
+          where: "tabshifted",
+        },
+      },
+    });
+
+    this.sendUserEventTelemetry(win, "CLICK", message);
+  }
+
+  /**
+   * Attach event listener to dispatch message defined action.
    */
   _attachClickListener(win, element, message) {
-    element.addEventListener("click", () => {
-      this._handleUserAction({
-        target: win,
-        data: {
-          type: message.content.cta_type,
-          data: {
-            args: message.content.cta_url,
-            where: "tabshifted",
-          },
-        },
-      });
-
-      this.sendUserEventTelemetry(win, "CLICK", message);
+    // Add event listener for `mouseup` not to overlap with the
+    // `mousedown` & `click` events dispatched from PanelMultiView.jsm
+    // https://searchfox.org/mozilla-central/rev/7531325c8660cfa61bf71725f83501028178cbb9/browser/components/customizableui/PanelMultiView.jsm#1830-1837
+    element.addEventListener("mouseup", () => {
+      this._dispatchUserAction(win, message);
     });
   }
 
@@ -246,8 +256,7 @@ class _ToolbarPanelHub {
     }
 
     const wrapperEl = this._createElement(doc, "button");
-    // istanbul ignore next
-    wrapperEl.doCommand = () => {};
+    wrapperEl.doCommand = () => this._dispatchUserAction(win, message);
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
 
@@ -263,12 +272,12 @@ class _ToolbarPanelHub {
     wrapperEl.appendChild(this._createMessageContent(win, doc, content));
 
     if (content.link_text) {
-      wrapperEl.appendChild(
-        this._createElement(doc, "a", {
-          classList: "text-link",
-          content: content.link_text,
-        })
-      );
+      const anchorEl = this._createElement(doc, "a", {
+        classList: "text-link",
+        content: content.link_text,
+      });
+      anchorEl.doCommand = () => this._dispatchUserAction(win, message);
+      wrapperEl.appendChild(anchorEl);
     }
 
     // Attach event listener on entire message container
