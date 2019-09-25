@@ -1,10 +1,7 @@
 .ds-privacy-modal {
-  &.modalOverlayInner {
-    width: 540px;
-    left: calc(50% - 270px);
-  }
-
   .privacy-notice {
-    padding: 40px 48px;
+    width: 492px;
+    padding: 40px 0;
+    margin: auto;
   }
 }
