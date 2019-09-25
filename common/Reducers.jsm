@@ -582,15 +582,11 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
         layout: action.data.layout || [],
       };
     case at.HIDE_PRIVACY_INFO:
-      console.log('HIDE_PRIVACY_INFO');
-
       return {
         ...prevState,
         isPrivacyInfoModalVisible: false,
       };
     case at.SHOW_PRIVACY_INFO:
-      console.log('SHOW_PRIVACY_INFO');
-
       return {
         ...prevState,
         isPrivacyInfoModalVisible: true,

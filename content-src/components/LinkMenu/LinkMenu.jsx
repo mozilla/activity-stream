@@ -51,8 +51,6 @@ export class _LinkMenu extends React.PureComponent {
         const { action, impression, id, type, userEvent } = option;
         if (!type && id) {
           option.onClick = () => {
-            console.log(action);
-
             props.dispatch(action);
             if (userEvent) {
               const userEventData = Object.assign(
