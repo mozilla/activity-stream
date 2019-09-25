@@ -87,16 +87,28 @@ this.ASRouterTriggerListeners = new Map([
       _matchPatternSet: null,
       readerModeEvent: "Reader:UpdateReaderButton",
 
-      init(triggerHandler, hosts = [], patterns) {
+      init(triggerHandler, hosts, patterns) {
         if (!this._initialized) {
           this.onMessage = this.onMessage.bind(this);
-          const win = Services.wm.getMostRecentBrowserWindow();
-          if (win) {
-            win.messageManager.addMessageListener(
-              this.readerModeEvent,
-              this.onMessage
-            );
-          }
+          EveryWindow.registerCallback(
+            this.id,
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.messageManager.addMessageListener(
+                  this.readerModeEvent,
+                  this.onMessage
+                );
+              }
+            },
+            win => {
+              if (!isPrivateWindow(win)) {
+                win.messageManager.removeMessageListener(
+                  this.readerModeEvent,
+                  this.onMessage
+                );
+              }
+            }
+          );
           this._triggerHandler = triggerHandler;
           this._initialized = true;
         }
@@ -113,7 +125,7 @@ this.ASRouterTriggerListeners = new Map([
             );
           }
         }
-        if (this._hosts) {
+        if (hosts) {
           hosts.forEach(h => this._hosts.add(h));
         }
       },
@@ -132,16 +144,11 @@ this.ASRouterTriggerListeners = new Map([
 
       uninit() {
         if (this._initialized) {
-          const win = Services.wm.getMostRecentBrowserWindow();
-          if (win) {
-            win.messageManager.removeMessageListener(
-              this.readerModeEvent,
-              this.onMessage
-            );
-          }
+          EveryWindow.unregisterCallback(this.id);
           this._initialized = false;
           this._triggerHandler = null;
           this._hosts = new Set();
+          this._matchPatternSet = null;
         }
       },
     },
