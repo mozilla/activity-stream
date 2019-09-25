@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { actionCreators as ac } from "common/Actions.jsm";
 import React from "react";
 import { SafeAnchor } from "../SafeAnchor/SafeAnchor";
 import { ModalOverlayWrapper } from "content-src/asrouter/components/ModalOverlay/ModalOverlay";
@@ -14,10 +13,8 @@ export class DSPrivacyModal extends React.PureComponent {
   }
 
   closeModal() {
-    console.log(`closeModal()`);
-
     this.props.dispatch({
-      type:`HIDE_PRIVACY_INFO`,
+      type: `HIDE_PRIVACY_INFO`,
       data: {},
     });
   }
@@ -29,9 +26,11 @@ export class DSPrivacyModal extends React.PureComponent {
         innerClassName="ds-privacy-modal"
       >
         <div className="privacy-notice">
-          <h3 data-l10n-id="newtab-privacy-modal-header"></h3>
-          <p data-l10n-id="newtab-privacy-modal-paragraph"></p>
-          <a data-l10n-id="newtab-privacy-modal-link" href="#TODO"></a>
+          <h3 data-l10n-id="newtab-privacy-modal-header" />
+          <p data-l10n-id="newtab-privacy-modal-paragraph" />
+          <SafeAnchor url="https://www.mozilla.org/en-US/privacy/firefox/">
+            <span data-l10n-id="newtab-privacy-modal-link" />
+          </SafeAnchor>
         </div>
         <section className="actions">
           <button
