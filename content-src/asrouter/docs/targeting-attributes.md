@@ -40,6 +40,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [totalBlockedCount](#totalblockedcount)
 * [recentBookmarks](#recentbookmarks)
 * [userPrefs](#userprefs)
+* [listAttachedOAuthClients](#listattachedoauthclients)
 
 ## Detailed usage
 
@@ -554,4 +555,21 @@ declare const userPrefs: {
   cfrAddons: boolean;
   snippets: boolean;
 }
+```
+
+### `listAttachedOAuthClients`
+
+Information about connected services associated with the FxA Account.
+
+#### Definition
+
+```
+interface OAuthClient {
+  id: string;
+  // FxA service name
+  name: string;
+  lastAccessTime: UnixEpochNumber;
+}
+
+declare const listAttachedOAuthClients: Array<OAuthClient>
 ```

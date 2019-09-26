@@ -462,7 +462,7 @@ const TargetingGetters = {
     return TrackingDBService.sumAllEvents();
   },
   get listAttachedOAuthClients() {
-    return this.usesFirefoxSync && fxAccounts.listAttachedOAuthClients();
+    return this.usesFirefoxSync ? fxAccounts.listAttachedOAuthClients() : [];
   },
 };
 
