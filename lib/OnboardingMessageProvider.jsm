@@ -46,7 +46,7 @@ const TRAILHEAD_MODAL_VARIANT_CONTENT = {
     url: "https://www.mozilla.org/firefox/accounts/",
   },
   form: {
-    title: { string_id: "onboarding-modal-variant-form-header" },
+    title: { string_id: "onboarding-welcome-form-header" },
     text: { string_id: "onboarding-join-form-body" },
     email: { string_id: "onboarding-join-form-email" },
     button: { string_id: "onboarding-join-form-continue" },
