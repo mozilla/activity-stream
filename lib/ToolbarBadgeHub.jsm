@@ -233,6 +233,11 @@ class _ToolbarBadgeHub {
     toolbarButton
       .querySelector(".toolbarbutton-badge")
       .classList.remove("feature-callout");
+    // Remove id used for for aria-label badge description
+    toolbarButton
+      .querySelector("toolbarbutton-notification-description")
+      .removeAttribute("id");
+    toolbarButton.removeAttribute("aria-labelledby");
     toolbarButton.removeAttribute("badged");
   }
 
@@ -243,13 +248,26 @@ class _ToolbarBadgeHub {
     }
     let toolbarbutton = document.getElementById(message.content.target);
     if (toolbarbutton) {
-      toolbarbutton.setAttribute("aria-label", "Notification");
-      toolbarbutton.setAttribute("aria-describedby", message.content.target);
       const badge = toolbarbutton.querySelector(".toolbarbutton-badge");
-      toolbarbutton.setAttribute("badged", true);
       badge.classList.add("feature-callout");
-      badge.setAttribute("aria-label", "Notification");
-      badge.setAttribute("aria-describedby", message.content.target);
+      toolbarbutton.setAttribute("badged", true);
+      // If we have additional aria-label information for the notification
+      // we add this content to the hidden `toolbarbutton-text` node.
+      // We then use `aria-labelledby` to link this description to the button
+      // that received the notification badge.
+      if (message.content["aria-label"]) {
+        toolbarbutton.setAttribute(
+          "aria-labelledby",
+          "toolbarbutton-notification-description"
+        );
+        toolbarbutton
+          .querySelector(".toolbarbutton-text")
+          .setAttribute("id", "toolbarbutton-notification-description");
+        document.l10n.setAttributes(
+          toolbarbutton.querySelector(".toolbarbutton-text"),
+          message.content["aria-label"].string_id
+        );
+      }
 
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing

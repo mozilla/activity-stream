@@ -461,6 +461,7 @@ const ONBOARDING_MESSAGES = () => [
       delay: 5,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
+      "aria-label": { string_id: "cfr-badge-reader-label-newfeature" },
     },
     priority: 1,
     trigger: { id: "toolbarBadgeUpdate" },
