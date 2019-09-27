@@ -243,10 +243,13 @@ class _ToolbarBadgeHub {
     }
     let toolbarbutton = document.getElementById(message.content.target);
     if (toolbarbutton) {
+      toolbarbutton.setAttribute("aria-label", "Notification");
+      toolbarbutton.setAttribute("aria-describedby", message.content.target);
+      const badge = toolbarbutton.querySelector(".toolbarbutton-badge");
       toolbarbutton.setAttribute("badged", true);
-      toolbarbutton
-        .querySelector(".toolbarbutton-badge")
-        .classList.add("feature-callout");
+      badge.classList.add("feature-callout");
+      badge.setAttribute("aria-label", "Notification");
+      badge.setAttribute("aria-describedby", message.content.target);
 
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
