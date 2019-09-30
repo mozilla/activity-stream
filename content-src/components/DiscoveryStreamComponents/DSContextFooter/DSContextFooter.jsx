@@ -22,7 +22,12 @@ export const StatusMessage = ({ icon, fluentID }) => (
 export class DSContextFooter extends React.PureComponent {
   render() {
     // display_engagement_labels is based on pref `browser.newtabpage.activity-stream.discoverystream.engagementLabelEnabled`
-    const { context, context_type, engagement, display_engagement_labels } = this.props;
+    const {
+      context,
+      context_type,
+      engagement,
+      display_engagement_labels,
+    } = this.props;
     const { icon, fluentID } = cardContextTypes[context_type] || {};
 
     return (

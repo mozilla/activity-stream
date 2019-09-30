@@ -213,7 +213,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             dispatch={this.props.dispatch}
             items={component.properties.items}
             cta_variant={component.cta_variant}
-            display_engagement_labels={this.props.Prefs.values[`discoverystream.engagementLabelEnabled`]}
+            display_engagement_labels={
+              this.props.Prefs.values[`discoverystream.engagementLabelEnabled`]
+            }
           />
         );
       case "Hero":
