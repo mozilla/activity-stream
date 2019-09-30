@@ -28,7 +28,12 @@ describe("<DSContextFooter>", () => {
     assert.isOk(wrapper.find(".story-footer"));
   });
   it("should render an engagement status if no badge and spoc passed", () => {
-    wrapper = mount(<DSContextFooter engagement={engagement} />);
+    wrapper = mount(
+      <DSContextFooter
+        display_engagement_labels={true}
+        engagement={engagement}
+      />
+    );
 
     const engagementLabel = wrapper.find(".story-view-count");
     assert.equal(engagementLabel.text(), engagement);
