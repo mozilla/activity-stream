@@ -60,6 +60,11 @@ export class ModalOverlayWrapper extends React.PureComponent {
           id={props.id}
           role="dialog"
         >
+          <button
+            className="icon icon-dismiss"
+            onClick={props.onClose}
+            data-l10n-id="onboarding-cards-dismiss"
+          />
           {props.children}
         </div>
       </React.Fragment>
