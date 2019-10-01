@@ -1886,7 +1886,13 @@ class _ASRouter {
           action.data.args
         );
         if (highlight) {
-          UITour.showHighlight(target.browser.ownerGlobal, highlight);
+          await UITour.showHighlight(
+            target.browser.ownerGlobal,
+            highlight,
+            // aEffect
+            "none",
+            { autohide: true }
+          );
         }
         break;
       case ra.INSTALL_ADDON_FROM_URL:
