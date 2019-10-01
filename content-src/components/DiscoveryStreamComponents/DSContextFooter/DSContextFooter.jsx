@@ -34,19 +34,20 @@ export class DSContextFooter extends React.PureComponent {
       <div className="story-footer">
         {context && <p className="story-sponsored-label clamp">{context}</p>}
         <TransitionGroup component={null}>
-          {!context && (context_type || (display_engagement_labels && engagement)) && (
-            <CSSTransition
-              key={fluentID}
-              timeout={ANIMATION_DURATION}
-              classNames="story-animate"
-            >
-              {engagement && !context_type ? (
-                <div className="story-view-count">{engagement}</div>
-              ) : (
-                <StatusMessage icon={icon} fluentID={fluentID} />
-              )}
-            </CSSTransition>
-          )}
+          {!context &&
+            (context_type || (display_engagement_labels && engagement)) && (
+              <CSSTransition
+                key={fluentID}
+                timeout={ANIMATION_DURATION}
+                classNames="story-animate"
+              >
+                {engagement && !context_type ? (
+                  <div className="story-view-count">{engagement}</div>
+                ) : (
+                  <StatusMessage icon={icon} fluentID={fluentID} />
+                )}
+              </CSSTransition>
+            )}
         </TransitionGroup>
       </div>
     );

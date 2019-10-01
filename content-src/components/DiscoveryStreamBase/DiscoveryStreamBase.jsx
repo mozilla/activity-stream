@@ -111,7 +111,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   }
 
   renderComponent(component, embedWidth) {
-    const ENGAGEMENT_LABEL_ENABLED = this.props.Prefs.values[`discoverystream.engagementLabelEnabled`];
+    const ENGAGEMENT_LABEL_ENABLED = this.props.Prefs.values[
+      `discoverystream.engagementLabelEnabled`
+    ];
 
     switch (component.type) {
       case "Highlights":
