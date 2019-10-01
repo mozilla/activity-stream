@@ -120,12 +120,4 @@ add_task(async function test_trailhead_branches() {
     // Unexpected selectors:
     ["#trailheadDialog", ".trailheadCards"]
   );
-
-  await test_trailhead_branch(
-    "control",
-    // Expected selectors:
-    [".firstrun-scene"],
-    // Unexpected selectors:
-    ["#trailheadDialog", ".trailheadCards"]
-  );
 });

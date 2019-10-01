@@ -28,7 +28,6 @@ const ONBOARDING_MESSAGES = () => [
   {
     id: "TRAILHEAD_1",
     template: "trailhead",
-    targeting: "trailheadInterrupt == 'join'",
     trigger: { id: "firstRun" },
     includeBundle: {
       length: 3,
@@ -342,17 +341,6 @@ const ONBOARDING_MESSAGES = () => [
     },
     targeting: "trailheadTriplet == 'payoff'",
     trigger: { id: "showOnboarding" },
-  },
-  {
-    id: "FXA_1",
-    template: "fxa_overlay",
-    content: {},
-    trigger: { id: "firstRun" },
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
   },
   {
     id: "RETURN_TO_AMO_1",
