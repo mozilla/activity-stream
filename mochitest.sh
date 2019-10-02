@@ -10,7 +10,7 @@ export DISPLAY=:99.0
 cd /mozilla-central && hg pull && hg update -C
 
 # Build Activity Stream and copy the output to m-c
-cd /activity-stream && npm install . && npm run buildmc
+cd /activity-stream && npm install . && npm run buildmc && patch /mozilla-central/python/mozlint/mozlint/cli.py tmp.patch
 
 # Build latest m-c with Activity Stream changes
 cd /mozilla-central && rm -rf ./objdir-frontend && ./mach build \

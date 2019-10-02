@@ -1,0 +1,29 @@
+diff --git a/python/mozlint/mozlint/cli.py b/python/mozlint/mozlint/cli.py
+index 46031f0505905..8002ad4732a80 100644
+--- a/python/mozlint/mozlint/cli.py
++++ b/python/mozlint/mozlint/cli.py
+@@ -203,22 +203,23 @@ def run(paths, linters, formats, outgoing, workdir, edit,
+     # run all linters
+     result = lint.roll(paths, outgoing=outgoing, workdir=workdir)
+ 
+     if edit and result.issues:
+         edit_issues(result)
+         result = lint.roll(result.issues.keys())
+ 
+     for formatter_name, path in formats:
++        print(formatter_name)
+         formatter = formatters.get(formatter_name)
+ 
+         out = formatter(result)
+         if out:
+             output_file = open(path, 'w') if path else sys.stdout
+-            print(out, file=output_file)
++            print(out.replace('\u2716', 'x'), file=output_file)
+ 
+     return result.returncode
+ 
+ 
+ if __name__ == '__main__':
+     parser = MozlintParser()
+     args = vars(parser.parse_args())
+     sys.exit(run(**args))
