@@ -85,9 +85,9 @@ newtab-menu-delete-pocket = Delete from { -pocket-brand-name }
 newtab-menu-archive-pocket = Archive in { -pocket-brand-name }
 newtab-menu-show-privacy-info = Our sponsors & your privacy
 
-## newtab privacy info modal. these strings are shown in a modal window to explain privacy and give context to sponsored content
+## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
-newtab-privacy-modal-done = Done
+newtab-privacy-modal-button-done = Done
 newtab-privacy-modal-header = Your privacy matters.
 newtab-privacy-modal-paragraph =
     In addition to dishing up captivating stories, we also show you relevant,

@@ -37,7 +37,7 @@ export class DSPrivacyModal extends React.PureComponent {
             className="done"
             type="submit"
             onClick={this.closeModal}
-            data-l10n-id="newtab-privacy-modal-done"
+            data-l10n-id="newtab-privacy-modal-button-done"
           />
         </section>
       </ModalOverlayWrapper>
