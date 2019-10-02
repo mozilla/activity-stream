@@ -24,7 +24,6 @@ const PROTECTIONS_PANEL_INFOMSG_PREF =
 
 const TOOLBAR_BUTTON_ID = "whats-new-menu-button";
 const APPMENU_BUTTON_ID = "appMenu-whatsnew-button";
-const PANEL_HEADER_SELECTOR = "#PanelUI-whatsNew-title > label";
 
 const BUTTON_STRING_ID = "cfr-whatsnew-button";
 const WHATS_NEW_PANEL_SELECTOR = "PanelUI-whatsNew-message-container";
@@ -204,22 +203,32 @@ class _ToolbarPanelHub {
   }
 
   /**
-   * Attach click event listener defined in message payload
+   * Dispatch the action defined in the message and user telemetry event.
+   */
+  _dispatchUserAction(win, message) {
+    this._handleUserAction({
+      target: win,
+      data: {
+        type: message.content.cta_type,
+        data: {
+          args: message.content.cta_url,
+          where: "tabshifted",
+        },
+      },
+    });
+
+    this.sendUserEventTelemetry(win, "CLICK", message);
+  }
+
+  /**
+   * Attach event listener to dispatch message defined action.
    */
   _attachClickListener(win, element, message) {
-    element.addEventListener("click", () => {
-      this._handleUserAction({
-        target: win,
-        data: {
-          type: message.content.cta_type,
-          data: {
-            args: message.content.cta_url,
-            where: "tabshifted",
-          },
-        },
-      });
-
-      this.sendUserEventTelemetry(win, "CLICK", message);
+    // Add event listener for `mouseup` not to overlap with the
+    // `mousedown` & `click` events dispatched from PanelMultiView.jsm
+    // https://searchfox.org/mozilla-central/rev/7531325c8660cfa61bf71725f83501028178cbb9/browser/components/customizableui/PanelMultiView.jsm#1830-1837
+    element.addEventListener("mouseup", () => {
+      this._dispatchUserAction(win, message);
     });
   }
 
@@ -246,8 +255,7 @@ class _ToolbarPanelHub {
     }
 
     const wrapperEl = this._createElement(doc, "button");
-    // istanbul ignore next
-    wrapperEl.doCommand = () => {};
+    wrapperEl.doCommand = () => this._dispatchUserAction(win, message);
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
 
@@ -263,12 +271,12 @@ class _ToolbarPanelHub {
     wrapperEl.appendChild(this._createMessageContent(win, doc, content));
 
     if (content.link_text) {
-      wrapperEl.appendChild(
-        this._createElement(doc, "a", {
-          classList: "text-link",
-          content: content.link_text,
-        })
-      );
+      const anchorEl = this._createElement(doc, "a", {
+        classList: "text-link",
+        content: content.link_text,
+      });
+      anchorEl.doCommand = () => this._dispatchUserAction(win, message);
+      wrapperEl.appendChild(anchorEl);
     }
 
     // Attach event listener on entire message container
@@ -322,8 +330,6 @@ class _ToolbarPanelHub {
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
 
-    this._attachClickListener(win, wrapperEl, message);
-
     wrapperEl.appendChild(
       this._createElement(doc, "h2", {
         classList: "whatsNew-message-title",
@@ -335,12 +341,14 @@ class _ToolbarPanelHub {
     );
 
     if (message.content.link_text) {
-      wrapperEl.appendChild(
-        this._createElement(doc, "a", {
-          classList: "text-link",
-          content: message.content.link_text,
-        })
-      );
+      let linkEl = this._createElement(doc, "a", {
+        classList: "text-link",
+        content: message.content.link_text,
+      });
+      wrapperEl.appendChild(linkEl);
+      this._attachClickListener(win, linkEl, message);
+    } else {
+      this._attachClickListener(win, wrapperEl, message);
     }
 
     return messageEl;
@@ -427,13 +435,6 @@ class _ToolbarPanelHub {
     const document = win.browser.ownerDocument;
     this.maybeInsertFTL(win);
     this._showElement(document, TOOLBAR_BUTTON_ID, BUTTON_STRING_ID);
-    // The toolbar dropdown panel uses this extra header element that is hidden
-    // in the appmenu subview version of the panel. We only need to set it
-    // when showing the toolbar button.
-    document.l10n.setAttributes(
-      document.querySelector(PANEL_HEADER_SELECTOR),
-      "cfr-whatsnew-panel-header"
-    );
   }
 
   _hideToolbarButton(win) {

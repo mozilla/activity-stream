@@ -2883,8 +2883,8 @@ describe("ASRouter", () => {
       };
       const configWithoutExperiment = {
         experiment: "",
-        interrupt: "control",
-        triplet: "",
+        interrupt: "join",
+        triplet: "supercharge",
       };
 
       it("should generates an experiment/branch configuration and update Router.state", async () => {
@@ -3013,17 +3013,25 @@ describe("ASRouter", () => {
           triplet: "",
         });
       });
-      it("should return control experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
+      it("should return default experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
         sandbox
           .stub(global.Services.locale, "appLocaleAsLangTag")
           .get(() => "zh-CN");
-        checkReturnValue({ experiment: "", interrupt: "control", triplet: "" });
+        checkReturnValue({
+          experiment: "",
+          interrupt: "join",
+          triplet: "supercharge",
+        });
       });
-      it("should return control experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
+      it("should return default experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
         sandbox
           .stub(global.Services.locale, "appLocaleAsLangTag")
           .get(() => "zh-CN");
-        checkReturnValue({ experiment: "", interrupt: "control", triplet: "" });
+        checkReturnValue({
+          experiment: "",
+          interrupt: "join",
+          triplet: "supercharge",
+        });
       });
       it("should roll for experiment if locale is in TRAILHEAD_LOCALES", async () => {
         sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = interrupts experiment
@@ -3116,7 +3124,7 @@ describe("ASRouter", () => {
         );
         assert.calledWith(
           setExperimentActiveStub,
-          "activity-stream-extended-triplets",
+          "activity-stream-extended-triplets-v2-1581912",
           "control"
         );
       });
@@ -3134,7 +3142,7 @@ describe("ASRouter", () => {
         );
         assert.calledWith(
           setExperimentActiveStub,
-          "activity-stream-extended-triplets",
+          "activity-stream-extended-triplets-v2-1581912",
           "holdback"
         );
       });

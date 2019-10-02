@@ -36,10 +36,10 @@ Please note that some targeting attributes require stricter controls on the tele
 * [hasPinnedTabs](#haspinnedtabs)
 * [hasAccessedFxAPanel](#hasaccessedfxapanel)
 * [isWhatsNewPanelEnabled](#iswhatsnewpanelenabled)
-* [earliestFirefoxVersion](#earliestfirefoxversion)
 * [isFxABadgeEnabled](#isfxabadgeenabled)
 * [totalBlockedCount](#totalblockedcount)
 * [recentBookmarks](#recentbookmarks)
+* [userPrefs](#userprefs)
 
 ## Detailed usage
 
@@ -501,16 +501,6 @@ Boolean pref that controls if the What's New panel feature is enabled
 declare const isWhatsNewPanelEnabled: boolean;
 ```
 
-### `earliestFirefoxVersion`
-
-Integer value of the first Firefox version the profile ran on
-
-#### Definition
-
-```ts
-declare const earliestFirefoxVersion: boolean;
-```
-
 ### `isFxABadgeEnabled`
 
 Boolean pref that controls if the FxA toolbar button is badged by Messaging System.
@@ -545,4 +535,23 @@ interface Bookmark {
   ...
 }
 declare const recentBookmarks: Array<Bookmark>
+```
+
+### `userPrefs`
+
+Information about user facing prefs configurable from `about:preferences`.
+
+#### Examples
+```java
+userPrefs.cfrFeatures == false
+```
+
+#### Definition
+
+```ts
+declare const userPrefs: {
+  cfrFeatures: boolean;
+  cfrAddons: boolean;
+  snippets: boolean;
+}
 ```

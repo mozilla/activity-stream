@@ -112,6 +112,10 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   }
 
   renderComponent(component, embedWidth) {
+    const ENGAGEMENT_LABEL_ENABLED = this.props.Prefs.values[
+      `discoverystream.engagementLabelEnabled`
+    ];
+
     switch (component.type) {
       case "Highlights":
         return <Highlights />;
@@ -214,6 +218,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             dispatch={this.props.dispatch}
             items={component.properties.items}
             cta_variant={component.cta_variant}
+            display_engagement_labels={ENGAGEMENT_LABEL_ENABLED}
           />
         );
       case "Hero":
