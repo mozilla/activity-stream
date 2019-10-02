@@ -8,6 +8,7 @@ import { CollapsibleSection } from "content-src/components/CollapsibleSection/Co
 import { connect } from "react-redux";
 import { DSDismiss } from "content-src/components/DiscoveryStreamComponents/DSDismiss/DSDismiss";
 import { DSMessage } from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
+import { DSPrivacyModal } from "content-src/components/DiscoveryStreamComponents/DSPrivacyModal/DSPrivacyModal";
 import { DSTextPromo } from "content-src/components/DiscoveryStreamComponents/DSTextPromo/DSTextPromo";
 import { Hero } from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import { Highlights } from "content-src/components/DiscoveryStreamComponents/Highlights/Highlights";
@@ -333,6 +334,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Render a DS-style TopSites then the rest if any in a collapsible section
     return (
       <React.Fragment>
+        {this.props.DiscoveryStream.isPrivacyInfoModalVisible && (
+          <DSPrivacyModal dispatch={this.props.dispatch} />
+        )}
         {topSites &&
           this.renderLayout([
             {
