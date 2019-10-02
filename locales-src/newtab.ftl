@@ -85,11 +85,18 @@ newtab-menu-delete-pocket = Delete from { -pocket-brand-name }
 newtab-menu-archive-pocket = Archive in { -pocket-brand-name }
 newtab-menu-show-privacy-info = Our sponsors & your privacy
 
-## newtab privacy info modal
+## newtab privacy info modal. these strings are shown in a modal window to explain privacy and give context to sponsored content
+
 newtab-privacy-modal-done = Done
 newtab-privacy-modal-header = Your privacy matters.
-newtab-privacy-modal-paragraph = In addition to dishing up captivating stories, we also show you relevant, highly-vetted content from select sponsors. Rest assured, your browsing data never leaves your personal copy of Firefox—we don’t see it, and our sponsors don’t either.
+newtab-privacy-modal-paragraph =
+    In addition to dishing up captivating stories, we also show you relevant,
+    highly-vetted content from select sponsors. Rest assured, your browsing
+    data never leaves your personal copy of { -brand-product-name } — we don’t see it, and our
+    sponsors don’t either.
 newtab-privacy-modal-link = Learn how privacy works on the new tab
+
+##
 
 # Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = Remove Bookmark
