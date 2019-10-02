@@ -662,7 +662,7 @@ add_task(async function test_onLocationChange_cb() {
     "example.com",
   ]);
 
-  await BrowserTestUtils.loadURI(browser, "about:blank");
+  BrowserTestUtils.loadURI(browser, "about:blank");
   await BrowserTestUtils.browserLoaded(browser, false, "about:blank");
 
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
