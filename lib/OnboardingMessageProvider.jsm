@@ -114,7 +114,7 @@ const ONBOARDING_MESSAGES = () => [
       template: "onboarding",
       trigger: { id: "showOnboarding" },
     },
-    frequency: { lifetime: 20 },
+    frequency: { lifetime: 5 },
     utm_term: "trailhead-cards",
   },
   {

@@ -3124,7 +3124,7 @@ describe("ASRouter", () => {
         );
         assert.calledWith(
           setExperimentActiveStub,
-          "activity-stream-extended-triplets",
+          "activity-stream-extended-triplets-v2-1581912",
           "control"
         );
       });
@@ -3142,7 +3142,7 @@ describe("ASRouter", () => {
         );
         assert.calledWith(
           setExperimentActiveStub,
-          "activity-stream-extended-triplets",
+          "activity-stream-extended-triplets-v2-1581912",
           "holdback"
         );
       });
