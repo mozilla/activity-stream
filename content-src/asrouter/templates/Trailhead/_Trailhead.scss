@@ -105,6 +105,7 @@
         background-image: url('#{$image-path}trailhead/benefit-knowledge.png');
       }
 
+      &.lockwise,
       &.privacy {
         background-image: url('#{$image-path}trailhead/benefit-privacy.png');
       }
@@ -115,10 +116,6 @@
 
       &.sync {
         background-image: url('#{$image-path}trailhead/benefit-sync.png');
-      }
-
-      &.lockwise {
-        background-image: url('#{$image-path}trailhead/benefit-lockwise.png');
       }
     }
 

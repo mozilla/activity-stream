@@ -42,11 +42,32 @@ const TRAILHEAD_MODAL_VARIANT_CONTENT = {
     text: { string_id: `onboarding-benefit-${id}-text` },
   })),
   learn: {
-    text: { string_id: "onboarding-welcome-modal-variant-learn-more" },
+    text: { string_id: "onboarding-welcome-modal-family-learn-more" },
     url: "https://www.mozilla.org/firefox/accounts/",
   },
   form: {
     title: { string_id: "onboarding-welcome-form-header" },
+    text: { string_id: "onboarding-join-form-body" },
+    email: { string_id: "onboarding-join-form-email" },
+    button: { string_id: "onboarding-join-form-continue" },
+  },
+  skipButton: { string_id: "onboarding-start-browsing-button-label" },
+};
+
+const JOIN_CONTENT = {
+  className: "joinCohort",
+  title: { string_id: "onboarding-welcome-body" },
+  benefits: ["products", "knowledge", "privacy"].map(id => ({
+    id,
+    title: { string_id: `onboarding-benefit-${id}-title` },
+    text: { string_id: `onboarding-benefit-${id}-text` },
+  })),
+  learn: {
+    text: { string_id: "onboarding-welcome-learn-more" },
+    url: "https://www.mozilla.org/firefox/accounts/",
+  },
+  form: {
+    title: { string_id: "onboarding-join-form-header" },
     text: { string_id: "onboarding-join-form-body" },
     email: { string_id: "onboarding-join-form-email" },
     button: { string_id: "onboarding-join-form-continue" },
@@ -60,24 +81,7 @@ const ONBOARDING_MESSAGES = () => [
     utm_term: "trailhead-join",
     ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
-      className: "joinCohort",
-      title: { string_id: "onboarding-welcome-body" },
-      benefits: ["products", "knowledge", "privacy"].map(id => ({
-        id,
-        title: { string_id: `onboarding-benefit-${id}-title` },
-        text: { string_id: `onboarding-benefit-${id}-text` },
-      })),
-      learn: {
-        text: { string_id: "onboarding-welcome-learn-more" },
-        url: "https://www.mozilla.org/firefox/accounts/",
-      },
-      form: {
-        title: { string_id: "onboarding-join-form-header" },
-        text: { string_id: "onboarding-join-form-body" },
-        email: { string_id: "onboarding-join-form-email" },
-        button: { string_id: "onboarding-join-form-continue" },
-      },
-      skipButton: { string_id: "onboarding-start-browsing-button-label" },
+      ...JOIN_CONTENT,
     },
   },
   {
@@ -121,24 +125,7 @@ const ONBOARDING_MESSAGES = () => [
     utm_term: "trailhead-modal_control",
     ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
-      className: "joinCohort",
-      title: { string_id: "onboarding-welcome-body" },
-      benefits: ["products", "knowledge", "privacy"].map(id => ({
-        id,
-        title: { string_id: `onboarding-benefit-${id}-title` },
-        text: { string_id: `onboarding-benefit-${id}-text` },
-      })),
-      learn: {
-        text: { string_id: "onboarding-welcome-learn-more" },
-        url: "https://www.mozilla.org/firefox/accounts/",
-      },
-      form: {
-        title: { string_id: "onboarding-join-form-header" },
-        text: { string_id: "onboarding-join-form-body" },
-        email: { string_id: "onboarding-join-form-email" },
-        button: { string_id: "onboarding-join-form-continue" },
-      },
-      skipButton: { string_id: "onboarding-start-browsing-button-label" },
+      ...JOIN_CONTENT,
     },
   },
   {
@@ -148,7 +135,7 @@ const ONBOARDING_MESSAGES = () => [
     ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
       ...TRAILHEAD_MODAL_VARIANT_CONTENT,
-      title: { string_id: "onboarding-welcome-modal-variant-a-body" },
+      title: { string_id: "onboarding-welcome-modal-get-body" },
     },
   },
   {
@@ -158,7 +145,7 @@ const ONBOARDING_MESSAGES = () => [
     ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
       ...TRAILHEAD_MODAL_VARIANT_CONTENT,
-      title: { string_id: "onboarding-welcome-modal-variant-b-body" },
+      title: { string_id: "onboarding-welcome-modal-supercharge-body" },
     },
   },
   {
@@ -168,7 +155,7 @@ const ONBOARDING_MESSAGES = () => [
     ...TRAILHEAD_ONBOARDING_TEMPLATE,
     content: {
       ...TRAILHEAD_MODAL_VARIANT_CONTENT,
-      title: { string_id: "onboarding-welcome-modal-variant-c-body" },
+      title: { string_id: "onboarding-welcome-modal-privacy-body" },
     },
   },
   {
