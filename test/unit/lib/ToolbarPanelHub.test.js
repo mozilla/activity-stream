@@ -39,6 +39,7 @@ describe("ToolbarPanelHub", () => {
       hasAttribute: sandbox.stub(),
       toggleAttribute: sandbox.stub(),
       remove: sandbox.stub(),
+      removeChild: sandbox.stub(),
     };
     fakeDocument = {
       l10n: {
@@ -285,6 +286,22 @@ describe("ToolbarPanelHub", () => {
       // Call the click handler to make coverage happy.
       eventListeners.mouseup();
       assert.calledOnce(handleUserActionStub);
+    });
+    it("should clear previous messages on 2nd renderMessages()", async () => {
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m => m.template === "whatsnew_panel_message"
+      );
+      fakeElementById.querySelectorAll.onCall(0).returns([]);
+      fakeElementById.querySelectorAll.onCall(1).returns(["a", "b", "c"]);
+
+      getMessagesStub.returns(messages);
+
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      assert.calledThrice(fakeElementById.removeChild);
+      assert.equal(fakeElementById.removeChild.firstCall.args[0], "a");
+      assert.equal(fakeElementById.removeChild.secondCall.args[0], "b");
     });
     it("should sort based on order field value", async () => {
       const messages = (await PanelTestProvider.getMessages()).filter(
