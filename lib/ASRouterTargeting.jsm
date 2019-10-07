@@ -461,7 +461,7 @@ const TargetingGetters = {
   get totalBlockedCount() {
     return TrackingDBService.sumAllEvents();
   },
-  get listAttachedOAuthClients() {
+  get attachedFxAOAuthClients() {
     return this.usesFirefoxSync ? fxAccounts.listAttachedOAuthClients() : [];
   },
 };
