@@ -192,7 +192,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
 ```js
 {
-  "event": "CLICK_PRIVACY_INFO_LINK",
+  "event": "CLICK_PRIVACY_INFO",
   "source": "DS_PRIVACY_MODAL",
 
   // Basic metadata
