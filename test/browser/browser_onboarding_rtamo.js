@@ -35,11 +35,13 @@ async function setRTAMOOnboarding() {
 
   registerCleanupFunction(async () => {
     // Separate cleanup methods between mac and windows
-    const { path } = Services.dirsvc.get("GreD", Ci.nsIFile).parent.parent;
-    const attributionSvc = Cc["@mozilla.org/mac-attribution;1"].getService(
-      Ci.nsIMacAttributionService
-    );
-    attributionSvc.setReferrerUrl(path, "", true);
+    if (AppConstants.platform === "macosx") {
+      const { path } = Services.dirsvc.get("GreD", Ci.nsIFile).parent.parent;
+      const attributionSvc = Cc["@mozilla.org/mac-attribution;1"].getService(
+        Ci.nsIMacAttributionService
+      );
+      attributionSvc.setReferrerUrl(path, "", true);
+    }
     // Clear cache call is only possible in a testing environment
     let env = Cc["@mozilla.org/process/environment;1"].getService(
       Ci.nsIEnvironment
