@@ -120,6 +120,8 @@ export const UserEventAction = Joi.object().keys({
         "ARCHIVE_FROM_POCKET",
         "SKIPPED_SIGNIN",
         "SUBMIT_EMAIL",
+        "SHOW_PRIVACY_INFO",
+        "CLICK_PRIVACY_INFO",
       ]).required(),
       source: Joi.valid(["TOP_SITES", "TOP_STORIES", "HIGHLIGHTS"]),
       action_position: Joi.number().integer(),

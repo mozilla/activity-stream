@@ -28,6 +28,7 @@ export const LinkMenuOptions = {
     action: {
       type: at.SHOW_PRIVACY_INFO,
     },
+    userEvent: "SHOW_PRIVACY_INFO",
   }),
   RemoveBookmark: site => ({
     id: "newtab-menu-remove-bookmark",
