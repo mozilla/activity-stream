@@ -86,7 +86,7 @@ cfr-protections-panel-link-text = Learn more
 
 ## What's New toolbar button and panel
 
-cfr-badge-reader-label-newfeature = New feature
+cfr-badge-reader-label-newfeature = New feature:
 
 cfr-whatsnew-button =
   .label = What’s New

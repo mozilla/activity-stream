@@ -233,12 +233,16 @@ class _ToolbarBadgeHub {
     toolbarButton
       .querySelector(".toolbarbutton-badge")
       .classList.remove("feature-callout");
-    // Remove id used for for aria-label badge description
-    toolbarButton
-      .querySelector("toolbarbutton-notification-description")
-      .removeAttribute("id");
-    toolbarButton.removeAttribute("aria-labelledby");
     toolbarButton.removeAttribute("badged");
+    // Remove id used for for aria-label badge description
+    const notificationDescription = toolbarButton.querySelector(
+      "#toolbarbutton-notification-description"
+    );
+    if (notificationDescription) {
+      notificationDescription.remove();
+      toolbarButton.removeAttribute("aria-labelledby");
+      toolbarButton.removeAttribute("aria-describedby");
+    }
   }
 
   addToolbarNotification(win, message) {
@@ -258,17 +262,28 @@ class _ToolbarBadgeHub {
       if (message.content["aria-label"]) {
         toolbarbutton.setAttribute(
           "aria-labelledby",
+          `toolbarbutton-notification-description ${message.content.target}`
+        );
+        // Because tooltiptext is different to the label, it gets duplicated as
+        // the description. Setting `describedby` to the same value as
+        // `labelledby` will be detected by the a11y code and the description
+        // will be removed.
+        toolbarbutton.setAttribute(
+          "aria-describedby",
+          `toolbarbutton-notification-description ${message.content.target}`
+        );
+        const descriptionEl = document.createElement("span");
+        descriptionEl.setAttribute(
+          "id",
           "toolbarbutton-notification-description"
         );
-        toolbarbutton
-          .querySelector(".toolbarbutton-text")
-          .setAttribute("id", "toolbarbutton-notification-description");
+        descriptionEl.setAttribute("hidden", true);
         document.l10n.setAttributes(
-          toolbarbutton.querySelector(".toolbarbutton-text"),
+          descriptionEl,
           message.content["aria-label"].string_id
         );
+        toolbarbutton.appendChild(descriptionEl);
       }
-
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
       toolbarbutton.addEventListener("mousedown", this.removeAllNotifications);
