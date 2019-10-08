@@ -21,6 +21,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AttributionCode: "resource:///modules/AttributionCode.jsm",
   FilterExpressions:
     "resource://gre/modules/components-utils/FilterExpressions.jsm",
+  fxAccounts: "resource://gre/modules/FxAccounts.jsm",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -459,6 +460,9 @@ const TargetingGetters = {
   },
   get totalBlockedCount() {
     return TrackingDBService.sumAllEvents();
+  },
+  get attachedFxAOAuthClients() {
+    return this.usesFirefoxSync ? fxAccounts.listAttachedOAuthClients() : [];
   },
 };
 
