@@ -1563,13 +1563,14 @@ describe("TelemetryFeed", () => {
       sandbox.stub(global.gUUIDGenerator, "generateUUID").returns(fakeUUID);
       const feed = new TelemetryFeed();
       const url = feed._generateStructuredIngestionEndpoint(
+        "testNameSpace",
         "testPingType",
         "1"
       );
 
       assert.equal(
         url,
-        `${fakeEndpoint}/testPingType/1/${fakeUUIDWithoutBraces}`
+        `${fakeEndpoint}/testNameSpace/testPingType/1/${fakeUUIDWithoutBraces}`
       );
     });
   });
