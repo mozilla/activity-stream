@@ -44,6 +44,8 @@ describe("ToolbarBadgeHub", () => {
       removeAttribute: sandbox.stub(),
       querySelector: sandbox.stub(),
       addEventListener: sandbox.stub(),
+      remove: sandbox.stub(),
+      appendChild: sandbox.stub(),
     };
     // Share the same element when selecting child nodes
     fakeElement.querySelector.returns(fakeElement);
@@ -202,7 +204,11 @@ describe("ToolbarBadgeHub", () => {
     let target;
     let fakeDocument;
     beforeEach(() => {
-      fakeDocument = { getElementById: sandbox.stub().returns(fakeElement) };
+      fakeDocument = {
+        getElementById: sandbox.stub().returns(fakeElement),
+        createElement: sandbox.stub().returns(fakeElement),
+        l10n: { setAttributes: sandbox.stub() },
+      };
       target = { browser: { ownerDocument: fakeDocument } };
     });
     it("shouldn't do anything if target element is not found", () => {
@@ -251,6 +257,41 @@ describe("ToolbarBadgeHub", () => {
         ...whatsnewMessage.content.action,
         message_id: whatsnewMessage.id,
       });
+    });
+    it("should create a description element", () => {
+      sandbox.stub(instance, "executeAction");
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledOnce(fakeDocument.createElement);
+      assert.calledWithExactly(fakeDocument.createElement, "span");
+    });
+    it("should set description id to element and to button", () => {
+      sandbox.stub(instance, "executeAction");
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledWithExactly(
+        fakeElement.setAttribute,
+        "id",
+        "toolbarbutton-notification-description"
+      );
+      assert.calledWithExactly(
+        fakeElement.setAttribute,
+        "aria-labelledby",
+        `toolbarbutton-notification-description ${
+          whatsnewMessage.content.target
+        }`
+      );
+    });
+    it("should attach fluent id to description", () => {
+      sandbox.stub(instance, "executeAction");
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledOnce(fakeDocument.l10n.setAttributes);
+      assert.calledWithExactly(
+        fakeDocument.l10n.setAttributes,
+        fakeElement,
+        whatsnewMessage.content["aria-label"].string_id
+      );
     });
   });
   describe("registerBadgeNotificationListener", () => {
@@ -418,10 +459,13 @@ describe("ToolbarBadgeHub", () => {
     it("should remove the notification", () => {
       instance.removeToolbarNotification(fakeElement);
 
-      assert.calledOnce(fakeElement.removeAttribute);
+      assert.calledThrice(fakeElement.removeAttribute);
       assert.calledWithExactly(fakeElement.removeAttribute, "badged");
+      assert.calledWithExactly(fakeElement.removeAttribute, "aria-labelledby");
+      assert.calledWithExactly(fakeElement.removeAttribute, "aria-describedby");
       assert.calledOnce(fakeElement.classList.remove);
       assert.calledWithExactly(fakeElement.classList.remove, "feature-callout");
+      assert.calledOnce(fakeElement.remove);
     });
   });
   describe("removeAllNotifications", () => {
