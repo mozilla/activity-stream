@@ -1237,16 +1237,16 @@ describe("DiscoveryStreamFeed", () => {
 
   describe("#recordBlockCampaignId", () => {
     it("should call writeDataPref with new campaign id added", () => {
-      sandbox.stub(feed, "readDataPref").returns(["1234"]);
+      sandbox.stub(feed, "readDataPref").returns({ "1234": 1 });
       sandbox.stub(feed, "writeDataPref").returns();
 
       feed.recordBlockCampaignId("5678");
 
       assert.calledOnce(feed.readDataPref);
-      assert.calledWith(feed.writeDataPref, "discoverystream.campaign.blocks", [
-        "1234",
-        "5678",
-      ]);
+      assert.calledWith(feed.writeDataPref, "discoverystream.campaign.blocks", {
+        "1234": 1,
+        "5678": 1,
+      });
     });
   });
 

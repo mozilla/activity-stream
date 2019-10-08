@@ -774,11 +774,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   filterBlocked(data) {
     const filtered = [];
     if (data && data.length) {
-      let campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS, []);
+      let campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS);
       const filteredItems = data.filter(item => {
         const blocked =
           NewTabUtils.blockedLinks.isBlocked({ url: item.url }) ||
-          campaigns.includes(item.campaign_id);
+          campaigns[item.campaign_id];
         if (blocked) {
           filtered.push(item);
         }
@@ -1144,7 +1144,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   resetDataPrefs() {
     this.writeDataPref(PREF_SPOC_IMPRESSIONS, {});
     this.writeDataPref(PREF_REC_IMPRESSIONS, {});
-    this.writeDataPref(PREF_CAMPAIGN_BLOCKS, []);
+    this.writeDataPref(PREF_CAMPAIGN_BLOCKS, {});
   }
 
   resetState() {
@@ -1187,9 +1187,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   recordBlockCampaignId(campaignId) {
-    const campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS, []);
-    if (!campaigns.includes(campaignId)) {
-      campaigns.push(campaignId);
+    const campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS);
+    // This is a number, not a string. TODO
+    if (!campaigns[campaignId]) {
+      campaigns[campaignId] = 1;
       this.writeDataPref(PREF_CAMPAIGN_BLOCKS, campaigns);
     }
   }
@@ -1231,9 +1232,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.store.dispatch(ac.SetPref(pref, JSON.stringify(impressions)));
   }
 
-  readDataPref(pref, defaultVal = {}) {
+  readDataPref(pref) {
     const prefVal = this.store.getState().Prefs.values[pref];
-    return prefVal ? JSON.parse(prefVal) : defaultVal;
+    return prefVal ? JSON.parse(prefVal) : {};
   }
 
   cleanUpImpressionPref(isExpired, pref) {
