@@ -1188,7 +1188,6 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   recordBlockCampaignId(campaignId) {
     const campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS);
-    // This is a number, not a string. TODO
     if (!campaigns[campaignId]) {
       campaigns[campaignId] = 1;
       this.writeDataPref(PREF_CAMPAIGN_BLOCKS, campaigns);
