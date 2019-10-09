@@ -154,6 +154,7 @@ for (const type of [
 // as call-to-action buttons in snippets, onboarding tour, etc.
 const ASRouterActions = {};
 for (const type of [
+  "HIGHLIGHT_FEATURE",
   "INSTALL_ADDON_FROM_URL",
   "OPEN_APPLICATIONS_MENU",
   "OPEN_PRIVATE_BROWSER_WINDOW",
