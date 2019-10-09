@@ -290,7 +290,7 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         fakeDocument.l10n.setAttributes,
         fakeElement,
-        whatsnewMessage.content["aria-label"].string_id
+        whatsnewMessage.content.badgeDescription.string_id
       );
     });
   });

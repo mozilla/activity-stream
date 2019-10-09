@@ -458,10 +458,10 @@ const ONBOARDING_MESSAGES = () => [
     id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
     template: "toolbar_badge",
     content: {
-      delay: 5,
+      delay: 5 * ONE_MINUTE,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
-      "aria-label": { string_id: "cfr-badge-reader-label-newfeature" },
+      badgeDescription: { string_id: "cfr-badge-reader-label-newfeature" },
     },
     priority: 1,
     trigger: { id: "toolbarBadgeUpdate" },

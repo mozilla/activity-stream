@@ -259,7 +259,7 @@ class _ToolbarBadgeHub {
       // we add this content to the hidden `toolbarbutton-text` node.
       // We then use `aria-labelledby` to link this description to the button
       // that received the notification badge.
-      if (message.content["aria-label"]) {
+      if (message.content.badgeDescription) {
         toolbarbutton.setAttribute(
           "aria-labelledby",
           `toolbarbutton-notification-description ${message.content.target}`
@@ -280,7 +280,7 @@ class _ToolbarBadgeHub {
         descriptionEl.setAttribute("hidden", true);
         document.l10n.setAttributes(
           descriptionEl,
-          message.content["aria-label"].string_id
+          message.content.badgeDescription.string_id
         );
         toolbarbutton.appendChild(descriptionEl);
       }
