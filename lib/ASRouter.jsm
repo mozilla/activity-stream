@@ -1889,7 +1889,6 @@ class _ASRouter {
           await UITour.showHighlight(
             target.browser.ownerGlobal,
             highlight,
-            // aEffect
             "none",
             { autohide: true }
           );
