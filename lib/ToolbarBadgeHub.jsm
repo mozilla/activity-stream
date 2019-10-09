@@ -151,6 +151,10 @@ class _ToolbarBadgeHub {
     }
   }
 
+  maybeInsertFTL(win) {
+    win.MozXULElement.insertFTLIfNeeded("browser/newtab/asrouter.ftl");
+  }
+
   executeAction({ id, data, message_id }) {
     switch (id) {
       case "show-whatsnew-button":
@@ -260,6 +264,8 @@ class _ToolbarBadgeHub {
       // We then use `aria-labelledby` to link this description to the button
       // that received the notification badge.
       if (message.content.badgeDescription) {
+        // Insert strings as soon as we know we're showing them
+        this.maybeInsertFTL(win);
         toolbarbutton.setAttribute(
           "aria-labelledby",
           `toolbarbutton-notification-description ${message.content.target}`
