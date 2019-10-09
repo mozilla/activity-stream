@@ -104,6 +104,16 @@ export class _Search extends React.PureComponent {
     }
   }
 
+  onInputMountHandoff(input) {
+    if (input) {
+      window.gContentSearchController = new ContentSearchHandoffUIController();
+      addEventListener("ContentSearchClient", this);
+    } else {
+      window.gContentSearchController = null;
+      removeEventListener("ContentSearchClient", this);
+    }
+  }
+
   onSearchHandoffButtonMount(button) {
     // Keep a reference to the button for use during "paste" event handling.
     this._searchHandoffButton = button;
@@ -168,18 +178,10 @@ export class _Search extends React.PureComponent {
                 aria-hidden="true"
                 onDrop={this.onSearchHandoffDrop}
                 onPaste={this.onSearchHandoffPaste}
+                ref={this.onInputMountHandoff}
               />
               <div className="fake-caret" />
             </button>
-            {/*
-            This dummy and hidden input below is so we can load ContentSearchUIController.
-            Why? It sets --newtab-search-icon for us and it isn't trivial to port over.
-          */}
-            <input
-              type="search"
-              style={{ display: "none" }}
-              ref={this.onInputMount}
-            />
           </div>
         )}
       </div>
