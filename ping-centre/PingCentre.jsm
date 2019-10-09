@@ -315,8 +315,8 @@ class PingCentre {
     return payload;
   }
 
-  async _createStructuredIngestionPing(data, options) {
-    let filter = options && options.filter;
+  async _createStructuredIngestionPing(data, options = {}) {
+    let { filter, excludeClientID } = options;
     let experiments = TelemetryEnvironment.getActiveExperiments();
     let experimentsString = this._createExperimentsString(experiments, filter);
 
@@ -333,6 +333,9 @@ class PingCentre {
     );
     if (experimentsString) {
       payload.shield_id = experimentsString;
+    }
+    if (excludeClientID) {
+      delete payload.client_id;
     }
 
     return payload;

@@ -373,6 +373,14 @@ describe("PingCentre", () => {
 
       assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
     });
+    it("should exclude the client_id if options.excludeClientID is true", async () => {
+      tSender = new PingCentre({ topic: "activity-stream" });
+      const ping = await tSender._createStructuredIngestionPing(fakePingJSON, {
+        excludeClientID: true,
+      });
+
+      assert.isUndefined(ping.client_id);
+    });
   });
 
   describe("#sendPing()", () => {

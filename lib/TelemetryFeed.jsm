@@ -665,7 +665,7 @@ this.TelemetryFeed = class TelemetryFeed {
       this.pingCentre.sendStructuredIngestionPing(
         event_object,
         this._generateStructuredIngestionEndpoint(namespace, pingType, version),
-        { filter: ACTIVITY_STREAM_ID }
+        { filter: ACTIVITY_STREAM_ID, excludeClientID: true }
       );
     }
   }
