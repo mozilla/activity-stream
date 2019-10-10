@@ -464,6 +464,9 @@ const TargetingGetters = {
   get attachedFxAOAuthClients() {
     return this.usesFirefoxSync ? fxAccounts.listAttachedOAuthClients() : [];
   },
+  get platformName() {
+    return AppConstants.platform;
+  },
 };
 
 this.ASRouterTargeting = {
