@@ -23,6 +23,7 @@ describe("ToolbarBadgeHub", () => {
   let clearUserPrefStub;
   let setStringPrefStub;
   let requestIdleCallbackStub;
+  let fakeWindow;
   beforeEach(async () => {
     globals = new GlobalOverrider();
     sandbox = sinon.createSandbox();
@@ -56,7 +57,8 @@ describe("ToolbarBadgeHub", () => {
     clearTimeoutStub = sandbox.stub();
     setTimeoutStub = sandbox.stub();
     setIntervalStub = sandbox.stub();
-    const fakeWindow = {
+    fakeWindow = {
+      MozXULElement: { insertFTLIfNeeded: sandbox.stub() },
       ownerGlobal: {
         gBrowser: {
           selectedBrowser: "browser",
@@ -209,7 +211,7 @@ describe("ToolbarBadgeHub", () => {
         createElement: sandbox.stub().returns(fakeElement),
         l10n: { setAttributes: sandbox.stub() },
       };
-      target = { browser: { ownerDocument: fakeDocument } };
+      target = { ...fakeWindow, browser: { ownerDocument: fakeDocument } };
     });
     it("shouldn't do anything if target element is not found", () => {
       fakeDocument.getElementById.returns(null);
