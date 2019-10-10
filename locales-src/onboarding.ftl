@@ -31,7 +31,10 @@ onboarding-join-form-email =
 onboarding-join-form-email-error = Valid email required
 onboarding-join-form-legal = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
 onboarding-join-form-continue = Continue
+
+# This message is followed by a link using onboarding-join-form-signin ("Sign In") as text.
 onboarding-join-form-signin-label = Already have an account?
+# Text for link to submit the sign in form
 onboarding-join-form-signin = Sign In
 
 onboarding-start-browsing-button-label = Start Browsing

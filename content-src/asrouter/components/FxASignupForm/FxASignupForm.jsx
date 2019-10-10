@@ -25,17 +25,10 @@ export class FxASignupForm extends React.PureComponent {
       .querySelector("input[name=email]");
   }
 
-  get signInURL() {
-    const urlObj = new URL(this.props.fxaEndpoint);
-    urlObj.pathname = "signin";
-    return urlObj.toString();
-  }
-
   onSubmit(event) {
     let userEvent = "SUBMIT_EMAIL";
     const { email } = event.target.elements;
     if (email.disabled) {
-      event.target.setAttribute("action", this.signInURL);
       userEvent = "SUBMIT_SIGNIN";
     } else if (!email.value.length) {
       email.required = true;

@@ -173,6 +173,27 @@ const ONBOARDING_MESSAGES = () => [
     },
   },
   {
+    id: "FULL_PAGE_1",
+    targeting: "trailheadInterrupt == 'full_page_d'",
+    utm_term: "trailhead-full_page_d",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      ...TRAILHEAD_FULL_PAGE_CONTENT,
+    },
+    template: "full_page_interrupt",
+  },
+  {
+    id: "FULL_PAGE_2",
+    targeting: "trailheadInterrupt == 'full_page_e'",
+    utm_term: "trailhead-full_page_e",
+    ...TRAILHEAD_ONBOARDING_TEMPLATE,
+    content: {
+      className: "fullPageCardsAtTop",
+      ...TRAILHEAD_FULL_PAGE_CONTENT,
+    },
+    template: "full_page_interrupt",
+  },
+  {
     id: "EXTENDED_TRIPLETS_1",
     template: "extended_triplets",
     campaign: "firstrun_triplets",
@@ -410,37 +431,6 @@ const ONBOARDING_MESSAGES = () => [
     },
     targeting: "trailheadTriplet == 'payoff'",
     trigger: { id: "showOnboarding" },
-  },
-  {
-    id: "FULL_PAGE_1",
-    template: "full_page_interrupt",
-    targeting: "trailheadInterrupt == 'full_page_d'",
-    trigger: { id: "firstRun" },
-    utm_term: "trailhead-full_page_d",
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
-    content: {
-      ...TRAILHEAD_FULL_PAGE_CONTENT,
-    },
-  },
-  {
-    id: "FULL_PAGE_2",
-    template: "full_page_interrupt",
-    targeting: "trailheadInterrupt == 'full_page_e'",
-    trigger: { id: "firstRun" },
-    utm_term: "trailhead-full_page_e",
-    includeBundle: {
-      length: 3,
-      template: "onboarding",
-      trigger: { id: "showOnboarding" },
-    },
-    content: {
-      className: "fullPageCardsAtTop",
-      ...TRAILHEAD_FULL_PAGE_CONTENT,
-    },
   },
   {
     id: "RETURN_TO_AMO_1",
