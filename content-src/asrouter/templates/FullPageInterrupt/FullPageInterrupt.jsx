@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { addUtmParams } from "../FirstRun/addUtmParams";
-import { FXASignupForm } from "../../components/FXASignupForm/FXASignupForm";
+import { FxASignupForm } from "../../components/FxASignupForm/FxASignupForm";
 import { OnboardingCard } from "../../templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 
@@ -47,7 +47,7 @@ export const FxAccounts = ({
       <div className="fullpage-icon fx-systems-icons" />
     </div>
     <div className="fullpage-form">
-      <FXASignupForm
+      <FxASignupForm
         document={document}
         content={content}
         dispatch={dispatch}
@@ -127,20 +127,18 @@ export class FullPageInterrupt extends React.PureComponent {
     this.removeOverlay();
   }
 
-  // By default we show accounts section on top and
-  // cards section in bottom half of the interrupt
-  showTopSection(props) {
+  render() {
+    const { props } = this;
     const { content } = props.message;
-    if (content && content.className === "fullPageCardsAtTop") {
-      return (
-        <FxCards
-          cards={props.cards}
-          onCardAction={this.onCardAction}
-          sendUserActionTelemetry={props.sendUserActionTelemetry}
-        />
-      );
-    }
-    return (
+    const cards = (
+      <FxCards
+        cards={props.cards}
+        onCardAction={this.onCardAction}
+        sendUserActionTelemetry={props.sendUserActionTelemetry}
+      />
+    );
+
+    const accounts = (
       <FxAccounts
         document={props.document}
         content={content}
@@ -152,34 +150,14 @@ export class FullPageInterrupt extends React.PureComponent {
         UTMTerm={props.UTMTerm}
       />
     );
-  }
 
-  showBottomSection(props) {
-    const { content } = props.message;
-    if (content && content.className === "fullPageCardsAtTop") {
-      return (
-        <FxAccounts
-          document={props.document}
-          content={content}
-          dispatch={props.dispatch}
-          fxaEndpoint={props.fxaEndpoint}
-          flowParams={props.flowParams}
-          removeOverlay={this.removeOverlay}
-          url={content.learn.url}
-          UTMTerm={props.UTMTerm}
-        />
-      );
-    }
-    return (
-      <FxCards
-        cards={props.cards}
-        onCardAction={this.onCardAction}
-        sendUserActionTelemetry={props.sendUserActionTelemetry}
-      />
-    );
-  }
-
-  render() {
+    // By default we show accounts section on top and
+    // cards section in bottom half of the full page interrupt
+    const cardsFirst = content && content.className === "fullPageCardsAtTop";
+    const firstContainerClassName = [
+      "container",
+      content && content.className,
+    ].join(" ");
     return (
       <div className="fullpage-wrapper">
         <div className="fullpage-icon brand-logo" />
@@ -191,9 +169,11 @@ export class FullPageInterrupt extends React.PureComponent {
           className="welcome-subtitle"
           data-l10n-id="onboarding-fullpage-welcome-subheader"
         />
-        <div className="container">{this.showTopSection(this.props)}</div>
+        <div className={firstContainerClassName}>
+          {cardsFirst ? cards : accounts}
+        </div>
         <div className="section-divider" />
-        <div className="container">{this.showBottomSection(this.props)}</div>
+        <div className="container">{cardsFirst ? accounts : cards}</div>
       </div>
     );
   }

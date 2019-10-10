@@ -6,7 +6,7 @@ import {
   FxAccounts,
   FxCards,
 } from "content-src/asrouter/templates/FullPageInterrupt/FullPageInterrupt";
-import { FXASignupForm } from "content-src/asrouter/components/FXASignupForm/FXASignupForm";
+import { FxASignupForm } from "content-src/asrouter/components/FxASignupForm/FxASignupForm";
 import { OnboardingCard } from "content-src/asrouter/templates/OnboardingMessage/OnboardingMessage";
 
 const CARDS = [
@@ -91,8 +91,8 @@ describe("<FullPageInterrupt>", () => {
     assert.lengthOf(wrapper.find(FxCards), 1);
   });
 
-  it("should render FXASignupForm inside FxAccounts", () => {
-    assert.lengthOf(wrapper.find(FXASignupForm), 1);
+  it("should render FxASignupForm inside FxAccounts", () => {
+    assert.lengthOf(wrapper.find(FxASignupForm), 1);
   });
 
   it("should display learn more link on full page", () => {

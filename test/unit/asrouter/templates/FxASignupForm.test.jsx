@@ -1,9 +1,9 @@
 import { actionCreators as ac, actionTypes as at } from "common/Actions.jsm";
-import { FXASignupForm } from "content-src/asrouter/components/FXASignupForm/FXASignupForm";
+import { FxASignupForm } from "content-src/asrouter/components/FxASignupForm/FxASignupForm";
 import { mount } from "enzyme";
 import React from "react";
 
-describe("<FXASignupForm>", () => {
+describe("<FxASignupForm>", () => {
   let wrapper;
   let dummyNode;
   let dispatch;
@@ -44,7 +44,7 @@ describe("<FXASignupForm>", () => {
     };
 
     wrapper = mount(
-      <FXASignupForm
+      <FxASignupForm
         document={fakeDocument}
         content={FAKE_MESSAGE_CONTENT}
         dispatch={dispatch}
@@ -92,7 +92,6 @@ describe("<FXASignupForm>", () => {
     form.getDOMNode().elements.email.value = "a@b.c";
 
     form.simulate("submit");
-
     assert.calledOnce(dispatch);
     assert.isUserEventAction(dispatch.firstCall.args[0]);
     assert.calledWith(
@@ -104,12 +103,11 @@ describe("<FXASignupForm>", () => {
     );
   });
 
-  it("should emit UserEvent SUBMIT_SIGNIN when signin is clicked", () => {
-    wrapper.setProps({ showSignInLink: true });
-    wrapper
-      .find("button[data-l10n-id='onboarding-join-form-signin']")
-      .simulate("click");
+  it("should emit UserEvent SUBMIT_SIGNIN when submit with email disabled", () => {
+    let form = wrapper.find("form");
+    form.getDOMNode().elements.email.disabled = true;
 
+    form.simulate("submit");
     assert.calledOnce(dispatch);
     assert.isUserEventAction(dispatch.firstCall.args[0]);
     assert.calledWith(

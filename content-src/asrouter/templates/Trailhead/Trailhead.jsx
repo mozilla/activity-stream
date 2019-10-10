@@ -4,7 +4,7 @@
 
 import { actionCreators as ac } from "common/Actions.jsm";
 import { ModalOverlayWrapper } from "../../components/ModalOverlay/ModalOverlay";
-import { FXASignupForm } from "../../components/FXASignupForm/FXASignupForm";
+import { FxASignupForm } from "../../components/FxASignupForm/FxASignupForm";
 import { addUtmParams } from "../FirstRun/addUtmParams";
 import React from "react";
 
@@ -22,8 +22,8 @@ const FOCUSABLE_SELECTOR = [
 export class Trailhead extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.onStartBlur = this.onStartBlur.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.onStartBlur = this.onStartBlur.bind(this);
   }
 
   get dialog() {
@@ -118,7 +118,7 @@ export class Trailhead extends React.PureComponent {
             />
           </div>
           <div className="trailhead-join-form">
-            <FXASignupForm
+            <FxASignupForm
               document={this.props.document}
               content={content}
               dispatch={this.props.dispatch}

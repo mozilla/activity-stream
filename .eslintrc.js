@@ -46,7 +46,7 @@ module.exports = {
         "content-src/asrouter/templates/FirstRun/**",
         "content-src/asrouter/templates/Trailhead/**",
         "content-src/asrouter/templates/FullPageInterrupt/FullPageInterrupt.jsx",
-        "content-src/asrouter/components/FXASignupForm/FXASignupForm.jsx",
+        "content-src/asrouter/components/FxASignupForm/FxASignupForm.jsx",
         "content-src/components/TopSites/**",
         "content-src/components/MoreRecommendations/MoreRecommendations.jsx",
         "content-src/components/CollapsibleSection/CollapsibleSection.jsx",

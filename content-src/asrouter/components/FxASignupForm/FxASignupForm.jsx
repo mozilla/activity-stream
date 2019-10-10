@@ -6,7 +6,7 @@ import { actionCreators as ac } from "common/Actions.jsm";
 import { addUtmParams } from "../../templates/FirstRun/addUtmParams";
 import React from "react";
 
-export class FXASignupForm extends React.PureComponent {
+export class FxASignupForm extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
@@ -16,7 +16,6 @@ export class FXASignupForm extends React.PureComponent {
 
     this.state = {
       emailInput: "",
-      isSignIn: false,
     };
   }
 
@@ -33,13 +32,12 @@ export class FXASignupForm extends React.PureComponent {
   }
 
   onSubmit(event) {
-    // Dynamically require the email on submission so screen readers don't read
-    // out it's always required because there's also ways to skip the modal
-    if (this.state.isSignIn) {
-      return;
-    }
+    let userEvent = "SUBMIT_EMAIL";
     const { email } = event.target.elements;
-    if (!email.value.length) {
+    if (email.disabled) {
+      event.target.setAttribute("action", this.signInURL);
+      userEvent = "SUBMIT_SIGNIN";
+    } else if (!email.value.length) {
       email.required = true;
       email.checkValidity();
       event.preventDefault();
@@ -48,22 +46,14 @@ export class FXASignupForm extends React.PureComponent {
 
     // Report to telemetry additional information about the form submission.
     const value = { has_flow_params: !!this.props.flowParams.flowId.length };
-    this.props.dispatch(ac.UserEvent({ event: "SUBMIT_EMAIL", value }));
+    this.props.dispatch(ac.UserEvent({ event: userEvent, value }));
 
     global.addEventListener("visibilitychange", this.props.onClose);
   }
 
   handleSignIn(event) {
-    if (event.target.value === "signin") {
-      this.setState({ isSignIn: true });
-      this.email.required = false;
-      this.email.disabled = true;
-    }
-    // Report to telemetry additional information about the form submission.
-    const value = { has_flow_params: !!this.props.flowParams.flowId.length };
-    this.props.dispatch(ac.UserEvent({ event: "SUBMIT_SIGNIN", value }));
-
-    global.addEventListener("visibilitychange", this.props.onClose);
+    // Set disabled to prevent email from appearing in url resulting in the wrong page
+    this.email.disabled = true;
   }
 
   componentDidMount() {
@@ -90,7 +80,6 @@ export class FXASignupForm extends React.PureComponent {
 
   render() {
     const { content, UTMTerm } = this.props;
-    const { isSignIn } = this.state;
     return (
       <div
         id="fxaSignupForm"
@@ -103,7 +92,7 @@ export class FXASignupForm extends React.PureComponent {
         <p id="joinFormBody" data-l10n-id={content.form.text.string_id} />
         <form
           method="get"
-          action={isSignIn ? this.signInURL : this.props.fxaEndpoint}
+          action={this.props.fxaEndpoint}
           target="_blank"
           rel="noopener noreferrer"
           onSubmit={this.onSubmit}
@@ -172,9 +161,7 @@ export class FXASignupForm extends React.PureComponent {
               <span data-l10n-id="onboarding-join-form-signin-label" />
               <button
                 data-l10n-id="onboarding-join-form-signin"
-                name="user_action"
                 onClick={this.handleSignIn}
-                value="signin"
               />
             </div>
           )}
@@ -184,4 +171,4 @@ export class FXASignupForm extends React.PureComponent {
   }
 }
 
-FXASignupForm.defaultProps = { document: global.document };
+FxASignupForm.defaultProps = { document: global.document };
