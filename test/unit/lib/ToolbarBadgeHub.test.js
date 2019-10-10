@@ -1,7 +1,7 @@
 import { _ToolbarBadgeHub } from "lib/ToolbarBadgeHub.jsm";
 import { GlobalOverrider } from "test/unit/utils";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
-import { _ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
+import { _ToolbarPanelHub, ToolbarPanelHub } from "lib/ToolbarPanelHub.jsm";
 
 describe("ToolbarBadgeHub", () => {
   let sandbox;
@@ -72,6 +72,7 @@ describe("ToolbarBadgeHub", () => {
     setStringPrefStub = sandbox.stub();
     requestIdleCallbackStub = sandbox.stub().callsFake(fn => fn());
     globals.set({
+      ToolbarPanelHub,
       requestIdleCallback: requestIdleCallbackStub,
       EveryWindow: everyWindowStub,
       PrivateBrowsingUtils: { isBrowserPrivate: isBrowserPrivateStub },
