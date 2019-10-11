@@ -297,10 +297,6 @@ export const SessionPing = Joi.object().keys(
 );
 
 export const ASRouterEventPing = Joi.object().keys({
-  client_id: Joi.string().required(),
-  action: Joi.string().required(),
-  impression_id: Joi.string().required(),
-  source: Joi.string().required(),
   addon_version: Joi.string().required(),
   locale: Joi.string().required(),
   message_id: Joi.string().required(),

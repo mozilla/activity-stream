@@ -71,7 +71,6 @@ XPCOMUtils.defineLazyServiceGetters(this, {
 const ACTIVITY_STREAM_ID = "activity-stream";
 const ACTIVITY_STREAM_ENDPOINT_PREF =
   "browser.newtabpage.activity-stream.telemetry.ping.endpoint";
-const ACTIVITY_STREAM_ROUTER_ID = "activity-stream-router";
 const DOMWINDOW_OPENED_TOPIC = "domwindowopened";
 const DOMWINDOW_UNLOAD_TOPIC = "unload";
 const TAB_PINNED_EVENT = "TabPinned";
@@ -97,6 +96,7 @@ const STRUCTURED_INGESTION_ENDPOINT_PREF =
 // List of namespaces for the structured ingestion system.
 // They are defined in https://github.com/mozilla-services/mozilla-pipeline-schemas
 const STRUCTURED_INGESTION_NAMESPACE_AS = "activity-stream";
+const STRUCTURED_INGESTION_NAMESPACE_MS = "messaging-system";
 
 this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {
@@ -251,19 +251,6 @@ this.TelemetryFeed = class TelemetryFeed {
       }),
     });
     return this.pingCentre;
-  }
-
-  /**
-   * Lazily initialize a PingCentre client for Activity Stream Router to send pings.
-   *
-   * Unlike the PingCentre client for Activity Stream, Activity Stream Router
-   * uses a separate client with the standard PingCentre endpoint.
-   */
-  get pingCentreForASRouter() {
-    Object.defineProperty(this, "pingCentreForASRouter", {
-      value: new PingCentre({ topic: ACTIVITY_STREAM_ROUTER_ID }),
-    });
-    return this.pingCentreForASRouter;
   }
 
   /**
@@ -567,10 +554,8 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   createASRouterEvent(action) {
     const ping = {
-      client_id: "n/a",
       addon_version: Services.appinfo.appBuildID,
       locale: Services.locale.appLocaleAsLangTag,
-      impression_id: this._impressionId,
     };
     const event = Object.assign(ping, action.data);
     if (event.action === "cfr_user_event") {
@@ -579,8 +564,10 @@ this.TelemetryFeed = class TelemetryFeed {
       return this.applySnippetsPolicy(event);
     } else if (event.action === "onboarding_user_event") {
       return this.applyOnboardingPolicy(event);
+    } else if (event.action === "asrouter_undesired_event") {
+      return this.applyUndesiredEventPolicy(event);
     }
-    return event;
+    return { ping: event };
   }
 
   /**
@@ -590,21 +577,19 @@ this.TelemetryFeed = class TelemetryFeed {
    * 3). In shield experiments conducted in release, it collects client_id and message_id
    */
   applyCFRPolicy(ping) {
+    let excludeClientID;
     if (
       UpdateUtils.getUpdateChannel(true) === "release" &&
       !this.isInCFRCohort
     ) {
-      ping.message_id = ping.bucket_id || "n/a";
-      ping.client_id = "n/a";
+      ping.message_id = "n/a";
       ping.impression_id = this._impressionId;
+      excludeClientID = true;
     } else {
-      ping.impression_id = "n/a";
-      // Ping-centre client will fill in the client_id if it's not provided in the ping.
-      delete ping.client_id;
+      excludeClientID = false;
     }
-    // bucket_id is no longer needed
-    delete ping.bucket_id;
-    return ping;
+    delete ping.action;
+    return { ping, excludeClientID, pingType: "cfr" };
   }
 
   /**
@@ -612,10 +597,8 @@ this.TelemetryFeed = class TelemetryFeed {
    * all the release channels
    */
   applySnippetsPolicy(ping) {
-    // Ping-centre client will fill in the client_id if it's not provided in the ping.
-    delete ping.client_id;
-    ping.impression_id = "n/a";
-    return ping;
+    delete ping.action;
+    return { ping, excludeClientID: false, pingType: "snippets" };
   }
 
   /**
@@ -624,9 +607,14 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   applyOnboardingPolicy(ping) {
     // Ping-centre client will fill in the client_id if it's not provided in the ping.
-    delete ping.client_id;
-    ping.impression_id = "n/a";
-    return ping;
+    delete ping.action;
+    return { ping, excludeClientID: false, pingType: "onboarding" };
+  }
+
+  applyUndesiredEventPolicy(ping) {
+    ping.impression_id = this._impressionId;
+    delete ping.action;
+    return { ping, excludeClientID: true, pingType: "undesired-events" };
   }
 
   sendEvent(event_object) {
@@ -670,11 +658,17 @@ this.TelemetryFeed = class TelemetryFeed {
     }
   }
 
-  sendASRouterEvent(event_object) {
-    if (this.telemetryEnabled) {
-      this.pingCentreForASRouter.sendPing(event_object, {
-        filter: ACTIVITY_STREAM_ID,
-      });
+  sendASRouterEvent(event_object, pingType, version, excludeClientID) {
+    if (this.telemetryEnabled && this.structuredIngestionTelemetryEnabled) {
+      this.pingCentre.sendStructuredIngestionPing(
+        event_object,
+        this._generateStructuredIngestionEndpoint(
+          STRUCTURED_INGESTION_NAMESPACE_MS,
+          pingType,
+          version
+        ),
+        { filter: ACTIVITY_STREAM_ID, excludeClientID }
+      );
     }
   }
 
@@ -699,8 +693,12 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   handleASRouterUserEvent(action) {
-    let event = this.createASRouterEvent(action);
-    this.sendASRouterEvent(event);
+    let { ping, excludeClientID, pingType } = this.createASRouterEvent(action);
+    if (!pingType) {
+      Cu.reportError("Unknown ping type for ASRouter telemetry");
+      return;
+    }
+    this.sendASRouterEvent(ping, pingType, "1", excludeClientID);
   }
 
   handleUndesiredEvent(action) {
@@ -999,9 +997,6 @@ this.TelemetryFeed = class TelemetryFeed {
     }
     if (Object.prototype.hasOwnProperty.call(this, "utEvents")) {
       this.utEvents.uninit();
-    }
-    if (Object.prototype.hasOwnProperty.call(this, "pingCentreForASRouter")) {
-      this.pingCentreForASRouter.uninit();
     }
 
     // TODO: Send any unfinished sessions
