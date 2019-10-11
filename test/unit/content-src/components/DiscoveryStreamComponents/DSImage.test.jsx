@@ -111,7 +111,7 @@ describe("Discovery Stream <DSImage>", () => {
 
     assert.calledOnce(observer.unobserve);
   });
-  describe.only("DSImage with Idle Callback", () => {
+  describe("DSImage with Idle Callback", () => {
     let wrapper;
     let windowStub = {
       requestIdleCallback: sinon.stub().returns(1),
