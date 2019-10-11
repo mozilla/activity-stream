@@ -28,9 +28,7 @@ export class FxASignupForm extends React.PureComponent {
   onSubmit(event) {
     let userEvent = "SUBMIT_EMAIL";
     const { email } = event.target.elements;
-    if (email.disabled) {
-      userEvent = "SUBMIT_SIGNIN";
-    } else if (!email.value.length) {
+    if (!email.disabled && !email.value.length) {
       email.required = true;
       email.checkValidity();
       event.preventDefault();

@@ -103,7 +103,7 @@ describe("<FxASignupForm>", () => {
     );
   });
 
-  it("should emit UserEvent SUBMIT_SIGNIN when submit with email disabled", () => {
+  it("should emit UserEvent SUBMIT_EMAIL when submit with email disabled", () => {
     let form = wrapper.find("form");
     form.getDOMNode().elements.email.disabled = true;
 
@@ -113,7 +113,7 @@ describe("<FxASignupForm>", () => {
     assert.calledWith(
       dispatch,
       ac.UserEvent({
-        event: at.SUBMIT_SIGNIN,
+        event: at.SUBMIT_EMAIL,
         value: { has_flow_params: true },
       })
     );
