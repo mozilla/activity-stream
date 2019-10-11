@@ -191,7 +191,6 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         return (
           <DSMessage
             title={component.header && component.header.title}
-            subtitle={component.header && component.header.subtitle}
             link_text={component.header && component.header.link_text}
             link_url={component.header && component.header.link_url}
             icon={component.header && component.header.icon}
