@@ -496,6 +496,7 @@ const ONBOARDING_MESSAGES = () => [
       delay: 5 * ONE_MINUTE,
       target: "whats-new-menu-button",
       action: { id: "show-whatsnew-button" },
+      badgeDescription: { string_id: "cfr-badge-reader-label-newfeature" },
     },
     priority: 1,
     trigger: { id: "toolbarBadgeUpdate" },
