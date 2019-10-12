@@ -25,6 +25,7 @@ add_task(async function check_openArticleURL() {
     "https://example.com/browser/browser/components/newtab/test/browser/red_page.html";
   const articleTrigger = ASRouterTriggerListeners.get("openArticleURL");
 
+  // Previously initialized by the Router
   articleTrigger.uninit();
 
   // Initialize the trigger with a new triggerHandler that resolves a promise
@@ -48,7 +49,10 @@ add_task(async function check_openArticleURL() {
       "We should match on the TEST_URL as a website article"
     )
   );
-  BrowserTestUtils.closeWindow(win);
+
+  // Cleanup
+  articleTrigger.uninit();
+  await BrowserTestUtils.closeWindow(win);
 });
 
 add_task(async function check_openURL_listener() {
