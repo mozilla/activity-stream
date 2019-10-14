@@ -83,11 +83,7 @@
 
   .ReturnToAMOGetStarted {
     margin-top: 40px;
-    float: right;
-
-    &:dir(rtl) {
-      float: left;
-    }
+    float: inline-end;
   }
 
   .ReturnToAMOAddExtension {
