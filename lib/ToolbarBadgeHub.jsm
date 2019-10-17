@@ -185,6 +185,7 @@ class _ToolbarBadgeHub {
         this.removeAllNotifications
       );
       event.target.removeEventListener("click", this.removeAllNotifications);
+      event.target.removeEventListener("keypress", this.removeAllNotifications);
       // If we have an event it means the user interacted with the badge
       // we should send telemetry
       if (this.state.notification) {
@@ -261,8 +262,9 @@ class _ToolbarBadgeHub {
       // `mousedown` event required because of the `onmousedown` defined on
       // the button that prevents `click` events from firing
       toolbarbutton.addEventListener("mousedown", this.removeAllNotifications);
-      // `click` event required for keyboard accessibility
+      // `click` and `keypress` events required for keyboard accessibility
       toolbarbutton.addEventListener("click", this.removeAllNotifications);
+      toolbarbutton.addEventListener("keypress", this.removeAllNotifications);
       this.state = { notification: { id: message.id } };
 
       return toolbarbutton;

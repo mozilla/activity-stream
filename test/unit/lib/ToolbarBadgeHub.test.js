@@ -239,7 +239,7 @@ describe("ToolbarBadgeHub", () => {
     it("should attach a cb on the notification", () => {
       instance.addToolbarNotification(target, fxaMessage);
 
-      assert.calledTwice(fakeElement.addEventListener);
+      assert.calledThrice(fakeElement.addEventListener);
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "mousedown",
@@ -248,6 +248,11 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "click",
+        instance.removeAllNotifications
+      );
+      assert.calledWithExactly(
+        fakeElement.addEventListener,
+        "keypress",
         instance.removeAllNotifications
       );
     });
@@ -528,7 +533,7 @@ describe("ToolbarBadgeHub", () => {
 
       instance.removeAllNotifications(fakeEvent);
 
-      assert.calledTwice(fakeEvent.target.removeEventListener);
+      assert.calledThrice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "mousedown",
@@ -537,6 +542,11 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "click",
+        instance.removeAllNotifications
+      );
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "keypress",
         instance.removeAllNotifications
       );
     });
@@ -558,7 +568,7 @@ describe("ToolbarBadgeHub", () => {
 
       instance.removeAllNotifications(fakeEvent);
 
-      assert.calledTwice(fakeEvent.target.removeEventListener);
+      assert.calledThrice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "mousedown",
@@ -567,6 +577,11 @@ describe("ToolbarBadgeHub", () => {
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "click",
+        instance.removeAllNotifications
+      );
+      assert.calledWithExactly(
+        fakeEvent.target.removeEventListener,
+        "keypress",
         instance.removeAllNotifications
       );
     });
