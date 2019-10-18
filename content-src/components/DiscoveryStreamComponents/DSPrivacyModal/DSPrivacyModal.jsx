@@ -40,6 +40,7 @@ export class DSPrivacyModal extends React.PureComponent {
           <h3 data-l10n-id="newtab-privacy-modal-header" />
           <p data-l10n-id="newtab-privacy-modal-paragraph" />
           <SafeAnchor
+            className="a11y-link-button"
             onLinkClick={this.onLinkClick}
             url="https://www.mozilla.org/en-US/privacy/firefox/"
           >
