@@ -239,15 +239,10 @@ describe("ToolbarBadgeHub", () => {
     it("should attach a cb on the notification", () => {
       instance.addToolbarNotification(target, fxaMessage);
 
-      assert.calledThrice(fakeElement.addEventListener);
+      assert.calledTwice(fakeElement.addEventListener);
       assert.calledWithExactly(
         fakeElement.addEventListener,
         "mousedown",
-        instance.removeAllNotifications
-      );
-      assert.calledWithExactly(
-        fakeElement.addEventListener,
-        "click",
         instance.removeAllNotifications
       );
       assert.calledWithExactly(
@@ -533,15 +528,10 @@ describe("ToolbarBadgeHub", () => {
 
       instance.removeAllNotifications(fakeEvent);
 
-      assert.calledThrice(fakeEvent.target.removeEventListener);
+      assert.calledTwice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "mousedown",
-        instance.removeAllNotifications
-      );
-      assert.calledWithExactly(
-        fakeEvent.target.removeEventListener,
-        "click",
         instance.removeAllNotifications
       );
       assert.calledWithExactly(
@@ -568,15 +558,10 @@ describe("ToolbarBadgeHub", () => {
 
       instance.removeAllNotifications(fakeEvent);
 
-      assert.calledThrice(fakeEvent.target.removeEventListener);
+      assert.calledTwice(fakeEvent.target.removeEventListener);
       assert.calledWithExactly(
         fakeEvent.target.removeEventListener,
         "mousedown",
-        instance.removeAllNotifications
-      );
-      assert.calledWithExactly(
-        fakeEvent.target.removeEventListener,
-        "click",
         instance.removeAllNotifications
       );
       assert.calledWithExactly(
