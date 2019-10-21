@@ -22,7 +22,8 @@ describe("ASRouterTriggerListeners", () => {
       gBrowser: {
         addTabsProgressListener: sandbox.stub(),
         removeTabsProgressListener: sandbox.stub(),
-        currentURI: { host: "" },
+        currentURI: { host: "", spec: "https://bookmarkedpage.example" },
+        selectedBrowser: {},
       },
       addEventListener: sinon.stub(),
       removeEventListener: sinon.stub(),
@@ -58,7 +59,7 @@ describe("ASRouterTriggerListeners", () => {
         observerStub = sandbox.stub(global.Services.obs, "addObserver");
         sandbox
           .stub(global.Services.wm, "getMostRecentBrowserWindow")
-          .returns({ gBrowser: { selectedBrowser: {} } });
+          .returns(existingWindow);
       });
       afterEach(() => {
         bookmarkedURLListener.uninit();
@@ -85,9 +86,11 @@ describe("ASRouterTriggerListeners", () => {
         );
 
         assert.calledOnce(newTriggerHandler);
-        assert.calledWithExactly(newTriggerHandler, subject, {
-          id: bookmarkedURLListener.id,
-        });
+        const { args } = newTriggerHandler.firstCall;
+        assert.equal(args[0], existingWindow.gBrowser.selectedBrowser);
+        assert.propertyVal(args[1], "id", bookmarkedURLListener.id);
+        assert.property(args[1], "context");
+        assert.property(args[1].context, "bookmark");
       });
     });
   });

@@ -11,6 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
   EveryWindow: "resource:///modules/EveryWindow.jsm",
+  NewTabUtils: "resource://gre/modules/NewTabUtils.jsm",
 });
 
 const FEW_MINUTES = 15 * 60 * 1000; // 15 mins
@@ -158,6 +159,11 @@ this.ASRouterTriggerListeners = new Map([
           if (browser) {
             this._triggerHandler(browser.gBrowser.selectedBrowser, {
               id: this.id,
+              context: {
+                bookmark: NewTabUtils.activityStreamProvider.getBookmark({
+                  url: new URL(browser.gBrowser.currentURI.spec),
+                }),
+              },
             });
           }
         }

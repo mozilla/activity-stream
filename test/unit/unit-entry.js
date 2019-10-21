@@ -148,6 +148,7 @@ const TEST_GLOBAL = {
   NewTabUtils: {
     activityStreamProvider: {
       getTopFrecentSites: () => [],
+      getBookmark: () => Promise.resolve({}),
       executePlacesQuery: async (sql, options) => ({ sql, options }),
     },
   },
