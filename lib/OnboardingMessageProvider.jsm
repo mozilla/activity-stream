@@ -465,6 +465,20 @@ const ONBOARDING_MESSAGES = () => [
     trigger: { id: "firstRun" },
   },
   {
+    id: "FXA_ACCOUNTS_BADGE_NEW_USER",
+    template: "toolbar_badge",
+    content: {
+      delay: 10000, // delay for 10 seconds
+      target: "fxa-toolbar-menu-button",
+    },
+    // This message will be evaluated before the What's New toolbar badge
+    // and for profiles newer than 28 days it will be displayed
+    priority: 2,
+    // Never accessed the FxA panel && doesn't use Firefox sync && has FxA enabled
+    targeting: `isFxABadgeEnabled && !hasAccessedFxAPanel && !usesFirefoxSync && isFxAEnabled == true && (currentDate|date - profileAgeCreated) / (1000 * 3600 * 24) < 28`,
+    trigger: { id: "toolbarBadgeUpdate" },
+  },
+  {
     id: "FXA_ACCOUNTS_BADGE",
     template: "toolbar_badge",
     content: {
