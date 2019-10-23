@@ -203,7 +203,6 @@ export const SpocsFillEntrySchema = Joi.object().keys({
 export const SpocsFillPing = Joi.object().keys(
   Object.assign({}, baseKeys, {
     impression_id: Joi.string().required(),
-    client_id: Joi.valid("n/a").required(),
     session_id: Joi.valid("n/a").required(),
     spoc_fills: Joi.array()
       .items(SpocsFillEntrySchema)
@@ -301,6 +300,8 @@ export const ASRouterEventPing = Joi.object().keys({
   locale: Joi.string().required(),
   message_id: Joi.string().required(),
   event: Joi.string().required(),
+  client_id: Joi.string().optional(),
+  impression_id: Joi.string().optional(),
 });
 
 export const UTSessionPing = Joi.array().items(

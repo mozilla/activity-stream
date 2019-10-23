@@ -23,6 +23,7 @@ const FAKE_ROUTER_MESSAGE_PROVIDER = [{ id: "cfr", enabled: true }];
 const FAKE_ROUTER_MESSAGE_PROVIDER_COHORT = [
   { id: "cfr", enabled: true, cohort: "cohort_group" },
 ];
+const FAKE_TELEMETRY_ID = "foo123";
 
 describe("TelemetryFeed", () => {
   let globals;
@@ -101,6 +102,9 @@ describe("TelemetryFeed", () => {
     globals.set("ExtensionSettingsStore", fakeExtensionSettingsStore);
     globals.set("PingCentre", PingCentre);
     globals.set("UTEventReporting", UTEventReporting);
+    globals.set("ClientID", {
+      getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID),
+    });
     sandbox
       .stub(ASRouterPreferences, "providers")
       .get(() => FAKE_ROUTER_MESSAGE_PROVIDER);
@@ -770,7 +774,7 @@ describe("TelemetryFeed", () => {
     });
   });
   describe("#applyCFRPolicy", () => {
-    it("should use client_id and message_id in prerelease", () => {
+    it("should use client_id and message_id in prerelease", async () => {
       globals.set("UpdateUtils", {
         getUpdateChannel() {
           return "nightly";
@@ -782,15 +786,15 @@ describe("TelemetryFeed", () => {
         message_id: "cfr_message_01",
         bucket_id: "cfr_bucket_01",
       };
-      const { ping, excludeClientID, pingType } = instance.applyCFRPolicy(data);
+      const { ping, pingType } = await instance.applyCFRPolicy(data);
 
-      assert.isFalse(excludeClientID);
       assert.equal(pingType, "cfr");
       assert.isUndefined(ping.impression_id);
+      assert.propertyVal(ping, "client_id", FAKE_TELEMETRY_ID);
       assert.propertyVal(ping, "bucket_id", "cfr_bucket_01");
       assert.propertyVal(ping, "message_id", "cfr_message_01");
     });
-    it("should use impression_id and bucket_id in release", () => {
+    it("should use impression_id and bucket_id in release", async () => {
       globals.set("UpdateUtils", {
         getUpdateChannel() {
           return "release";
@@ -802,15 +806,15 @@ describe("TelemetryFeed", () => {
         message_id: "cfr_message_01",
         bucket_id: "cfr_bucket_01",
       };
-      const { ping, excludeClientID, pingType } = instance.applyCFRPolicy(data);
+      const { ping, pingType } = await instance.applyCFRPolicy(data);
 
-      assert.isTrue(excludeClientID);
       assert.equal(pingType, "cfr");
+      assert.isUndefined(ping.client_id);
       assert.propertyVal(ping, "impression_id", FAKE_UUID);
       assert.propertyVal(ping, "message_id", "n/a");
       assert.propertyVal(ping, "bucket_id", "cfr_bucket_01");
     });
-    it("should use client_id and message_id in the experiment cohort in release", () => {
+    it("should use client_id and message_id in the experiment cohort in release", async () => {
       globals.set("UpdateUtils", {
         getUpdateChannel() {
           return "release";
@@ -825,46 +829,40 @@ describe("TelemetryFeed", () => {
         message_id: "cfr_message_01",
         bucket_id: "cfr_bucket_01",
       };
-      const { ping, excludeClientID, pingType } = instance.applyCFRPolicy(data);
+      const { ping, pingType } = await instance.applyCFRPolicy(data);
 
-      assert.isFalse(excludeClientID);
       assert.equal(pingType, "cfr");
       assert.isUndefined(ping.impression_id);
+      assert.propertyVal(ping, "client_id", FAKE_TELEMETRY_ID);
       assert.propertyVal(ping, "bucket_id", "cfr_bucket_01");
       assert.propertyVal(ping, "message_id", "cfr_message_01");
     });
   });
   describe("#applySnippetsPolicy", () => {
-    it("should include client_id", () => {
+    it("should include client_id", async () => {
       const data = {
         action: "snippets_user_event",
         event: "IMPRESSION",
         message_id: "snippets_message_01",
       };
-      const { ping, excludeClientID, pingType } = instance.applySnippetsPolicy(
-        data
-      );
+      const { ping, pingType } = await instance.applySnippetsPolicy(data);
 
-      assert.isFalse(excludeClientID);
       assert.equal(pingType, "snippets");
+      assert.propertyVal(ping, "client_id", FAKE_TELEMETRY_ID);
       assert.propertyVal(ping, "message_id", "snippets_message_01");
     });
   });
   describe("#applyOnboardingPolicy", () => {
-    it("should include client_id", () => {
+    it("should include client_id", async () => {
       const data = {
         action: "onboarding_user_event",
         event: "CLICK_BUTTION",
         message_id: "onboarding_message_01",
       };
-      const {
-        ping,
-        excludeClientID,
-        pingType,
-      } = instance.applyOnboardingPolicy(data);
+      const { ping, pingType } = await instance.applyOnboardingPolicy(data);
 
-      assert.isFalse(excludeClientID);
       assert.equal(pingType, "onboarding");
+      assert.propertyVal(ping, "client_id", FAKE_TELEMETRY_ID);
       assert.propertyVal(ping, "message_id", "onboarding_message_01");
     });
   });
@@ -874,14 +872,10 @@ describe("TelemetryFeed", () => {
         action: "asrouter_undesired_event",
         event: "RS_MISSING_DATA",
       };
-      const {
-        ping,
-        excludeClientID,
-        pingType,
-      } = instance.applyUndesiredEventPolicy(data);
+      const { ping, pingType } = instance.applyUndesiredEventPolicy(data);
 
-      assert.isTrue(excludeClientID);
       assert.equal(pingType, "undesired-events");
+      assert.isUndefined(ping.client_id);
       assert.propertyVal(ping, "impression_id", FAKE_UUID);
     });
   });
@@ -987,20 +981,6 @@ describe("TelemetryFeed", () => {
       assert.calledWith(instance.pingCentre.sendStructuredIngestionPing, event);
     });
   });
-  describe("#sendASRouterEvent", () => {
-    it("should call PingCentre sendStructuredIngestionPing for AS Router", () => {
-      FakePrefs.prototype.prefs.telemetry = true;
-      FakePrefs.prototype.prefs[STRUCTURED_INGESTION_TELEMETRY_PREF] = true;
-      const event = {};
-      instance = new TelemetryFeed();
-      sandbox.stub(instance.pingCentre, "sendStructuredIngestionPing");
-
-      instance.sendASRouterEvent(event);
-
-      assert.calledWith(instance.pingCentre.sendStructuredIngestionPing, event);
-    });
-  });
-
   describe("#setLoadTriggerInfo", () => {
     it("should call saveSessionPerfData w/load_trigger_{ts,type} data", () => {
       const stub = sandbox.stub(instance, "saveSessionPerfData");
@@ -1604,31 +1584,32 @@ describe("TelemetryFeed", () => {
     });
   });
   describe("#handleASRouterUserEvent", () => {
-    it("should call sendASRouterEvent on known pingTypes", () => {
+    it("should call sendStructuredIngestionEvent on known pingTypes", async () => {
       const data = {
         action: "onboarding_user_event",
         event: "IMPRESSION",
         message_id: "12345",
       };
       instance = new TelemetryFeed();
-      sandbox.spy(instance, "sendASRouterEvent");
+      sandbox.spy(instance, "sendStructuredIngestionEvent");
 
-      instance.handleASRouterUserEvent({ data });
+      await instance.handleASRouterUserEvent({ data });
 
-      assert.calledOnce(instance.sendASRouterEvent);
+      assert.calledOnce(instance.sendStructuredIngestionEvent);
     });
-    it("should reportError on unknown pingTypes", () => {
+    it("should reportError on unknown pingTypes", async () => {
       const data = {
         action: "unknown_event",
         event: "IMPRESSION",
         message_id: "12345",
       };
       instance = new TelemetryFeed();
-      sandbox.spy(instance, "sendASRouterEvent");
+      sandbox.spy(instance, "sendStructuredIngestionEvent");
 
-      instance.handleASRouterUserEvent({ data });
+      await instance.handleASRouterUserEvent({ data });
 
       assert.calledOnce(global.Cu.reportError);
+      assert.notCalled(instance.sendStructuredIngestionEvent);
     });
   });
 });

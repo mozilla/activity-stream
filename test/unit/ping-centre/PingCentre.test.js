@@ -363,7 +363,6 @@ describe("PingCentre", () => {
       let EXPECTED_RESULT = Object.assign(
         {
           locale: FAKE_LOCALE,
-          client_id: FAKE_TELEMETRY_ID,
           version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
@@ -372,14 +371,6 @@ describe("PingCentre", () => {
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
 
       assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
-    });
-    it("should exclude the client_id if options.excludeClientID is true", async () => {
-      tSender = new PingCentre({ topic: "activity-stream" });
-      const ping = await tSender._createStructuredIngestionPing(fakePingJSON, {
-        excludeClientID: true,
-      });
-
-      assert.isUndefined(ping.client_id);
     });
   });
 
@@ -534,7 +525,6 @@ describe("PingCentre", () => {
       let EXPECTED_RESULT = Object.assign(
         {
           locale: FAKE_LOCALE,
-          client_id: FAKE_TELEMETRY_ID,
           version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },

@@ -59,6 +59,11 @@ ChromeUtils.defineModuleGetter(
   "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "ClientID",
+  "resource://gre/modules/ClientID.jsm"
+);
 
 XPCOMUtils.defineLazyServiceGetters(this, {
   gUUIDGenerator: ["@mozilla.org/uuid-generator;1", "nsIUUIDGenerator"],
@@ -123,6 +128,13 @@ this.TelemetryFeed = class TelemetryFeed {
 
   get structuredIngestionEndpointBase() {
     return this._prefs.get(STRUCTURED_INGESTION_ENDPOINT_PREF);
+  }
+
+  get telemetryClientId() {
+    Object.defineProperty(this, "telemetryClientId", {
+      value: ClientID.getClientID(),
+    });
+    return this.telemetryClientId;
   }
 
   init() {
@@ -510,7 +522,6 @@ this.TelemetryFeed = class TelemetryFeed {
   createSpocsFillPing(data) {
     return Object.assign(this.createPing(null), data, {
       impression_id: this._impressionId,
-      client_id: "n/a",
       session_id: "n/a",
     });
   }
@@ -552,22 +563,30 @@ this.TelemetryFeed = class TelemetryFeed {
    * Create a ping for AS router event. The client_id is set to "n/a" by default,
    * different component can override this by its own telemetry collection policy.
    */
-  createASRouterEvent(action) {
-    const ping = {
+  async createASRouterEvent(action) {
+    let event = {
+      ...action.data,
       addon_version: Services.appinfo.appBuildID,
       locale: Services.locale.appLocaleAsLangTag,
     };
-    const event = Object.assign(ping, action.data);
-    if (event.action === "cfr_user_event") {
-      return this.applyCFRPolicy(event);
-    } else if (event.action === "snippets_user_event") {
-      return this.applySnippetsPolicy(event);
-    } else if (event.action === "onboarding_user_event") {
-      return this.applyOnboardingPolicy(event);
-    } else if (event.action === "asrouter_undesired_event") {
-      return this.applyUndesiredEventPolicy(event);
+    switch (event.action) {
+      case "cfr_user_event":
+        event = await this.applyCFRPolicy(event);
+        break;
+      case "snippets_user_event":
+        event = await this.applySnippetsPolicy(event);
+        break;
+      case "onboarding_user_event":
+        event = await this.applyOnboardingPolicy(event);
+        break;
+      case "asrouter_undesired_event":
+        event = this.applyUndesiredEventPolicy(event);
+        break;
+      default:
+        event = { ping: event };
+        break;
     }
-    return { ping: event };
+    return event;
   }
 
   /**
@@ -576,45 +595,44 @@ this.TelemetryFeed = class TelemetryFeed {
    * 2). In prerelease, it collects client_id and message_id
    * 3). In shield experiments conducted in release, it collects client_id and message_id
    */
-  applyCFRPolicy(ping) {
-    let excludeClientID;
+  async applyCFRPolicy(ping) {
     if (
       UpdateUtils.getUpdateChannel(true) === "release" &&
       !this.isInCFRCohort
     ) {
       ping.message_id = "n/a";
       ping.impression_id = this._impressionId;
-      excludeClientID = true;
     } else {
-      excludeClientID = false;
+      ping.client_id = await this.telemetryClientId;
     }
     delete ping.action;
-    return { ping, excludeClientID, pingType: "cfr" };
+    return { ping, pingType: "cfr" };
   }
 
   /**
    * Per Bug 1485069, all the metrics for Snippets in AS router use client_id in
    * all the release channels
    */
-  applySnippetsPolicy(ping) {
+  async applySnippetsPolicy(ping) {
+    ping.client_id = await this.telemetryClientId;
     delete ping.action;
-    return { ping, excludeClientID: false, pingType: "snippets" };
+    return { ping, pingType: "snippets" };
   }
 
   /**
    * Per Bug 1482134, all the metrics for Onboarding in AS router use client_id in
    * all the release channels
    */
-  applyOnboardingPolicy(ping) {
-    // Ping-centre client will fill in the client_id if it's not provided in the ping.
+  async applyOnboardingPolicy(ping) {
+    ping.client_id = await this.telemetryClientId;
     delete ping.action;
-    return { ping, excludeClientID: false, pingType: "onboarding" };
+    return { ping, pingType: "onboarding" };
   }
 
   applyUndesiredEventPolicy(ping) {
     ping.impression_id = this._impressionId;
     delete ping.action;
-    return { ping, excludeClientID: true, pingType: "undesired-events" };
+    return { ping, pingType: "undesired-events" };
   }
 
   sendEvent(event_object) {
@@ -648,26 +666,12 @@ this.TelemetryFeed = class TelemetryFeed {
     return `${this.structuredIngestionEndpointBase}/${extension}`;
   }
 
-  sendStructuredIngestionEvent(event_object, namespace, pingType, version) {
+  sendStructuredIngestionEvent(eventObject, namespace, pingType, version) {
     if (this.telemetryEnabled && this.structuredIngestionTelemetryEnabled) {
       this.pingCentre.sendStructuredIngestionPing(
-        event_object,
+        eventObject,
         this._generateStructuredIngestionEndpoint(namespace, pingType, version),
-        { filter: ACTIVITY_STREAM_ID, excludeClientID: true }
-      );
-    }
-  }
-
-  sendASRouterEvent(event_object, pingType, version, excludeClientID) {
-    if (this.telemetryEnabled && this.structuredIngestionTelemetryEnabled) {
-      this.pingCentre.sendStructuredIngestionPing(
-        event_object,
-        this._generateStructuredIngestionEndpoint(
-          STRUCTURED_INGESTION_NAMESPACE_MS,
-          pingType,
-          version
-        ),
-        { filter: ACTIVITY_STREAM_ID, excludeClientID }
+        { filter: ACTIVITY_STREAM_ID }
       );
     }
   }
@@ -692,13 +696,18 @@ this.TelemetryFeed = class TelemetryFeed {
     this.sendUTEvent(userEvent, this.utEvents.sendUserEvent);
   }
 
-  handleASRouterUserEvent(action) {
-    let { ping, excludeClientID, pingType } = this.createASRouterEvent(action);
+  async handleASRouterUserEvent(action) {
+    const { ping, pingType } = await this.createASRouterEvent(action);
     if (!pingType) {
       Cu.reportError("Unknown ping type for ASRouter telemetry");
       return;
     }
-    this.sendASRouterEvent(ping, pingType, "1", excludeClientID);
+    this.sendStructuredIngestionEvent(
+      ping,
+      STRUCTURED_INGESTION_NAMESPACE_MS,
+      pingType,
+      "1"
+    );
   }
 
   handleUndesiredEvent(action) {
