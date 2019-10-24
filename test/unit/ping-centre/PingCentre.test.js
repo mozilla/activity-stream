@@ -363,7 +363,6 @@ describe("PingCentre", () => {
       let EXPECTED_RESULT = Object.assign(
         {
           locale: FAKE_LOCALE,
-          client_id: FAKE_TELEMETRY_ID,
           version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
@@ -526,7 +525,6 @@ describe("PingCentre", () => {
       let EXPECTED_RESULT = Object.assign(
         {
           locale: FAKE_LOCALE,
-          client_id: FAKE_TELEMETRY_ID,
           version: "69.0a1",
           release_channel: FAKE_UPDATE_CHANNEL,
         },
