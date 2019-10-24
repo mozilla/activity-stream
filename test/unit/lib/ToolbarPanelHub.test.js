@@ -548,10 +548,9 @@ describe("ToolbarPanelHub", () => {
         } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
         assert.propertyVal(dispatchPayload.data, "message_id", panelPingId);
-        assert.equal(
-          dispatchPayload.data.event_context,
-          JSON.stringify({ view: "toolbar_dropdown" })
-        );
+        assert.deepEqual(dispatchPayload.data.event_context, {
+          view: "toolbar_dropdown",
+        });
       });
       it("should dispatch a IMPRESSION with application_menu", async () => {
         // means panel is triggered as a subview in the application menu
@@ -588,10 +587,9 @@ describe("ToolbarPanelHub", () => {
         } = fakeDispatch.lastCall;
         assert.propertyVal(dispatchPayload, "type", "TOOLBAR_PANEL_TELEMETRY");
         assert.propertyVal(dispatchPayload.data, "message_id", panelPingId);
-        assert.equal(
-          dispatchPayload.data.event_context,
-          JSON.stringify({ view: "application_menu" })
-        );
+        assert.deepEqual(dispatchPayload.data.event_context, {
+          view: "application_menu",
+        });
       });
     });
     describe("#forceShowMessage", () => {

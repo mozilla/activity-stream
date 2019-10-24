@@ -939,6 +939,28 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(instance.applyUndesiredEventPolicy);
     });
+    it("should stringify event_context if it is an Object", async () => {
+      const data = {
+        action: "asrouter_undesired_event",
+        event: "UNDESIRED_EVENT",
+        event_context: { foo: "bar" },
+      };
+      const action = ac.ASRouterUserEvent(data);
+      const { ping } = await instance.createASRouterEvent(action);
+
+      assert.propertyVal(ping, "event_context", JSON.stringify({ foo: "bar" }));
+    });
+    it("should not stringify event_context if it is a String", async () => {
+      const data = {
+        action: "asrouter_undesired_event",
+        event: "UNDESIRED_EVENT",
+        event_context: "foo",
+      };
+      const action = ac.ASRouterUserEvent(data);
+      const { ping } = await instance.createASRouterEvent(action);
+
+      assert.propertyVal(ping, "event_context", "foo");
+    });
   });
   describe("#sendEvent", () => {
     it("should call PingCentre", async () => {

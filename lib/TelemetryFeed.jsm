@@ -569,6 +569,9 @@ this.TelemetryFeed = class TelemetryFeed {
       addon_version: Services.appinfo.appBuildID,
       locale: Services.locale.appLocaleAsLangTag,
     };
+    if (event.event_context && typeof event.event_context === "object") {
+      event.event_context = JSON.stringify(event.event_context);
+    }
     switch (event.action) {
       case "cfr_user_event":
         event = await this.applyCFRPolicy(event);

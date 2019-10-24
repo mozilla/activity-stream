@@ -477,7 +477,7 @@ class _ToolbarPanelHub {
         message_id: message.id,
         bucket_id: message.id,
         event,
-        event_context: JSON.stringify(options.value),
+        event_context: options.value,
       });
     }
   }
