@@ -1398,13 +1398,41 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       case at.PREF_CHANGED:
         switch (action.data.name) {
           case PREF_CONFIG:
-          case PREF_ENABLED:
-          case PREF_HARDCODED_BASIC_LAYOUT:
-          case PREF_SPOCS_ENDPOINT:
             // Clear the cached config and broadcast the newly computed value
             this._prefCache.config = null;
             this.store.dispatch(
               ac.BroadcastToContent({
+                type: at.DISCOVERY_STREAM_CONFIG_CHANGE,
+                data: this.config,
+              })
+            );
+            break;
+          case PREF_ENABLED:
+            // Clear the cached config and broadcast the newly computed value
+            this._prefCache.config = null;
+            // If we're turning this from off to on, we should not update open tabs.
+            if (action.data.value) {
+              this.store.dispatch(
+                ac.AlsoToPreloaded({
+                  type: at.DISCOVERY_STREAM_CONFIG_CHANGE,
+                  data: this.config,
+                })
+              );
+            } else {
+              this.store.dispatch(
+                ac.BroadcastToContent({
+                  type: at.DISCOVERY_STREAM_CONFIG_CHANGE,
+                  data: this.config,
+                })
+              );
+            }
+            break;
+          case PREF_SPOCS_ENDPOINT:
+          case PREF_HARDCODED_BASIC_LAYOUT:
+            // Clear the cached config and broadcast the newly computed value
+            this._prefCache.config = null;
+            this.store.dispatch(
+              ac.AlsoToPreloaded({
                 type: at.DISCOVERY_STREAM_CONFIG_CHANGE,
                 data: this.config,
               })

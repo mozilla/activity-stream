@@ -1805,7 +1805,7 @@ describe("DiscoveryStreamFeed", () => {
         layout_endpoint: "foo",
       });
     });
-    it("should fire loadSpocs is showSponsored pref changes", async () => {
+    it("should fire loadSpocs if showSponsored pref changes", async () => {
       sandbox.stub(feed, "loadSpocs").returns(Promise.resolve());
 
       await feed.onAction({
@@ -1834,6 +1834,106 @@ describe("DiscoveryStreamFeed", () => {
       });
 
       assert.calledOnce(feed.clearSpocs);
+    });
+    it("should fire BroadcastToContent for config changes", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({
+        type: at.PREF_CHANGED,
+        data: { name: CONFIG_PREF_NAME },
+      });
+
+      assert.calledWith(
+        feed.store.dispatch,
+        ac.BroadcastToContent({
+          data: {
+            enabled: false,
+            layout_endpoint: "https://getpocket.cdn.mozilla.net/dummy",
+            show_spocs: false,
+          },
+          type: "DISCOVERY_STREAM_CONFIG_CHANGE",
+        })
+      );
+    });
+    it("should fire BroadcastToContent for enabled false", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({
+        type: at.PREF_CHANGED,
+        data: { name: "discoverystream.enabled", value: false },
+      });
+
+      assert.calledWith(
+        feed.store.dispatch,
+        ac.BroadcastToContent({
+          data: {
+            enabled: false,
+            layout_endpoint: "https://getpocket.cdn.mozilla.net/dummy",
+            show_spocs: false,
+          },
+          type: "DISCOVERY_STREAM_CONFIG_CHANGE",
+        })
+      );
+    });
+    it("should fire AlsoToPreloaded for enabled true", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({
+        type: at.PREF_CHANGED,
+        data: { name: "discoverystream.enabled", value: true },
+      });
+
+      assert.calledWith(
+        feed.store.dispatch,
+        ac.AlsoToPreloaded({
+          data: {
+            enabled: false,
+            layout_endpoint: "https://getpocket.cdn.mozilla.net/dummy",
+            show_spocs: false,
+          },
+          type: "DISCOVERY_STREAM_CONFIG_CHANGE",
+        })
+      );
+    });
+    it("should fire AlsoToPreloaded for hardcoded basic layout", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({
+        type: at.PREF_CHANGED,
+        data: { name: "discoverystream.hardcoded-basic-layout" },
+      });
+
+      assert.calledWith(
+        feed.store.dispatch,
+        ac.AlsoToPreloaded({
+          data: {
+            enabled: false,
+            layout_endpoint: "https://getpocket.cdn.mozilla.net/dummy",
+            show_spocs: false,
+          },
+          type: "DISCOVERY_STREAM_CONFIG_CHANGE",
+        })
+      );
+    });
+    it("should fire AlsoToPreloaded for spocs endpoint changes", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({
+        type: at.PREF_CHANGED,
+        data: { name: "discoverystream.spocs-endpoint" },
+      });
+
+      assert.calledWith(
+        feed.store.dispatch,
+        ac.AlsoToPreloaded({
+          data: {
+            enabled: false,
+            layout_endpoint: "https://getpocket.cdn.mozilla.net/dummy",
+            show_spocs: false,
+          },
+          type: "DISCOVERY_STREAM_CONFIG_CHANGE",
+        })
+      );
     });
   });
 
