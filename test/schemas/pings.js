@@ -295,14 +295,16 @@ export const SessionPing = Joi.object().keys(
   })
 );
 
-export const ASRouterEventPing = Joi.object().keys({
-  addon_version: Joi.string().required(),
-  locale: Joi.string().required(),
-  message_id: Joi.string().required(),
-  event: Joi.string().required(),
-  client_id: Joi.string().optional(),
-  impression_id: Joi.string().optional(),
-});
+export const ASRouterEventPing = Joi.object()
+  .keys({
+    addon_version: Joi.string().required(),
+    locale: Joi.string().required(),
+    message_id: Joi.string().required(),
+    event: Joi.string().required(),
+    client_id: Joi.string(),
+    impression_id: Joi.string(),
+  })
+  .or("client_id", "impression_id");
 
 export const UTSessionPing = Joi.array().items(
   Joi.string()
