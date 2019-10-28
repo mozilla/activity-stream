@@ -76,3 +76,93 @@ prefs.ignore("foo", aCallback);
 
 See [toolkit/modules/Preferences.jsm](https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Preferences.jsm)
 for more information about what methods are available.
+
+## Discovery Stream Preferences
+
+Preferences specific to the Discovery Stream are nested under the sub-branch `browser.newtabpage.activity-stream.discoverystream`.
+
+#### `browser.newtabpage.activity-stream.discoverystream.campaign.blocks`
+
+- Type: `string (JSON)`
+- Default: `{}`
+
+TODO: EXPLANATION
+
+#### `browser.newtabpage.activity-stream.discoverystream.config`
+
+- Type `string (JSON)`
+- Default:
+  ```
+  {
+     "api_key_pref":"extensions.pocket.oAuthConsumerKey",
+     "collapsible":true,
+     "enabled":true,
+     "show_spocs":true,
+     "hardcoded_layout":true,
+     "personalized":false,
+     "layout_endpoint":"https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"
+  }
+  ```
+  - `api_key_pref` (string): The name of the variable containing the key for the Pocket API.
+  - `collapsible` (boolean): TODO: EXPLANATION
+  - `enabled` (boolean): TODO: EXPLANATION
+  - `show_spocs` (boolean): Show sponsored content in new tab.
+  - `hardcoded_layout` (boolean): When this is true, a hardcoded layout shipped with Firefox will be used instead of a remotely fetched layout definition.
+  - `personalized` (boolean): When this is true personalized content based on browsing history will be favored.
+  - `layout_endpoint` (string): The URL for a remote layout definition that will be used only if `hardcoded_layout` is `false`.
+
+#### `browser.newtabpage.activity-stream.discoverystream.enabled`
+
+- Type: `boolean`
+- Default: `true`
+
+When this is set to `true` the Discovery Stream experience will show up. Otherwise the old Activity Stream will be shown.
+
+#### `browser.newtabpage.activity-stream.discoverystream.endpointSpocsClear`
+
+- Type: `string (URL)`
+- Default: `https://spocs.getpocket.com/user`
+
+TODO: EXPLANATION
+
+#### `browser.newtabpage.activity-stream.discoverystream.endpoints`
+
+- Type: `string (URLs, CSV)`
+- Default: `https://getpocket.cdn.mozilla.net/,https://spocs.getpocket.com/`
+
+A whitelist of endpoints that are allowed to be used.
+
+#### `browser.newtabpage.activity-stream.discoverystream.engagementLabelEnabled`
+
+- Type: `boolean`
+- Default: `false`
+
+A flag controlling the visibility of engagement labels on cards (eg: "Trending" or "Popular").
+
+#### `browser.newtabpage.activity-stream.discoverystream.hardcoded-basic-layout`
+
+- Type: `boolean`
+- Default: `false`
+
+TODO: EXPLANATION
+
+#### `browser.newtabpage.activity-stream.discoverystream.rec.impressions`
+
+- Type: `string (JSON)`
+- Default: `{}`
+
+TODO: EXPLANATION
+
+#### `browser.newtabpage.activity-stream.discoverystream.spoc.impressions`
+
+- Type: `string`
+- Default: `{}`
+
+TODO: EXPLANATION
+
+#### `browser.newtabpage.activity-stream.discoverystream.spocs-endpoint`
+
+- Type: `string`
+- Default: `null`
+
+TODO: EXPLANATION
