@@ -79,7 +79,7 @@ for more information about what methods are available.
 
 ## Discovery Stream Preferences
 
-Preferences specific to the Discovery Stream are nested under the sub-branch `browser.newtabpage.activity-stream.discoverystream`.
+Preferences specific to the Discovery Stream are nested under the sub-branch `browser.newtabpage.activity-stream.discoverystream` (with the exception of `browser.newtabpage.blocked`).
 
 #### `browser.newtabpage.activity-stream.discoverystream.campaign.blocks`
 
@@ -88,6 +88,14 @@ Preferences specific to the Discovery Stream are nested under the sub-branch `br
 - Pref Type: AS
 
 Not intended for user configuration, but is programatically updated. Used for tracking blocked campaign IDs when a user dismisses a SPOC. Keys are campaign IDs. Values don't have a specific meaning.
+
+#### `browser.newtabpage.blocked`
+
+- Type: `string (JSON)`
+- Default: `null`
+- Pref Type: AS
+
+Not intended for user configuration, but is programatically updated. Used for tracking blocked story IDs when a user dismisses one. Keys are story IDs. Values don't have a specific meaning.
 
 #### `browser.newtabpage.activity-stream.discoverystream.config`
 
