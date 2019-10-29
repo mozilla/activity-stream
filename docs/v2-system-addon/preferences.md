@@ -85,8 +85,9 @@ Preferences specific to the Discovery Stream are nested under the sub-branch `br
 
 - Type: `string (JSON)`
 - Default: `{}`
+- Pref Type: AS
 
-TODO: EXPLANATION
+Not intended for user configuration, but is programatically updated. Used for tracking blocked campaign IDs when a user dismisses a SPOC. Keys are campaign IDs. Values don't have a specific meaning.
 
 #### `browser.newtabpage.activity-stream.discoverystream.config`
 
@@ -94,18 +95,18 @@ TODO: EXPLANATION
 - Default:
   ```
   {
-     "api_key_pref":"extensions.pocket.oAuthConsumerKey",
-     "collapsible":true,
-     "enabled":true,
-     "show_spocs":true,
-     "hardcoded_layout":true,
-     "personalized":false,
-     "layout_endpoint":"https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"
+     "api_key_pref": "extensions.pocket.oAuthConsumerKey",
+     "collapsible": true,
+     "enabled": true,
+     "show_spocs": true,
+     "hardcoded_layout": true,
+     "personalized": false,
+     "layout_endpoint": "https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"
   }
   ```
   - `api_key_pref` (string): The name of the variable containing the key for the Pocket API.
-  - `collapsible` (boolean): TODO: EXPLANATION
-  - `enabled` (boolean): TODO: EXPLANATION
+  - `collapsible` (boolean): Controls whether the sections in new tab can be collapsed. DEPRECATE?
+  - `enabled` (boolean): Controls whether DS is turned on for general population. Can be overriden by `browser.newtabpage.activity-stream.discoverystream.enabled`.
   - `show_spocs` (boolean): Show sponsored content in new tab.
   - `hardcoded_layout` (boolean): When this is true, a hardcoded layout shipped with Firefox will be used instead of a remotely fetched layout definition.
   - `personalized` (boolean): When this is true personalized content based on browsing history will be favored.
@@ -115,27 +116,31 @@ TODO: EXPLANATION
 
 - Type: `boolean`
 - Default: `true`
+- Pref Type: Firefox
 
-When this is set to `true` the Discovery Stream experience will show up. Otherwise the old Activity Stream will be shown.
+When this is set to `true` the Discovery Stream experience will show up if `enabled` is also `true` on `browser.newtabpage.activity-stream.discoverystream.config`. Otherwise the old Activity Stream will be shown.
 
 #### `browser.newtabpage.activity-stream.discoverystream.endpointSpocsClear`
 
 - Type: `string (URL)`
 - Default: `https://spocs.getpocket.com/user`
+- Pref Type: AS
 
-TODO: EXPLANATION
+Endpoint for when a user opts-out of sponsored content to delete the user's data from the ad server. TODO: talk to mathijs
 
 #### `browser.newtabpage.activity-stream.discoverystream.endpoints`
 
 - Type: `string (URLs, CSV)`
 - Default: `https://getpocket.cdn.mozilla.net/,https://spocs.getpocket.com/`
+- Pref Type: AS
 
-A whitelist of endpoints that are allowed to be used.
+A whitelist of endpoints that are allowed to be used by Discovery Stream for remote content (eg: story metadata) and configuration (eg: remote layout definitions for experimentation).
 
 #### `browser.newtabpage.activity-stream.discoverystream.engagementLabelEnabled`
 
 - Type: `boolean`
 - Default: `false`
+- Pref Type: AS
 
 A flag controlling the visibility of engagement labels on cards (eg: "Trending" or "Popular").
 
@@ -143,26 +148,31 @@ A flag controlling the visibility of engagement labels on cards (eg: "Trending" 
 
 - Type: `boolean`
 - Default: `false`
+- Pref Type: Firefox
 
-TODO: EXPLANATION
+If this is `false` the default hardcoded layout is used, and if it's `true` then an alternate legacy hardcoded layout (that currently simulates the older AS experience) is used. MAYBE DEPRECATE
 
 #### `browser.newtabpage.activity-stream.discoverystream.rec.impressions`
 
 - Type: `string (JSON)`
 - Default: `{}`
+- Pref Type: AS
 
-TODO: EXPLANATION
+Programatically generated hash table where the keys are rec IDs and the values are timestamps representing the first impression.
 
 #### `browser.newtabpage.activity-stream.discoverystream.spoc.impressions`
 
 - Type: `string`
 - Default: `{}`
+- Pref Type: AS
 
-TODO: EXPLANATION
+Programatically generated hash table where the keys are SPOC IDs and the values are arrays of timestamps recording every impression.
 
 #### `browser.newtabpage.activity-stream.discoverystream.spocs-endpoint`
 
 - Type: `string`
 - Default: `null`
+- Pref Type: Firefox
 
-TODO: EXPLANATION
+Override to specify endpoint for SPOCs. Will take precedence over remote and hardcoded layout SPOC endpoints.
+MAYBE DEPRECATE?
