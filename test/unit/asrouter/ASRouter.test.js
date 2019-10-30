@@ -219,14 +219,17 @@ describe("ASRouter", () => {
       assert.deepEqual(Router.state.messageBlockList, ["foo"]);
     });
     it("should migrate provider impressions to group impressions", async () => {
-      providerImpressions = { foo: [1, 2, 3] };
+      setMessageProviderPref([
+        { id: "onboarding", type: "local", messages: [] },
+      ]);
+      providerImpressions = { onboarding: [1, 2, 3] };
       Router = new _ASRouter();
       await Router.init(channel, createFakeStorage(), dispatchStub);
 
-      assert.property(Router.state.groupImpressions, "foo");
+      assert.property(Router.state.groupImpressions, "onboarding");
       assert.deepEqual(
-        Router.state.groupImpressions.foo,
-        providerImpressions.foo
+        Router.state.groupImpressions.onboarding,
+        providerImpressions.onboarding
       );
     });
     it("should initialize all the hub providers", async () => {
