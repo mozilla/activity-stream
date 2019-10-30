@@ -524,7 +524,7 @@ class _ASRouter {
       lastMessageId: null,
       providers: [],
       messageBlockList: [],
-      groupsBlockList: [],
+      groupBlockList: [],
       providerBlockList: [],
       messageImpressions: {},
       trailheadInitialized: false,
@@ -709,7 +709,7 @@ class _ASRouter {
           // All messages coming from this provider will belong to this group
           groups: [id],
           // Provider is enabled if pref config is true and is not in the block list
-          enabled: enabled && !this.state.groupsBlockList.includes(id),
+          enabled: enabled && !this.state.groupBlockList.includes(id),
           type,
         };
         if (frequency) {
@@ -724,7 +724,7 @@ class _ASRouter {
         enabled:
           group.enabled &&
           // Enabled if the group is not preset in the block list
-          !this.state.groupsBlockList.includes(group.id) &&
+          !this.state.groupBlockList.includes(group.id) &&
           Array.isArray(group.userPreferences) &&
           group.userPreferences.every(ASRouterPreferences.getUserPreference),
       };
@@ -890,9 +890,9 @@ class _ASRouter {
       (await this._storage.get("messageImpressions")) || {};
     const groupImpressions =
       (await this._storage.get("groupImpressions")) || {};
-    // Combine the existing providersBlockList into the groupsBlockList
-    const groupsBlockList = (
-      (await this._storage.get("groupsBlockList")) || []
+    // Combine the existing providersBlockList into the groupBlockList
+    const groupBlockList = (
+      (await this._storage.get("groupBlockList")) || []
     ).concat(providerBlockList);
 
     // Merge any existing provider impressions into the corresponding group
@@ -910,7 +910,7 @@ class _ASRouter {
       (await this._storage.get("previousSessionEnd")) || 0;
     await this.setState({
       messageBlockList,
-      groupsBlockList,
+      groupBlockList,
       providerBlockList,
       groupImpressions,
       messageImpressions,
@@ -1485,7 +1485,7 @@ class _ASRouter {
         !state.messageBlockList.includes(item.id) &&
         (!item.campaign || !state.messageBlockList.includes(item.campaign)) &&
         !state.providerBlockList.includes(item.provider) &&
-        item.groups.every(groupId => !state.groupsBlockList.includes(groupId))
+        item.groups.every(groupId => !state.groupBlockList.includes(groupId))
     );
   }
 
@@ -1799,8 +1799,8 @@ class _ASRouter {
     if (!id) {
       return false;
     }
-    const groupsBlockList = [...this.state.groupsBlockList, id];
-    this._storage.set("groupsBlockList", groupsBlockList);
+    const groupBlockList = [...this.state.groupBlockList, id];
+    this._storage.set("groupBlockList", groupBlockList);
     return this.setGroupState({ id, value: false });
   }
 
@@ -1813,10 +1813,10 @@ class _ASRouter {
     if (!id) {
       return false;
     }
-    const groupsBlockList = [
-      ...this.state.groupsBlockList.filter(groupId => groupId !== id),
+    const groupBlockList = [
+      ...this.state.groupBlockList.filter(groupId => groupId !== id),
     ];
-    this._storage.set("groupsBlockList", groupsBlockList);
+    this._storage.set("groupBlockList", groupBlockList);
     return this.setGroupState({ id, value: true });
   }
 

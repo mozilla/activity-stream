@@ -1008,7 +1008,7 @@ describe("ASRouter", () => {
     it("should not return a message from a blocked group", async () => {
       // Block all messages except the first
       await Router.setState(() => ({
-        groupsBlockList: ["blockedG"],
+        groupBlockList: ["blockedG"],
         messages: [
           { id: "foo", provider: "snippets", groups: ["snippets"] },
           { id: "bar", provider: "snippets", groups: ["snippets", "blockedG"] },
@@ -3560,7 +3560,7 @@ describe("ASRouter", () => {
         assert.jsonSchema(group, MessageGroupSchema);
       });
     });
-    it("should disable groups that are in the groupsBlockList", async () => {
+    it("should disable groups that are in the groupBlockList", async () => {
       const groupsProvider = { id: "groups-provider" };
       const messageGroups = [
         {
@@ -3576,7 +3576,7 @@ describe("ASRouter", () => {
         .returns({ messages: messageGroups });
 
       await Router.setState({
-        groupsBlockList: ["group-1", "provider-group"],
+        groupBlockList: ["group-1", "provider-group"],
         providers: [
           {
             id: "provider-group",
@@ -3626,12 +3626,12 @@ describe("ASRouter", () => {
       assert.isFalse(await Router.blockGroupById());
     });
     it("should save to storage the updated blocked list", async () => {
-      await Router.setState({ groupsBlockList: [1, 2] });
+      await Router.setState({ groupBlockList: [1, 2] });
 
       await Router.blockGroupById(3);
 
       assert.calledOnce(Router._storage.set);
-      assert.calledWithExactly(Router._storage.set, "groupsBlockList", [
+      assert.calledWithExactly(Router._storage.set, "groupBlockList", [
         1,
         2,
         3,
@@ -3655,12 +3655,12 @@ describe("ASRouter", () => {
       assert.isFalse(await Router.unblockGroupById());
     });
     it("should save to storage the updated blocked list", async () => {
-      await Router.setState({ groupsBlockList: ["block_1", "block_2"] });
+      await Router.setState({ groupBlockList: ["block_1", "block_2"] });
 
       await Router.unblockGroupById("block_2");
 
       assert.calledOnce(Router._storage.set);
-      assert.calledWithExactly(Router._storage.set, "groupsBlockList", [
+      assert.calledWithExactly(Router._storage.set, "groupBlockList", [
         "block_1",
       ]);
     });
