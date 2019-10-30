@@ -942,6 +942,16 @@ export class ASRouterAdminInner extends React.PureComponent {
     });
   }
 
+  _getGroupImpressionsCount(id, frequency) {
+    if (frequency) {
+      return this.state.groupImpressions[id]
+        ? this.state.groupImpressions[id].length
+        : 0;
+    }
+
+    return "n/a";
+  }
+
   renderPocketStory(story) {
     return (
       <tr className="message-item" key={story.guid}>
@@ -1171,12 +1181,7 @@ export class ASRouterAdminInner extends React.PureComponent {
                         onChange={this.toggleGroups}
                       />
                     </td>
-                    <td>
-                      {frequency &&
-                        this.state.groupImpressions[id] &&
-                        this.state.groupImpressions[id].length}
-                      {!frequency && !this.state.groupImpressions[id] && "n/a"}
-                    </td>
+                    <td>{this._getGroupImpressionsCount(id, frequency)}</td>
                     <td>{JSON.stringify(frequency, null, 2)}</td>
                   </Row>
                 ))}
