@@ -18,6 +18,7 @@ const createDummyRecommendation = ({
 }) => {
   let recommendation = {
     template,
+    groups: ["mochitest-group"],
     content: {
       layout: layout || "addon_recommendation",
       category,
