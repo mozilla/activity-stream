@@ -182,14 +182,21 @@ class PageAction {
   async showAddressBarNotifier(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
-    this.label.value = await this.getStrings(
+    let notificationText = await this.getStrings(
       recommendation.content.notification_text
     );
-
-    this.button.setAttribute(
-      "tooltiptext",
-      await this.getStrings(recommendation.content.notification_text)
-    );
+    this.label.value = notificationText;
+    if (notificationText.attributes) {
+      this.button.setAttribute(
+        "tooltiptext",
+        notificationText.attributes.tooltiptext
+      );
+      // For a11y, we want the more descriptive text.
+      this.container.setAttribute(
+        "aria-label",
+        notificationText.attributes.tooltiptext
+      );
+    }
     this.button.setAttribute(
       "data-cfr-icon",
       CATEGORY_ICONS[recommendation.content.category]
@@ -215,6 +222,13 @@ class PageAction {
       this._expand(DELAY_BEFORE_EXPAND_MS);
 
       this.addImpression(recommendation);
+    }
+
+    if (notificationText.attributes) {
+      this.window.A11yUtils.announce({
+        raw: notificationText.attributes["a11y-announcement"],
+        source: this.container,
+      });
     }
   }
 
