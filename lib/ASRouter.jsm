@@ -1656,12 +1656,17 @@ class _ASRouter {
         state.messages,
         "messageImpressions"
       );
+      const groupImpressions = this._cleanupImpressionsForItems(
+        state,
+        state.providers,
+        "groupImpressions"
+      );
       this._cleanupImpressionsForItems(
         state,
         state.providers,
         "providerImpressions"
       );
-      return { messageImpressions };
+      return { messageImpressions, groupImpressions };
     });
   }
 
