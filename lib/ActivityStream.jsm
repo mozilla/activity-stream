@@ -469,10 +469,11 @@ const PREFS_CONFIG = new Map([
       title: "Configuration for the new pocket new tab",
       getValue: ({ geo, locale }) => {
         // PLEASE NOTE:
-        // hardcoded_layout in `lib/DiscoveryStreamFeed.jsm` only works for en-* and requires refactoring for non english locales
+        // hardcoded_layout in `lib/DiscoveryStreamFeed.jsm` only works for en-* and DE and requires refactoring for other locales
         const dsEnablementMatrix = {
           US: ["en-CA", "en-GB", "en-US"],
           CA: ["en-CA", "en-GB", "en-US"],
+          DE: ["de", "de-DE", "de-AT", "de-CH"],
         };
 
         // Verify that the current geo & locale combination is enabled
