@@ -1658,7 +1658,7 @@ class _ASRouter {
       );
       const groupImpressions = this._cleanupImpressionsForItems(
         state,
-        state.providers,
+        state.groups,
         "groupImpressions"
       );
       this._cleanupImpressionsForItems(

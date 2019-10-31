@@ -63,6 +63,7 @@ describe("ASRouter", () => {
   let providerBlockList;
   let messageImpressions;
   let providerImpressions;
+  let groupImpressions;
   let previousSessionEnd;
   let fetchStub;
   let clock;
@@ -85,6 +86,7 @@ describe("ASRouter", () => {
     getStub
       .withArgs("messageImpressions")
       .returns(Promise.resolve(messageImpressions));
+    getStub.withArgs("groupImpressions").resolves(groupImpressions);
     getStub
       .withArgs("providerImpressions")
       .returns(Promise.resolve(providerImpressions));
@@ -116,6 +118,7 @@ describe("ASRouter", () => {
     providerBlockList = [];
     messageImpressions = {};
     providerImpressions = {};
+    groupImpressions = {};
     previousSessionEnd = 100;
     sandbox = sinon.createSandbox();
 
@@ -280,6 +283,36 @@ describe("ASRouter", () => {
       await Router.init(channel, createFakeStorage(), dispatchStub);
 
       assert.deepEqual(Router.state.messageImpressions, messageImpressions);
+    });
+    it("should clear impressions for groups that are not active", async () => {
+      groupImpressions = { foo: [0, 1, 2] };
+      Router = new _ASRouter();
+      await Router.init(channel, createFakeStorage(), dispatchStub);
+
+      assert.notProperty(Router.state.groupImpressions, "foo");
+    });
+    it("should keep impressions for groups that are active", async () => {
+      Router = new _ASRouter();
+      await Router.init(channel, createFakeStorage(), dispatchStub);
+      await Router.setState(() => {
+        return {
+          groups: [
+            {
+              id: "foo",
+              enabled: true,
+              frequency: {
+                custom: [{ period: "daily", cap: 10 }],
+                lifetime: Infinity,
+              },
+            },
+          ],
+          groupImpressions: { foo: [Date.now()] },
+        };
+      });
+      Router.cleanupImpressions();
+
+      assert.property(Router.state.groupImpressions, "foo");
+      assert.lengthOf(Router.state.groupImpressions.foo, 1);
     });
     it("should await .loadMessagesFromAllProviders() and add messages from providers to state.messages", async () => {
       Router = new _ASRouter(Object.freeze(FAKE_LOCAL_PROVIDERS));
@@ -2693,10 +2726,15 @@ describe("ASRouter", () => {
             {},
             state.messageImpressions
           );
-          const groupImpressions = Object.assign({}, state.providerImpressions);
-          groupImpressions.bar = barGroupImpressions;
+          const gImpressions = Object.assign({}, state.providerImpressions);
+          gImpressions.bar = barGroupImpressions;
           messageImpressions.foo = fooMessageImpressions;
-          return { providers, messageImpressions, groups, groupImpressions };
+          return {
+            providers,
+            messageImpressions,
+            groups,
+            groupImpressions: gImpressions,
+          };
         });
 
         await Router.isBelowFrequencyCaps(message);
