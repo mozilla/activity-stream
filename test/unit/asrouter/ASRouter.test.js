@@ -159,14 +159,14 @@ describe("ASRouter", () => {
       registerBadgeNotificationListener: sandbox.stub(),
     };
     globals.set({
+      // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
+      // importing these modules into the global scope ourselves.
       ASRouterPreferences,
       TARGETING_PREFERENCES,
       ASRouterTargeting,
       ASRouterTriggerListeners,
       QueryCache,
       AttributionCode: fakeAttributionCode,
-      // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
-      // importing these modules into the global scope ourselves.
       SnippetsTestMessageProvider,
       PanelTestProvider,
       BookmarkPanelHub: FakeBookmarkPanelHub,
@@ -3528,7 +3528,13 @@ describe("ASRouter", () => {
   });
   describe("#loadAllMessageGroups", () => {
     it("should group local providers and message providers, group enabled", async () => {
-      const groupsProvider = { id: "groups-provider" };
+      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
+      const groupsProvider = {
+        id: "message-groups",
+        enabled: true,
+        userPreferences: [],
+        type: "remote-settings",
+      };
       const messageGroups = [
         {
           id: "group-1",
@@ -3538,9 +3544,9 @@ describe("ASRouter", () => {
         },
       ];
       const stub = sandbox
-        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups });
+        .returns({ messages: messageGroups, lastUpdated: Date.now() });
 
       await Router.setState({
         providers: [
@@ -3550,13 +3556,14 @@ describe("ASRouter", () => {
             type: "local",
             frequency: { lifetime: 3 },
           },
+          groupsProvider,
         ],
       });
 
-      await Router.loadAllMessageGroups(groupsProvider);
+      await Router.loadAllMessageGroups();
 
       assert.calledOnce(stub);
-      assert.lengthOf(Router.state.groups, 2);
+      assert.lengthOf(Router.state.groups, 3);
       assert.propertyVal(
         Router.state.groups.find(group => group.id === "provider-group")
           .frequency,
@@ -3568,7 +3575,13 @@ describe("ASRouter", () => {
       });
     });
     it("should group local providers and message providers, group disabled", async () => {
-      const groupsProvider = { id: "groups-provider" };
+      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
+      const groupsProvider = {
+        id: "message-groups",
+        enabled: false,
+        userPreferences: [],
+        type: "remote-settings",
+      };
       const messageGroups = [
         {
           id: "group-1",
@@ -3578,9 +3591,9 @@ describe("ASRouter", () => {
         },
       ];
       sandbox
-        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups });
+        .returns({ messages: messageGroups, lastUpdated: Date.now() });
       const stub = sandbox
         .stub(ASRouterPreferences, "getUserPreference")
         .withArgs("foo")
@@ -3589,20 +3602,27 @@ describe("ASRouter", () => {
       await Router.setState({
         providers: [
           { id: "provider-group", enabled: false, type: "remote-settings" },
+          groupsProvider,
         ],
       });
 
-      await Router.loadAllMessageGroups(groupsProvider);
+      await Router.loadAllMessageGroups();
 
       assert.calledOnce(stub);
-      assert.lengthOf(Router.state.groups, 2);
+      assert.lengthOf(Router.state.groups, 3);
       assert.isTrue(Router.state.groups.every(group => !group.enabled));
       Router.state.groups.forEach(group => {
         assert.jsonSchema(group, MessageGroupSchema);
       });
     });
     it("should disable groups that are in the groupBlockList", async () => {
-      const groupsProvider = { id: "groups-provider" };
+      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
+      const groupsProvider = {
+        id: "message-groups",
+        enabled: true,
+        userPreferences: [],
+        type: "remote-settings",
+      };
       const messageGroups = [
         {
           id: "group-1",
@@ -3612,12 +3632,12 @@ describe("ASRouter", () => {
         },
       ];
       const stub = sandbox
-        .stub(MessageLoaderUtils, "loadMessagesForProvider")
+        .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups });
+        .returns({ messages: messageGroups, lastUpdated: Date.now() });
 
       await Router.setState({
-        groupBlockList: ["group-1", "provider-group"],
+        groupBlockList: ["message-groups", "provider-group", "group-1"],
         providers: [
           {
             id: "provider-group",
@@ -3625,13 +3645,14 @@ describe("ASRouter", () => {
             type: "local",
             frequency: { lifetime: 3 },
           },
+          groupsProvider,
         ],
       });
 
-      await Router.loadAllMessageGroups(groupsProvider);
+      await Router.loadAllMessageGroups();
 
       assert.calledOnce(stub);
-      assert.lengthOf(Router.state.groups, 2);
+      assert.lengthOf(Router.state.groups, 3);
       assert.isTrue(Router.state.groups.every(group => !group.enabled));
       Router.state.groups.forEach(group => {
         assert.jsonSchema(group, MessageGroupSchema);

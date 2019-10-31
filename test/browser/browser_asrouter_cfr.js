@@ -885,3 +885,14 @@ add_task(async function test_cfr_notification_keyboard() {
   await hidden;
   Assert.ok(true, "Panel hidden after Escape pressed");
 });
+
+add_task(function test_updateCycleForProviders() {
+  Services.prefs
+    .getChildList("browser.newtabpage.activity-stream.asrouter.providers.")
+    .forEach(provider => {
+      const prefValue = JSON.parse(Services.prefs.getStringPref(provider, ""));
+      if (prefValue.type === "remote-settings") {
+        Assert.ok(prefValue.updateCycleInMs);
+      }
+    });
+});

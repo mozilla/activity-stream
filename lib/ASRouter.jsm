@@ -390,16 +390,7 @@ const MessageLoaderUtils = {
     );
   },
 
-  /**
-   * loadMessagesForProvider - Load messages for a provider, given the provider's type.
-   *
-   * @param {obj} provider An AS Router provider
-   * @param {string} provider.type An AS Router provider type (defaults to "local")
-   * @param {obj} options.storage A storage object with get() and set() methods for caching.
-   * @param {func} options.dispatchToAS dispatch an action the main AS Store
-   * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
-   */
-  async loadMessagesForProvider(provider, options) {
+  async _loadDataForProvider(provider, options) {
     const loader = this._getMessageLoader(provider);
     let messages = await loader(provider, options);
     // istanbul ignore if
@@ -413,13 +404,30 @@ const MessageLoaderUtils = {
         )
       );
     }
+
+    return { messages, lastUpdated: Date.now() };
+  },
+
+  /**
+   * loadMessagesForProvider - Load messages for a provider, given the provider's type.
+   *
+   * @param {obj} provider An AS Router provider
+   * @param {string} provider.type An AS Router provider type (defaults to "local")
+   * @param {obj} options.storage A storage object with get() and set() methods for caching.
+   * @param {func} options.dispatchToAS dispatch an action the main AS Store
+   * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
+   */
+  async loadMessagesForProvider(provider, options) {
+    let { messages, lastUpdated } = await this._loadDataForProvider(
+      provider,
+      options
+    );
     // Filter out messages we temporarily want to exclude
     if (provider.exclude && provider.exclude.length) {
       messages = messages.filter(
         message => !provider.exclude.includes(message.id)
       );
     }
-    const lastUpdated = Date.now();
     return {
       messages: messages
         .map(msg => ({
@@ -690,17 +698,21 @@ class _ASRouter {
    * Fetch all message groups and update Router.state.groups
    * @param provider RS messages provider for message groups
    */
-  async loadAllMessageGroups(provider) {
+  async loadAllMessageGroups() {
+    const [provider] = this.state.providers.filter(
+      p =>
+        p.id === "message-groups" && MessageLoaderUtils.shouldProviderUpdate(p)
+    );
     if (!provider) {
       return;
     }
-    let { messages } = await MessageLoaderUtils.loadMessagesForProvider(
-      provider,
-      {
-        storage: this._storage,
-        dispatchToAS: this.dispatchToAS,
-      }
-    );
+    let {
+      messages,
+      lastUpdated,
+    } = await MessageLoaderUtils._loadDataForProvider(provider, {
+      storage: this._storage,
+      dispatchToAS: this.dispatchToAS,
+    });
     const providerGroups = this.state.providers.map(
       ({ id, frequency = null, enabled, type }) => {
         const group = {
@@ -729,10 +741,18 @@ class _ASRouter {
           group.userPreferences.every(ASRouterPreferences.getUserPreference),
       };
     });
+    // New `lastUpdated` value for this provider
+    const updatedProvider = { ...provider, lastUpdated };
+    const newProvidersState = this.state.providers.filter(
+      p => p.id === "message-groups"
+    );
     // Groups consist of automatically generated groups based on each message provider
     // merged with message defined groups fetched from Remote Settings.
     // A message defined group can override a provider group is it has the same name.
-    await this.setState({ groups: [...providerGroups, ...messageGroups] });
+    await this.setState({
+      groups: [...providerGroups, ...messageGroups],
+      providers: [...newProvidersState, updatedProvider],
+    });
   }
 
   /**
@@ -744,9 +764,7 @@ class _ASRouter {
     const needsUpdate = this.state.providers.filter(provider =>
       MessageLoaderUtils.shouldProviderUpdate(provider)
     );
-    await this.loadAllMessageGroups(
-      needsUpdate.find(({ id }) => id === "message-groups")
-    );
+    await this.loadAllMessageGroups();
     // Don't do extra work if we don't need any updates
     if (needsUpdate.length) {
       let newState = { messages: [], providers: [] };
