@@ -597,9 +597,19 @@ export class ASRouterAdminInner extends React.PureComponent {
 
   renderMessageItem(msg) {
     const isCurrent = msg.id === this.state.lastMessageId;
-    const isBlocked =
+    const isBlockedByGroup = this.state.groups
+      .filter(group => msg.groups.includes(group.id))
+      .some(group => !group.enabled);
+    const msgProvider = this.state.providers.find(
+      provider => provider.id === msg.provider
+    );
+    const isProviderExcluded =
+      msgProvider.exclude && msgProvider.exclude.includes(msg.id);
+    const isMessageBlocked =
       this.state.messageBlockList.includes(msg.id) ||
       this.state.messageBlockList.includes(msg.campaign);
+    const isBlocked =
+      isMessageBlocked || isBlockedByGroup || isProviderExcluded;
     const impressions = this.state.messageImpressions[msg.id]
       ? this.state.messageImpressions[msg.id].length
       : 0;
@@ -636,7 +646,17 @@ export class ASRouterAdminInner extends React.PureComponent {
           <br />({impressions} impressions)
         </td>
         <td className="message-summary">
-          <pre>{JSON.stringify(msg, null, 2)}</pre>
+          {isBlocked &&
+            <tr>
+              Block reason:
+              {isBlockedByGroup && " Blocked by group"}
+              {isProviderExcluded && " Excluded by provider"}
+              {isMessageBlocked && " Message blocked"}
+            </tr>
+          }
+          <tr>
+            <pre>{JSON.stringify(msg, null, 2)}</pre>
+          </tr>
         </td>
       </tr>
     );
