@@ -405,7 +405,7 @@ const MessageLoaderUtils = {
       );
     }
 
-    return { messages, lastUpdated: Date.now() };
+    return { messages };
   },
 
   /**
@@ -418,10 +418,8 @@ const MessageLoaderUtils = {
    * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
    */
   async loadMessagesForProvider(provider, options) {
-    let { messages, lastUpdated } = await this._loadDataForProvider(
-      provider,
-      options
-    );
+    let { messages } = await this._loadDataForProvider(provider, options);
+    const lastUpdated = Date.now();
     // Filter out messages we temporarily want to exclude
     if (provider.exclude && provider.exclude.length) {
       messages = messages.filter(
@@ -706,10 +704,7 @@ class _ASRouter {
     if (!provider) {
       return;
     }
-    let {
-      messages,
-      lastUpdated,
-    } = await MessageLoaderUtils._loadDataForProvider(provider, {
+    let { messages } = await MessageLoaderUtils._loadDataForProvider(provider, {
       storage: this._storage,
       dispatchToAS: this.dispatchToAS,
     });
@@ -741,18 +736,10 @@ class _ASRouter {
           group.userPreferences.every(ASRouterPreferences.getUserPreference),
       };
     });
-    // New `lastUpdated` value for this provider
-    const updatedProvider = { ...provider, lastUpdated };
-    const newProvidersState = this.state.providers.filter(
-      p => p.id === "message-groups"
-    );
     // Groups consist of automatically generated groups based on each message provider
     // merged with message defined groups fetched from Remote Settings.
     // A message defined group can override a provider group is it has the same name.
-    await this.setState({
-      groups: [...providerGroups, ...messageGroups],
-      providers: [...newProvidersState, updatedProvider],
-    });
+    await this.setState({ groups: [...providerGroups, ...messageGroups] });
   }
 
   /**

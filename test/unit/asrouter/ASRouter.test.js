@@ -3528,7 +3528,6 @@ describe("ASRouter", () => {
   });
   describe("#loadAllMessageGroups", () => {
     it("should group local providers and message providers, group enabled", async () => {
-      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
       const groupsProvider = {
         id: "message-groups",
         enabled: true,
@@ -3546,7 +3545,7 @@ describe("ASRouter", () => {
       const stub = sandbox
         .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups, lastUpdated: Date.now() });
+        .returns({ messages: messageGroups });
 
       await Router.setState({
         providers: [
@@ -3575,7 +3574,6 @@ describe("ASRouter", () => {
       });
     });
     it("should group local providers and message providers, group disabled", async () => {
-      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
       const groupsProvider = {
         id: "message-groups",
         enabled: false,
@@ -3593,7 +3591,7 @@ describe("ASRouter", () => {
       sandbox
         .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups, lastUpdated: Date.now() });
+        .returns({ messages: messageGroups });
       const stub = sandbox
         .stub(ASRouterPreferences, "getUserPreference")
         .withArgs("foo")
@@ -3616,7 +3614,6 @@ describe("ASRouter", () => {
       });
     });
     it("should disable groups that are in the groupBlockList", async () => {
-      sandbox.stub(MessageLoaderUtils, "shouldProviderUpdate").returns(true);
       const groupsProvider = {
         id: "message-groups",
         enabled: true,
@@ -3634,7 +3631,7 @@ describe("ASRouter", () => {
       const stub = sandbox
         .stub(MessageLoaderUtils, "_loadDataForProvider")
         .withArgs(groupsProvider, sinon.match.object)
-        .returns({ messages: messageGroups, lastUpdated: Date.now() });
+        .returns({ messages: messageGroups });
 
       await Router.setState({
         groupBlockList: ["message-groups", "provider-group", "group-1"],
