@@ -419,13 +419,6 @@ const MessageLoaderUtils = {
    */
   async loadMessagesForProvider(provider, options) {
     let { messages } = await this._loadDataForProvider(provider, options);
-    const lastUpdated = Date.now();
-    // Filter out messages we temporarily want to exclude
-    if (provider.exclude && provider.exclude.length) {
-      messages = messages.filter(
-        message => !provider.exclude.includes(message.id)
-      );
-    }
     return {
       messages: messages
         .map(msg => ({
@@ -435,7 +428,7 @@ const MessageLoaderUtils = {
           provider: provider.id,
         }))
         .filter(message => message.weight > 0),
-      lastUpdated,
+      lastUpdated: Date.now(),
       errors: MessageLoaderUtils.errors,
     };
   },
@@ -686,10 +679,31 @@ class _ASRouter {
     });
   }
 
+  /**
+   * Check all provided groups are enabled
+   * @param groups Set of groups to verify
+   * @returns bool
+   */
   hasGroupsEnabled(groups = []) {
     return this.state.groups
       .filter(({ id }) => groups.includes(id))
       .every(({ enabled }) => enabled);
+  }
+
+  /**
+   * Verify that the provider block the message through the `exclude` field
+   * @param message Message to verify
+   * @returns bool
+   */
+  isExcludedByProvider(message) {
+    const provider = this.state.providers.find(p => p.id === message.provider);
+    if (!provider) {
+      return true;
+    }
+    if (provider.exclude) {
+      return provider.exclude.includes(message.id);
+    }
+    return false;
   }
 
   /**
@@ -1487,7 +1501,8 @@ class _ASRouter {
         !state.messageBlockList.includes(item.id) &&
         (!item.campaign || !state.messageBlockList.includes(item.campaign)) &&
         !state.providerBlockList.includes(item.provider) &&
-        this.hasGroupsEnabled(item.groups)
+        this.hasGroupsEnabled(item.groups) &&
+        !this.isExcludedByProvider(item)
     );
   }
 

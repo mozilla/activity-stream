@@ -438,14 +438,17 @@ describe("ASRouter", () => {
         campaign: "foocampaign",
         targeting: "true",
         groups: ["snippets"],
+        provider: "snippets",
       };
       const messageNotTargeted = {
         id: "2",
         campaign: "foocampaign",
         groups: ["snippets"],
+        provider: "snippets",
       };
       await Router.setState({
         messages: [messageTargeted, messageNotTargeted],
+        providers: [{ id: "snippets" }],
       });
       sandbox.stub(ASRouterTargeting, "isMatch").resolves(false);
 
@@ -993,6 +996,11 @@ describe("ASRouter", () => {
   });
 
   describe("#handleMessageRequest", () => {
+    beforeEach(async () => {
+      await Router.setState(() => ({
+        providers: [{ id: "snippets" }, { id: "badge" }],
+      }));
+    });
     it("should not return a blocked message", async () => {
       // Block all messages except the first
       await Router.setState(() => ({
@@ -1061,18 +1069,39 @@ describe("ASRouter", () => {
 
       assert.isNull(result);
     });
+    it("should not return a message excluded by the provider", async () => {
+      // There are only two providers; block the FAKE_LOCAL_PROVIDER, leaving
+      // only FAKE_REMOTE_PROVIDER unblocked, which provides only one message
+      sandbox.stub(Router, "loadMessagesFromAllProviders");
+      await Router.setState(() => ({
+        providers: [{ id: "snippets", exclude: ["foo"] }],
+      }));
+
+      await Router.setState(() => ({
+        messages: [{ id: "foo", provider: "snippets" }],
+        messageBlockList: ["foocampaign"],
+      }));
+
+      const result = await Router.handleMessageRequest({
+        provider: "snippets",
+      });
+
+      assert.isNull(result);
+    });
     it("should get unblocked messages that match the trigger", async () => {
       const message1 = {
         id: "1",
         campaign: "foocampaign",
         trigger: { id: "foo" },
         groups: ["snippets"],
+        provider: "snippets",
       };
       const message2 = {
         id: "2",
         campaign: "foocampaign",
         trigger: { id: "bar" },
         groups: ["snippets"],
+        provider: "snippets",
       };
       await Router.setState({ messages: [message2, message1] });
       // Just return the first message provided as arg
@@ -1089,6 +1118,7 @@ describe("ASRouter", () => {
         template: "badge",
         trigger: { id: "foo" },
         groups: ["badge"],
+        provider: "badge",
       };
       const message2 = {
         id: "2",
@@ -1096,6 +1126,7 @@ describe("ASRouter", () => {
         template: "snippet",
         trigger: { id: "foo" },
         groups: ["snippets"],
+        provider: "snippets",
       };
       await Router.setState({ messages: [message2, message1] });
       // Just return the first message provided as arg
@@ -1239,8 +1270,10 @@ describe("ASRouter", () => {
   describe("onMessage", () => {
     describe("#onMessage: NEWTAB_MESSAGE_REQUEST", () => {
       it("should set state.lastMessageId to a message id", async () => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
         await Router.setState({
           messages: [{ id: "foo", provider: "snippets", groups: ["snippets"] }],
+          providers: [{ id: "snippets" }],
         });
         await Router.onMessage(
           fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" })
@@ -1248,10 +1281,12 @@ describe("ASRouter", () => {
 
         assert.equal(Router.state.lastMessageId, "foo");
       });
-      it("should send a message back to the to the target", async () => {
+      it("should send a message back to the target", async () => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
         // force the only message to be a regular message so getRandomItemFromArray picks it
         await Router.setState({
           messages: [{ id: "foo", provider: "snippets", groups: ["snippets"] }],
+          providers: [{ id: "snippets" }],
         });
         const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
         await Router.onMessage(msg);
@@ -1264,7 +1299,8 @@ describe("ASRouter", () => {
           { type: "SET_MESSAGE", data: currentMessage }
         );
       });
-      it("should send a message back to the to the target if there is a bundle, too", async () => {
+      it("should send a message back to the target if there is a bundle, too", async () => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
         // force the only message to be a bundled message so getRandomItemFromArray picks it
         sandbox.stub(Router, "_findProvider").returns(null);
         await Router.setState({
@@ -1278,6 +1314,7 @@ describe("ASRouter", () => {
               content: { title: "Foo1", body: "Foo123-1" },
             },
           ],
+          providers: [{ id: "snippets" }],
         });
         const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
         await Router.onMessage(msg);
@@ -1298,6 +1335,7 @@ describe("ASRouter", () => {
         );
       });
       it("should properly order the message's bundle if specified", async () => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
         // force the only messages to be a bundled messages so getRandomItemFromArray picks one of them
         sandbox.stub(Router, "_findProvider").returns(null);
         const firstMessage = {
@@ -1318,7 +1356,10 @@ describe("ASRouter", () => {
           order: 2,
           content: { title: "Foo1", body: "Foo123-1" },
         };
-        await Router.setState({ messages: [secondMessage, firstMessage] });
+        await Router.setState({
+          messages: [secondMessage, firstMessage],
+          providers: [{ id: "snippets" }],
+        });
         const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
         await Router.onMessage(msg);
         assert.calledWith(
@@ -1348,8 +1389,10 @@ describe("ASRouter", () => {
               bundled: 2,
               content: { title: "Foo1", body: "Foo123-1" },
               groups: ["bundle"],
+              provider: "snippets",
             },
           ],
+          providers: [{ id: "snippets" }],
         });
         const bundle = await Router._getBundledMessages(
           Router.state.messages[0]
@@ -1372,6 +1415,7 @@ describe("ASRouter", () => {
               groups: ["snippets"],
             },
           ],
+          providers: [{ id: "snippets" }],
         });
         const result = await Router._getBundledMessages(
           Router.state.messages[0]
@@ -1411,6 +1455,8 @@ describe("ASRouter", () => {
           { type: "CLEAR_ALL" }
         );
       });
+    });
+    describe("#_addPreviewEndpoint", () => {
       it("should make a request to the provided endpoint on NEWTAB_MESSAGE_REQUEST", async () => {
         const url = "https://snippets-admin.mozilla.org/foo";
         const msg = fakeAsyncMessage({
@@ -1758,6 +1804,9 @@ describe("ASRouter", () => {
     });
 
     describe("#onMessage: NEWTAB_MESSAGE_REQUEST", () => {
+      beforeEach(() => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
+      });
       it("should call sendNewTabMessage on NEWTAB_MESSAGE_REQUEST", async () => {
         sandbox.stub(Router, "sendNewTabMessage").resolves();
         const data = { endpoint: "foo" };
@@ -1773,8 +1822,15 @@ describe("ASRouter", () => {
         );
       });
       it("should return the preview message if that's available and remove it from Router.state", async () => {
-        const expectedObj = { provider: "preview", groups: ["preview"] };
-        Router.setState({ messages: [expectedObj] });
+        const expectedObj = {
+          id: "foo",
+          groups: ["preview"],
+          provider: "preview",
+        };
+        Router.setState({
+          messages: [expectedObj],
+          providers: [{ id: "preview" }],
+        });
 
         await Router.sendNewTabMessage(channel, { endpoint: "foo.com" });
 
@@ -1908,6 +1964,7 @@ describe("ASRouter", () => {
             bundled: 2,
             trigger: { id: "foo" },
             content: { title: "Foo1", body: "Foo123-1" },
+            provider: "onboarding",
           },
           {
             id: "foo2",
@@ -1916,6 +1973,7 @@ describe("ASRouter", () => {
             bundled: 2,
             trigger: { id: "bar" },
             content: { title: "Foo2", body: "Foo123-2" },
+            provider: "onboarding",
           },
           {
             id: "foo3",
@@ -1924,10 +1982,11 @@ describe("ASRouter", () => {
             bundled: 2,
             trigger: { id: "foo" },
             content: { title: "Foo3", body: "Foo123-3" },
+            provider: "onboarding",
           },
         ];
         sandbox.stub(Router, "_findProvider").returns(null);
-        await Router.setState({ messages });
+        await Router.setState({ messages, providers: [{ id: "onboarding" }] });
         const { target } = fakeAsyncMessage({
           type: "TRIGGER",
           data: { trigger: { id: "foo" } },
@@ -1951,6 +2010,9 @@ describe("ASRouter", () => {
     });
 
     describe(".includeBundle", () => {
+      beforeEach(() => {
+        sandbox.stub(Router, "loadMessagesFromAllProviders");
+      });
       it("should send a message with .includeBundle property with specified length and template", async () => {
         let messages = [
           {
@@ -1964,6 +2026,7 @@ describe("ASRouter", () => {
             },
             trigger: { id: "firstRun" },
             content: {},
+            provider: "onboarding",
           },
           {
             id: "foo2",
@@ -1972,6 +2035,7 @@ describe("ASRouter", () => {
             bundled: 2,
             trigger: { id: "foo" },
             content: { title: "Foo2", body: "Foo123-2" },
+            provider: "onboarding",
           },
           {
             id: "foo3",
@@ -1980,10 +2044,11 @@ describe("ASRouter", () => {
             bundled: 2,
             trigger: { id: "foo" },
             content: { title: "Foo3", body: "Foo123-3" },
+            provider: "onboarding",
           },
         ];
         sandbox.stub(Router, "_findProvider").returns(null);
-        await Router.setState({ messages });
+        await Router.setState({ messages, providers: [{ id: "onboarding" }] });
 
         const msg = fakeAsyncMessage({
           type: "TRIGGER",
@@ -2982,6 +3047,9 @@ describe("ASRouter", () => {
   });
 
   describe("handle targeting errors", () => {
+    beforeEach(() => {
+      sandbox.stub(Router, "loadMessagesFromAllProviders");
+    });
     it("should dispatch an event when a targeting expression throws an error", async () => {
       sandbox
         .stub(global.FilterExpressions, "eval")
@@ -2995,6 +3063,7 @@ describe("ASRouter", () => {
             groups: ["snippets"],
           },
         ],
+        providers: [{ id: "snippets" }],
       });
       const msg = fakeAsyncMessage({ type: "NEWTAB_MESSAGE_REQUEST" });
       dispatchStub.reset();
