@@ -757,7 +757,7 @@ class _ASRouter {
       let newState = { messages: [], providers: [] };
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
-          let {
+          const {
             messages,
             lastUpdated,
             errors,
@@ -765,9 +765,6 @@ class _ASRouter {
             storage: this._storage,
             dispatchToAS: this.dispatchToAS,
           });
-          messages = messages.filter(({ groups }) =>
-            this.hasGroupsEnabled(groups)
-          );
           newState.providers.push({ ...provider, lastUpdated, errors });
           newState.messages = [...newState.messages, ...messages];
         } else {
@@ -1490,7 +1487,7 @@ class _ASRouter {
         !state.messageBlockList.includes(item.id) &&
         (!item.campaign || !state.messageBlockList.includes(item.campaign)) &&
         !state.providerBlockList.includes(item.provider) &&
-        item.groups.every(groupId => !state.groupBlockList.includes(groupId))
+        this.hasGroupsEnabled(item.groups)
     );
   }
 

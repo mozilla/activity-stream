@@ -874,40 +874,6 @@ describe("ASRouter", () => {
         type: "AS_ROUTER_TELEMETRY_USER_EVENT",
       });
     });
-    it("should filter out messages that are part of a group that is not enabled", async () => {
-      await createRouterAndInit([
-        {
-          id: "remotey",
-          type: "remote",
-          url: "http://fake.com/endpoint",
-          enabled: true,
-          updateCycleInMs: 300,
-        },
-        {
-          id: "alocalprovider",
-          type: "local",
-          enabled: true,
-          messages: FAKE_LOCAL_MESSAGES,
-        },
-      ]);
-      const NEW_MESSAGES = [{ id: "new_123", groups: ["bar"] }];
-      const spy = sandbox.spy(Router, "hasGroupsEnabled");
-      sandbox.stub(Router, "loadAllMessageGroups").resolves();
-      await Router.setState({ groups: [{ id: "bar", enabled: false }] });
-      fetchStub.withArgs("http://fake.com/endpoint").resolves({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ messages: NEW_MESSAGES }),
-        headers: FAKE_RESPONSE_HEADERS,
-      });
-
-      clock.tick(301);
-      await Router.loadMessagesFromAllProviders();
-
-      assert.calledOnce(spy);
-      assert.calledWithExactly(spy, ["bar", "remotey"]);
-      assert.isUndefined(Router.state.messages.find(m => m.id === "new_123"));
-    });
   });
 
   describe("#_updateMessageProviders", () => {
@@ -1041,20 +1007,20 @@ describe("ASRouter", () => {
       });
       assert.equal(result.id, "bar");
     });
-    it("should not return a message from a blocked group", async () => {
+    it("should not return a message from a disabled group", async () => {
+      sandbox.stub(Router, "_findMessage").callsFake(msgs => msgs && msgs[0]);
       // Block all messages except the first
       await Router.setState(() => ({
-        groupBlockList: ["blockedG"],
         messages: [
           { id: "foo", provider: "snippets", groups: ["snippets"] },
-          { id: "bar", provider: "snippets", groups: ["snippets", "blockedG"] },
+          { id: "bar", provider: "snippets", groups: ["snippets"] },
         ],
-        messageBlockList: ["foo"],
+        groups: [{ id: "snippets", enabled: false }],
       }));
       const result = await Router.handleMessageRequest({
         provider: "snippets",
       });
-      assert.isNull(result);
+      assert.isUndefined(result);
     });
     it("should not return a message from a blocked campaign", async () => {
       // Block all messages except the first
