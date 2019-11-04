@@ -1687,8 +1687,13 @@ class _ASRouter {
     });
   }
 
-  // Helper for cleanupImpressions - calculate the updated impressions object for
-  //                                 the given items, then store it and return it
+  /** _cleanupImpressionsForItems - Helper for cleanupImpressions - calculate the updated
+  /*                                impressions object for the given items, then store it and return it
+   *
+   * @param {obj} state Reference to ASRouter internal state
+   * @param {array} items Can be messages, providers or groups that we count impressions for
+   * @param {string} impressionsString Key name for entry in state where impressions are stored
+   */
   _cleanupImpressionsForItems(state, items, impressionsString) {
     const impressions = { ...state[impressionsString] };
     let needsUpdate = false;
