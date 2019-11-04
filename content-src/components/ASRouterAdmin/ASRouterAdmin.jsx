@@ -646,14 +646,14 @@ export class ASRouterAdminInner extends React.PureComponent {
           <br />({impressions} impressions)
         </td>
         <td className="message-summary">
-          {isBlocked &&
+          {isBlocked && (
             <tr>
               Block reason:
               {isBlockedByGroup && " Blocked by group"}
               {isProviderExcluded && " Excluded by provider"}
               {isMessageBlocked && " Message blocked"}
             </tr>
-          }
+          )}
           <tr>
             <pre>{JSON.stringify(msg, null, 2)}</pre>
           </tr>
