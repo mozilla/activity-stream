@@ -618,6 +618,7 @@ const CFR_MESSAGES = [
   {
     id: "SOCIAL_TRACKING_PROTECTION",
     template: "cfr_doorhanger",
+    priority: 1,
     content: {
       layout: "icon_and_message",
       category: "cfrFeatures",
@@ -648,6 +649,13 @@ const CFR_MESSAGES = [
             label: { string_id: "cfr-doorhanger-socialtracking-close-button" },
             event: "BLOCK",
           },
+          {
+            label: {
+              string_id: "cfr-doorhanger-socialtracking-dont-show-again",
+            },
+            action: { type: "DISABLE_STP_DOORHANGERS" },
+            event: "BLOCK",
+          },
         ],
       },
     },
@@ -668,6 +676,7 @@ const CFR_MESSAGES = [
   {
     id: "FINGERPRINTERS_PROTECTION",
     template: "cfr_doorhanger",
+    priority: 2,
     content: {
       layout: "icon_and_message",
       category: "cfrFeatures",
@@ -698,6 +707,13 @@ const CFR_MESSAGES = [
             label: { string_id: "cfr-doorhanger-socialtracking-close-button" },
             event: "BLOCK",
           },
+          {
+            label: {
+              string_id: "cfr-doorhanger-socialtracking-dont-show-again",
+            },
+            action: { type: "DISABLE_STP_DOORHANGERS" },
+            event: "BLOCK",
+          },
         ],
       },
     },
@@ -714,6 +730,7 @@ const CFR_MESSAGES = [
   {
     id: "CRYPTOMINERS_PROTECTION",
     template: "cfr_doorhanger",
+    priority: 3,
     content: {
       layout: "icon_and_message",
       category: "cfrFeatures",
@@ -742,6 +759,13 @@ const CFR_MESSAGES = [
         secondary: [
           {
             label: { string_id: "cfr-doorhanger-socialtracking-close-button" },
+            event: "BLOCK",
+          },
+          {
+            label: {
+              string_id: "cfr-doorhanger-socialtracking-dont-show-again",
+            },
+            action: { type: "DISABLE_STP_DOORHANGERS" },
             event: "BLOCK",
           },
         ],
