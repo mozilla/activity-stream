@@ -384,6 +384,8 @@ export class ASRouterAdminInner extends React.PureComponent {
         source: "addons.mozilla.org",
         campaign: "non-fx-button",
         content: "iridium@particlecore.github.io",
+        browserName: "Google Chrome",
+        browserVersion: "70",
       },
     };
   }
@@ -1041,6 +1043,36 @@ export class ASRouterAdminInner extends React.PureComponent {
                 name="content"
                 placeholder="iridium@particlecore.github.io"
                 value={this.state.attributionParameters.content}
+                onChange={this.onChangeAttributionParameters}
+              />{" "}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b> Browser </b>
+            </td>
+            <td>
+              {" "}
+              <input
+                type="text"
+                name="browserName"
+                placeholder="Google Chrome"
+                value={this.state.attributionParameters.browserName}
+                onChange={this.onChangeAttributionParameters}
+              />{" "}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b> Browser Version </b>
+            </td>
+            <td>
+              {" "}
+              <input
+                type="text"
+                name="browserVersion"
+                placeholder="70"
+                value={this.state.attributionParameters.browserVersion}
                 onChange={this.onChangeAttributionParameters}
               />{" "}
             </td>

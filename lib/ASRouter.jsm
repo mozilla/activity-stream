@@ -1836,9 +1836,9 @@ class _ASRouter {
   /* istanbul ignore next */
   async forceAttribution(data) {
     // Extract the parameters from data that will make up the referrer url
-    const { source, campaign, content } = data;
+    const { source, campaign, content, browserName, browserVersion } = data;
     if (AppConstants.platform === "win") {
-      const attributionData = `source=${source}&campaign=${campaign}&content=${content}`;
+      const attributionData = `source=${source}&campaign=${campaign}&content=${content}&browser=${browserName}&browser_version=${browserVersion}`;
       this._writeAttributionFile(encodeURIComponent(attributionData));
     } else if (AppConstants.platform === "macosx") {
       let appPath = Services.dirsvc.get("GreD", Ci.nsIFile).parent.parent.path;
@@ -1846,7 +1846,7 @@ class _ASRouter {
         Ci.nsIMacAttributionService
       );
 
-      let referrer = `https://www.mozilla.org/anything/?utm_campaign=${campaign}&utm_source=${source}&utm_content=${encodeURIComponent(
+      let referrer = `https://www.mozilla.org/anything/?utm_browser=${encodeURIComponent(browserName)}&utm_browser_version=${browserVersion}&utm_campaign=${campaign}&utm_source=${source}&utm_content=${encodeURIComponent(
         content
       )}`;
 
