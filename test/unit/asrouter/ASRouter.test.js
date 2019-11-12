@@ -1388,7 +1388,6 @@ describe("ASRouter", () => {
         );
         handleMessageRequestStub
           .withArgs({
-            provider: "onboarding",
             template: "extended_triplets",
           })
           .resolves({ id: "foo" });
@@ -1409,7 +1408,6 @@ describe("ASRouter", () => {
         );
         handleMessageRequestStub
           .withArgs({
-            provider: "onboarding",
             template: "extended_triplets",
           })
           .resolves({ id: "foo" });
@@ -1421,7 +1419,6 @@ describe("ASRouter", () => {
 
         assert.calledTwice(handleMessageRequestStub);
         assert.calledWithExactly(handleMessageRequestStub, {
-          provider: "onboarding",
           template: "extended_triplets",
         });
         assert.calledWithExactly(handleMessageRequestStub, {
@@ -1435,7 +1432,6 @@ describe("ASRouter", () => {
         );
         handleMessageRequestStub
           .withArgs({
-            provider: "onboarding",
             template: "extended_triplets",
           })
           .resolves(null);
@@ -1449,7 +1445,6 @@ describe("ASRouter", () => {
         assert.notCalled(spy);
         assert.calledTwice(handleMessageRequestStub);
         assert.calledWithExactly(handleMessageRequestStub, {
-          provider: "onboarding",
           template: "extended_triplets",
         });
         assert.calledWithExactly(handleMessageRequestStub, {
@@ -2879,6 +2874,18 @@ describe("ASRouter", () => {
       assert.calledOnce(Router.setFirstRunStateFromPref);
       assert.equal(Router.state.trailheadInterrupt, "join");
       assert.equal(Router.state.trailheadTriplet, "supercharge");
+    });
+    it("should set default triplet when firstrun.branches pref not set", async () => {
+      sandbox.spy(Router, "setFirstRunStateFromPref");
+      getStringPrefStub.withArgs(TRAILHEAD_CONFIG.OVERRIDE_PREF).returns("");
+
+      await Router.init(channel, createFakeStorage(), dispatchStub);
+
+      assert.calledOnce(Router.setFirstRunStateFromPref);
+      assert.equal(
+        Router.state.trailheadTriplet,
+        TRAILHEAD_CONFIG.DEFAULT_TRIPLET
+      );
     });
     it.skip("should call .setupTrailhead on init", async () => {
       sandbox.spy(Router, "setupTrailhead");
