@@ -24,7 +24,7 @@ test_newtab({
     );
     is(
       learnMore.textContent,
-      "What's Pocket?",
+      "What’s Pocket?",
       "Got the rendered Message with link text and url within discovery stream"
     );
   },
