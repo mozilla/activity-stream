@@ -101,7 +101,7 @@ onboarding-benefit-lockwise-text = Manage passwords that are protected and porta
 
 onboarding-tracking-protection-title2 = Protection From Tracking
 onboarding-tracking-protection-text2 = { -brand-short-name } helps stop websites from tracking you online, making it harder for ads to follow you around the web.
-onboarding-tracking-protection-button2 = How it Works
+onboarding-tracking-protection-button2 = What's Pocket?
 
 onboarding-data-sync-title = Take Your Settings with You
 # "Sync" is short for synchronize.
