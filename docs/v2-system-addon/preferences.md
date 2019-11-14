@@ -81,13 +81,13 @@ for more information about what methods are available.
 
 Preferences specific to the Discovery Stream are nested under the sub-branch `browser.newtabpage.activity-stream.discoverystream` (with the exception of `browser.newtabpage.blocked`).
 
-#### `browser.newtabpage.activity-stream.discoverystream.campaign.blocks`
+#### `browser.newtabpage.activity-stream.discoverystream.flight.blocks`
 
 - Type: `string (JSON)`
 - Default: `{}`
 - Pref Type: AS
 
-Not intended for user configuration, but is programmatically updated. Used for tracking blocked campaign IDs when a user dismisses a SPOC. Keys are campaign IDs. Values don't have a specific meaning.
+Not intended for user configuration, but is programmatically updated. Used for tracking blocked flight IDs when a user dismisses a SPOC. Keys are flight IDs. Values don't have a specific meaning.
 
 #### `browser.newtabpage.blocked`
 

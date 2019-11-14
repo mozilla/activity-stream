@@ -62,7 +62,7 @@ const PREF_TOPSTORIES = "feeds.section.topstories";
 const PREF_SPOCS_CLEAR_ENDPOINT = "discoverystream.endpointSpocsClear";
 const PREF_SHOW_SPONSORED = "showSponsored";
 const PREF_SPOC_IMPRESSIONS = "discoverystream.spoc.impressions";
-const PREF_CAMPAIGN_BLOCKS = "discoverystream.campaign.blocks";
+const PREF_FLIGHT_BLOCKS = "discoverystream.flight.blocks";
 const PREF_REC_IMPRESSIONS = "discoverystream.rec.impressions";
 
 let getHardcodedLayout;
@@ -92,7 +92,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * Send SPOCS Fill telemetry.
    * @param {object} filteredItems An object keyed on filter reasons, and the value
    *                 is a list of SPOCS.
-   *                 reasons: blocked_by_user, frequency_cap, below_min_score, campaign_duplicate
+   *                 reasons: blocked_by_user, frequency_cap, below_min_score, flight_duplicate
    * @param {boolean} fullRecalc A boolean indicating if it's a full recalculation.
    *                  Calling `loadSpocs` will be treated as a full recalculation.
    *                  Whereas responding the action "DISCOVERY_STREAM_SPOC_IMPRESSION"
@@ -103,8 +103,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const spocsFill = [];
     for (const [reason, items] of Object.entries(filteredItems)) {
       items.forEach(item => {
-        // Only send SPOCS (i.e. it has a campaign_id)
-        if (item.campaign_id) {
+        // Only send SPOCS (i.e. it has a flight_id)
+        if (item.flight_id) {
           spocsFill.push({ reason, full_recalc, id: item.id, displayed: 0 });
         }
       });
@@ -588,7 +588,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
             },
           };
 
-          this.cleanUpCampaignImpressionPref(spocsState.spocs);
+          this.cleanUpFlightImpressionPref(spocsState.spocs);
           await this.cache.set("spocs", spocsState);
         } else {
           Cu.reportError("No response for spocs_endpoint prop");
@@ -611,7 +611,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let frequencyCapped = [];
     let blockedItems = [];
     let belowMinScore = [];
-    let campaignDupes = [];
+    let flightDupes = [];
     this.placementsForEach(placement => {
       const freshSpocs = spocsState.spocs[placement.name];
 
@@ -619,8 +619,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         return;
       }
 
+      // Migrate flight_id
+      const { data: migratedSpocs } = this.migrateFlightId(freshSpocs);
+
       const { data: capResult, filtered: caps } = this.frequencyCapSpocs(
-        freshSpocs
+        migratedSpocs
       );
       frequencyCapped = [...frequencyCapped, ...caps];
 
@@ -634,10 +637,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       );
       let {
         below_min_score: minScoreFilter,
-        campaign_duplicate: dupes,
+        flight_duplicate: dupes,
       } = transformFilter;
       belowMinScore = [...belowMinScore, ...minScoreFilter];
-      campaignDupes = [...campaignDupes, ...dupes];
+      flightDupes = [...flightDupes, ...dupes];
 
       spocsState.spocs = {
         ...spocsState.spocs,
@@ -659,7 +662,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         frequency_cap: frequencyCapped,
         blocked_by_user: blockedItems,
         below_min_score: belowMinScore,
-        campaign_duplicate: campaignDupes,
+        flight_duplicate: flightDupes,
       },
       true
     );
@@ -770,11 +773,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   filterBlocked(data) {
     const filtered = [];
     if (data && data.length) {
-      let campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS);
+      let flights = this.readDataPref(PREF_FLIGHT_BLOCKS);
       const filteredItems = data.filter(item => {
         const blocked =
           NewTabUtils.blockedLinks.isBlocked({ url: item.url }) ||
-          campaigns[item.campaign_id];
+          flights[item.flight_id];
         if (blocked) {
           filtered.push(item);
         }
@@ -792,33 +795,33 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (spocs && spocs.length) {
       const spocsPerDomain =
         this.store.getState().DiscoveryStream.spocs.spocs_per_domain || 1;
-      const campaignMap = {};
-      const campaignDuplicates = [];
+      const flightMap = {};
+      const flightDuplicates = [];
 
       // This order of operations is intended.
       // scoreItems must be first because it creates this.score.
       const { data: items, filtered: belowMinScoreItems } = this.scoreItems(
         spocs
       );
-      // This removes campaign dupes.
+      // This removes flight dupes.
       // We do this only after scoring and sorting because that way
       // we can keep the first item we see, and end up keeping the highest scored.
       const newSpocs = items.filter(s => {
-        if (!campaignMap[s.campaign_id]) {
-          campaignMap[s.campaign_id] = 1;
+        if (!flightMap[s.flight_id]) {
+          flightMap[s.flight_id] = 1;
           return true;
-        } else if (campaignMap[s.campaign_id] < spocsPerDomain) {
-          campaignMap[s.campaign_id]++;
+        } else if (flightMap[s.flight_id] < spocsPerDomain) {
+          flightMap[s.flight_id]++;
           return true;
         }
-        campaignDuplicates.push(s);
+        flightDuplicates.push(s);
         return false;
       });
       return {
         data: newSpocs,
         filtered: {
           below_min_score: belowMinScoreItems,
-          campaign_duplicate: campaignDuplicates,
+          flight_duplicate: flightDuplicates,
         },
       };
     }
@@ -826,9 +829,40 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       data: spocs,
       filtered: {
         below_min_score: [],
-        campaign_duplicate: [],
+        flight_duplicate: [],
       },
     };
+  }
+
+  // For backwards compatibility, older spoc endpoint don't have flight_id,
+  // but instead had campaign_id we can use
+  //
+  // @param {Object} data  An object that might have a SPOCS array.
+  // @returns {Object} An object with a property `data` as the result.
+  migrateFlightId(spocs) {
+    if (spocs && spocs.length) {
+      return {
+        data: spocs.map(s => {
+          return {
+            ...s,
+            ...(s.flight_id || s.campaign_id
+              ? {
+                  flight_id: s.flight_id || s.campaign_id,
+                }
+              : {}),
+            ...(s.caps
+              ? {
+                  caps: {
+                    ...s.caps,
+                    flight: s.caps.flight || s.caps.campaign,
+                  },
+                }
+              : {}),
+          };
+        }),
+      };
+    }
+    return { data: spocs };
   }
 
   // Filter spocs based on frequency caps
@@ -859,24 +893,24 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return { data: spocs, filtered: [] };
   }
 
-  // Frequency caps are based on campaigns, which may include multiple spocs.
+  // Frequency caps are based on flight, which may include multiple spocs.
   // We currently support two types of frequency caps:
-  // - lifetime: Indicates how many times spocs from a campaign can be shown in total
-  // - period: Indicates how many times spocs from a campaign can be shown within a period
+  // - lifetime: Indicates how many times spocs from a flight can be shown in total
+  // - period: Indicates how many times spocs from a flight can be shown within a period
   //
-  // So, for example, the feed configuration below defines that for campaign 1 no more
+  // So, for example, the feed configuration below defines that for flight 1 no more
   // than 5 spocs can be shown in total, and no more than 2 per hour.
-  // "campaign_id": 1,
+  // "flight_id": 1,
   // "caps": {
   //  "lifetime": 5,
-  //  "campaign": {
+  //  "flight": {
   //    "count": 2,
   //    "period": 3600
   //  }
   // }
   isBelowFrequencyCap(impressions, spoc) {
-    const campaignImpressions = impressions[spoc.campaign_id];
-    if (!campaignImpressions) {
+    const flightImpressions = impressions[spoc.flight_id];
+    if (!flightImpressions) {
       return true;
     }
 
@@ -886,18 +920,17 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       lifetime || MAX_LIFETIME_CAP,
       MAX_LIFETIME_CAP
     );
-    const lifeTimeCapExceeded = campaignImpressions.length >= lifeTimeCap;
+    const lifeTimeCapExceeded = flightImpressions.length >= lifeTimeCap;
     if (lifeTimeCapExceeded) {
       return false;
     }
 
-    const campaignCap = spoc.caps && spoc.caps.campaign;
-    if (campaignCap) {
-      const campaignCapExceeded =
-        campaignImpressions.filter(
-          i => Date.now() - i < campaignCap.period * 1000
-        ).length >= campaignCap.count;
-      return !campaignCapExceeded;
+    const flightCap = spoc.caps && spoc.caps.flight;
+    if (flightCap) {
+      const flightCapExceeded =
+        flightImpressions.filter(i => Date.now() - i < flightCap.period * 1000)
+          .length >= flightCap.count;
+      return !flightCapExceeded;
     }
     return true;
   }
@@ -1140,7 +1173,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   resetDataPrefs() {
     this.writeDataPref(PREF_SPOC_IMPRESSIONS, {});
     this.writeDataPref(PREF_REC_IMPRESSIONS, {});
-    this.writeDataPref(PREF_CAMPAIGN_BLOCKS, {});
+    this.writeDataPref(PREF_FLIGHT_BLOCKS, {});
   }
 
   resetState() {
@@ -1164,12 +1197,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  recordCampaignImpression(campaignId) {
+  recordFlightImpression(flightId) {
     let impressions = this.readDataPref(PREF_SPOC_IMPRESSIONS);
 
-    const timeStamps = impressions[campaignId] || [];
+    const timeStamps = impressions[flightId] || [];
     timeStamps.push(Date.now());
-    impressions = { ...impressions, [campaignId]: timeStamps };
+    impressions = { ...impressions, [flightId]: timeStamps };
 
     this.writeDataPref(PREF_SPOC_IMPRESSIONS, impressions);
   }
@@ -1182,26 +1215,26 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  recordBlockCampaignId(campaignId) {
-    const campaigns = this.readDataPref(PREF_CAMPAIGN_BLOCKS);
-    if (!campaigns[campaignId]) {
-      campaigns[campaignId] = 1;
-      this.writeDataPref(PREF_CAMPAIGN_BLOCKS, campaigns);
+  recordBlockFlightId(flightId) {
+    const flights = this.readDataPref(PREF_FLIGHT_BLOCKS);
+    if (!flights[flightId]) {
+      flights[flightId] = 1;
+      this.writeDataPref(PREF_FLIGHT_BLOCKS, flights);
     }
   }
 
-  cleanUpCampaignImpressionPref(data) {
-    let campaignIds = [];
+  cleanUpFlightImpressionPref(data) {
+    let flightIds = [];
     this.placementsForEach(placement => {
       const newSpocs = data[placement.name];
       if (!newSpocs) {
         return;
       }
-      campaignIds = [...campaignIds, ...newSpocs.map(s => `${s.campaign_id}`)];
+      flightIds = [...flightIds, ...newSpocs.map(s => `${s.flight_id}`)];
     });
-    if (campaignIds && campaignIds.length) {
+    if (flightIds && flightIds.length) {
       this.cleanUpImpressionPref(
-        id => !campaignIds.includes(id),
+        id => !flightIds.includes(id),
         PREF_SPOC_IMPRESSIONS
       );
     }
@@ -1303,7 +1336,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         break;
       case at.DISCOVERY_STREAM_SPOC_IMPRESSION:
         if (this.showSpocs) {
-          this.recordCampaignImpression(action.data.campaignId);
+          this.recordFlightImpression(action.data.flightId);
 
           // Apply frequency capping to SPOCs in the redux store, only update the
           // store if the SPOCs are changed.
@@ -1340,7 +1373,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           }
         }
         break;
-      // This is fired from the browser, it has no concept of spocs, campaign or pocket.
+      // This is fired from the browser, it has no concept of spocs, flight or pocket.
       // We match the blocked url with our available spoc urls to see if there is a match.
       // I suspect we *could* instead do this in BLOCK_URL but I'm not sure.
       case at.PLACES_LINK_BLOCKED:
@@ -1387,12 +1420,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         this.uninitPrefs();
         break;
       case at.BLOCK_URL: {
-        // If we block a story that also has a campaign_id
+        // If we block a story that also has a flight_id
         // we want to record that as blocked too.
-        // This is because a single campaign might have slightly different urls.
-        const { campaign_id } = action.data;
-        if (campaign_id) {
-          this.recordBlockCampaignId(campaign_id);
+        // This is because a single flight might have slightly different urls.
+        const { flight_id } = action.data;
+        if (flight_id) {
+          this.recordBlockFlightId(flight_id);
         }
         break;
       }

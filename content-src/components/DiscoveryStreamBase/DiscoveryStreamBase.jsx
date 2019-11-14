@@ -154,7 +154,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           url,
           context,
           cta,
-          campaign_id,
+          flight_id,
           id,
           shim,
         } = spoc;
@@ -179,7 +179,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
               cta_text={cta}
               cta_url={url}
               subtitle={context}
-              campaignId={campaign_id}
+              flightId={flight_id}
               id={id}
               pos={0}
               shim={shim}

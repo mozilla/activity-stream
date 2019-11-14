@@ -463,9 +463,9 @@ const PREFS_CONFIG = new Map([
   ],
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   [
-    "discoverystream.campaign.blocks",
+    "discoverystream.flight.blocks",
     {
-      title: "Track campaign blocks",
+      title: "Track flight blocks",
       skipBroadcast: true,
       value: "{}",
     },
