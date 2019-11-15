@@ -8,7 +8,7 @@ $ds-width: 936px;
   grid-template-columns: repeat($columns, 1fr);
   grid-column-gap: var(--gridColumnGap);
   grid-row-gap: var(--gridRowGap);
-  width: $ds-width;
+  // width: $ds-width;
   margin: 0 auto;
 
   @while $columns > 0 {
@@ -48,7 +48,7 @@ $ds-width: 936px;
 
 .collapsible-section.ds-layout {
   margin: auto;
-  width: $ds-width + 2 * $section-horizontal-padding;
+  // width: $ds-width + 2 * $section-horizontal-padding;
 
   .section-top-bar {
     .learn-more-link a {
