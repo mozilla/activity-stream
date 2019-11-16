@@ -4,7 +4,10 @@ $ds-width: 936px;
   $columns: 12;
   --gridColumnGap: 48px;
   --gridRowGap: 24px;
-  display: grid;
+
+  // TODO THIS IS FORCING 576px min width
+  // display: grid;
+
   grid-template-columns: repeat($columns, 1fr);
   grid-column-gap: var(--gridColumnGap);
   grid-row-gap: var(--gridRowGap);
