@@ -3,10 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
-XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
 ChromeUtils.defineModuleGetter(
   this,
@@ -38,7 +34,6 @@ const PREF_BRANCH = "browser.ping-centre.";
 
 const TELEMETRY_PREF = `${PREF_BRANCH}telemetry`;
 const LOGGING_PREF = `${PREF_BRANCH}log`;
-const PRODUCTION_ENDPOINT_PREF = `${PREF_BRANCH}production.endpoint`;
 const STRUCTURED_INGESTION_SEND_TIMEOUT = 30 * 1000; // 30 seconds
 
 const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
@@ -201,8 +196,6 @@ class PingCentre {
     this._topic = options.topic;
     this._prefs = Services.prefs.getBranch("");
 
-    this._setPingEndpoint(options.topic, options.overrideEndpointPref);
-
     this._enabled = this._prefs.getBoolPref(TELEMETRY_PREF);
     this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
     this._prefs.addObserver(TELEMETRY_PREF, this._onTelemetryPrefChange);
@@ -228,16 +221,6 @@ class PingCentre {
 
   get enabled() {
     return this._enabled && this._fhrEnabled;
-  }
-
-  _setPingEndpoint(topic, overrideEndpointPref) {
-    const overrideValue =
-      overrideEndpointPref && this._prefs.getStringPref(overrideEndpointPref);
-    if (overrideValue) {
-      this._pingEndpoint = overrideValue;
-    } else {
-      this._pingEndpoint = this._prefs.getStringPref(PRODUCTION_ENDPOINT_PREF);
-    }
   }
 
   _onLoggingPrefChange(aSubject, aTopic, prefKey) {
@@ -334,39 +317,6 @@ class PingCentre {
     }
 
     return payload;
-  }
-
-  async sendPing(data, options) {
-    if (!this.enabled) {
-      return Promise.resolve();
-    }
-
-    const payload = await this._createPing(data, options);
-
-    if (this.logging) {
-      // performance related pings cause a lot of logging, so we mute them
-      if (data.action !== "activity_stream_performance") {
-        Services.console.logStringMessage(
-          `TELEMETRY PING: ${JSON.stringify(payload)}\n`
-        );
-      }
-    }
-
-    return fetch(this._pingEndpoint, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      credentials: "omit",
-    })
-      .then(response => {
-        if (!response.ok) {
-          Cu.reportError(
-            `Ping failure with HTTP response code: ${response.status}`
-          );
-        }
-      })
-      .catch(e => {
-        Cu.reportError(`Ping failure with error: ${e}`);
-      });
   }
 
   static _gzipCompressString(string) {
@@ -483,7 +433,6 @@ class PingCentre {
 
 this.PingCentre = PingCentre;
 this.PingCentreConstants = {
-  PRODUCTION_ENDPOINT_PREF,
   FHR_UPLOAD_ENABLED_PREF,
   TELEMETRY_PREF,
   LOGGING_PREF,

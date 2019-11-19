@@ -4,7 +4,6 @@
 import { FakePrefs, GlobalOverrider } from "test/unit/utils";
 import { PingCentre, PingCentreConstants } from "ping-centre/PingCentre.jsm";
 const {
-  PRODUCTION_ENDPOINT_PREF,
   FHR_UPLOAD_ENABLED_PREF,
   TELEMETRY_PREF,
   LOGGING_PREF,
@@ -22,7 +21,6 @@ const prefInitHook = function() {
 const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_UPDATE_CHANNEL = "beta";
 const FAKE_LOCALE = "en-US";
-const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 const FAKE_ACTIVE_EXPERIMENTS = {
   "pref-flip-quantum-css-style-r1-1381147": { branch: "stylo" },
   "nightly-nothing-burger-1-pref": { branch: "Control" },
@@ -35,10 +33,7 @@ describe("PingCentre", () => {
   let tSender;
   let sandbox;
   let fetchStub;
-  const fakeEndpointUrl = "http://127.0.0.1/stuff";
   const fakePingJSON = { action: "fake_action", monkey: 1 };
-  const fakeFetchHttpErrorResponse = { ok: false, status: 400 };
-  const fakeFetchSuccessResponse = { ok: true, status: 200 };
 
   beforeEach(() => {
     globals = new GlobalOverrider();
@@ -80,29 +75,14 @@ describe("PingCentre", () => {
   });
 
   it("should construct the Prefs object", () => {
-    tSender = new PingCentre({
-      topic: "activity-stream",
-      overrideEndpointPref: fakeEndpointUrl,
-    });
+    tSender = new PingCentre({ topic: "activity-stream" });
 
     assert.calledOnce(global.Services.prefs.getBranch);
   });
 
   it("should throw when topic is not specified", () => {
     assert.throws(() => {
-      tSender = new PingCentre({ overrideEndpointPref: fakeEndpointUrl });
-    });
-  });
-
-  describe("setting the telemetry endpoint", () => {
-    beforeEach(() => {
-      globals.set("AppConstants", { MOZ_UPDATE_CHANNEL: "release" });
-      FakePrefs.prototype.prefs[PRODUCTION_ENDPOINT_PREF] = fakeEndpointUrl;
-    });
-
-    it("should correctly set endpoint based on topic", () => {
-      tSender = new PingCentre({ topic: "onboarding" });
-      assert.equal(tSender._pingEndpoint, fakeEndpointUrl);
+      tSender = new PingCentre();
     });
   });
 
@@ -118,10 +98,7 @@ describe("PingCentre", () => {
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = p.enabledPref;
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = p.fhrPref;
 
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
 
       assert.equal(tSender.enabled, p.result);
     }
@@ -140,10 +117,7 @@ describe("PingCentre", () => {
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
         FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
 
-        tSender = new PingCentre({
-          topic: "activity-stream",
-          overrideEndpointPref: fakeEndpointUrl,
-        });
+        tSender = new PingCentre({ topic: "activity-stream" });
         assert.propertyVal(tSender, "enabled", true);
       });
 
@@ -159,10 +133,7 @@ describe("PingCentre", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
-        tSender = new PingCentre({
-          topic: "activity-stream",
-          overrideEndpointPref: fakeEndpointUrl,
-        });
+        tSender = new PingCentre({ topic: "activity-stream" });
 
         assert.propertyVal(tSender, "enabled", false);
       });
@@ -179,10 +150,7 @@ describe("PingCentre", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
         FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
-        tSender = new PingCentre({
-          topic: "activity-stream",
-          overrideEndpointPref: fakeEndpointUrl,
-        });
+        tSender = new PingCentre({ topic: "activity-stream" });
         assert.propertyVal(tSender, "enabled", true);
       });
 
@@ -198,10 +166,7 @@ describe("PingCentre", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = false;
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-        tSender = new PingCentre({
-          topic: "activity-stream",
-          overrideEndpointPref: fakeEndpointUrl,
-        });
+        tSender = new PingCentre({ topic: "activity-stream" });
 
         assert.propertyVal(tSender, "enabled", false);
       });
@@ -216,10 +181,7 @@ describe("PingCentre", () => {
 
   describe("#_createExperimentsString", () => {
     beforeEach(() => {
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
     });
 
     function testExperimentString(experimentString, activeExperiments, filter) {
@@ -245,10 +207,7 @@ describe("PingCentre", () => {
     it("should apply filter to experiment list", () => {
       const FILTER = "boop";
 
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
 
       let expString = tSender._createExperimentsString(
         FAKE_ACTIVE_EXPERIMENTS,
@@ -276,10 +235,7 @@ describe("PingCentre", () => {
     let getStub;
 
     beforeEach(() => {
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
     });
 
     afterEach(() => {
@@ -374,117 +330,15 @@ describe("PingCentre", () => {
     });
   });
 
-  describe("#sendPing()", () => {
-    let prefStub;
-    let getStub;
-
-    beforeEach(() => {
-      FakePrefs.prototype.prefs = {};
-      FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
-
-      prefStub = sinon
-        .stub(global.Services.prefs, "prefHasUserValue")
-        .returns(true);
-      getStub = sinon
-        .stub(global.Services.prefs, "getStringPref")
-        .returns(FAKE_BROWSER_SEARCH_REGION);
-
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-      });
-    });
-
-    afterEach(() => {
-      prefStub.restore();
-      getStub.restore();
-    });
-
-    it("should not send if the PingCentre is disabled", async () => {
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
-
-      await tSender.sendPing(fakePingJSON);
-
-      assert.notCalled(fetchStub);
-    });
-
-    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch", async () => {
-      fetchStub.resolves(fakeFetchSuccessResponse);
-      await tSender.sendPing(fakePingJSON);
-
-      const EXPECTED_SHIELD_STRING =
-        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign(
-        {
-          locale: FAKE_LOCALE,
-          topic: "activity-stream",
-          client_id: FAKE_TELEMETRY_ID,
-          version: "69.0a1",
-          release_channel: FAKE_UPDATE_CHANNEL,
-        },
-        fakePingJSON
-      );
-      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
-      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
-      EXPECTED_RESULT.region = FAKE_BROWSER_SEARCH_REGION;
-
-      assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, fakeEndpointUrl, {
-        method: "POST",
-        body: JSON.stringify(EXPECTED_RESULT),
-        credentials: "omit",
-      });
-    });
-
-    it("should log HTTP failures using Cu.reportError", async () => {
-      fetchStub.resolves(fakeFetchHttpErrorResponse);
-
-      await tSender.sendPing(fakePingJSON);
-
-      assert.called(Cu.reportError);
-    });
-
-    it("should log an error using Cu.reportError if fetch rejects", async () => {
-      fetchStub.rejects("Oh noes!");
-
-      await tSender.sendPing(fakePingJSON);
-
-      assert.called(Cu.reportError);
-    });
-
-    it("should log if logging is on && if action is not activity_stream_performance", async () => {
-      globals.sandbox.stub(global.Services.console, "logStringMessage");
-      FakePrefs.prototype.prefs = {};
-      FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      FakePrefs.prototype.prefs[LOGGING_PREF] = true;
-      fetchStub.resolves(fakeFetchSuccessResponse);
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
-
-      await tSender.sendPing(fakePingJSON);
-
-      assert.called(global.Services.console.logStringMessage); // eslint-disable-line no-console
-    });
-  });
-
   describe("#sendStructuredIngestionPing()", () => {
     let prefStub;
     let getStub;
+    const fakeEndpointUrl = "https://fake-endpoint.com";
 
     beforeEach(() => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
 
       prefStub = sinon
         .stub(global.Services.prefs, "prefHasUserValue")
@@ -494,10 +348,7 @@ describe("PingCentre", () => {
         .returns(FAKE_BROWSER_SEARCH_REGION);
       sandbox.stub(PingCentre, "_sendInGzip").resolves();
 
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
     });
 
     afterEach(() => {
@@ -507,10 +358,7 @@ describe("PingCentre", () => {
 
     it("should not send if the PingCentre is disabled", async () => {
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
 
       await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
 
@@ -551,10 +399,7 @@ describe("PingCentre", () => {
 
   describe("#uninit()", () => {
     it("should remove the telemetry pref listener", () => {
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
       assert.property(fakePrefs.observers, TELEMETRY_PREF);
 
       tSender.uninit();
@@ -563,10 +408,7 @@ describe("PingCentre", () => {
     });
 
     it("should remove the fhrpref listener", () => {
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
       assert.property(fakePrefs.observers, FHR_UPLOAD_ENABLED_PREF);
 
       tSender.uninit();
@@ -587,10 +429,7 @@ describe("PingCentre", () => {
       globals.sandbox
         .stub(FakePrefs.prototype, "removeObserver")
         .throws("Some Error");
-      tSender = new PingCentre({
-        topic: "activity-stream",
-        overrideEndpointPref: fakeEndpointUrl,
-      });
+      tSender = new PingCentre({ topic: "activity-stream" });
 
       tSender.uninit();
 
@@ -603,10 +442,7 @@ describe("PingCentre", () => {
       it("should change this.logging from false to true", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[LOGGING_PREF] = false;
-        tSender = new PingCentre({
-          topic: "activity-stream",
-          overrideEndpointPref: fakeEndpointUrl,
-        });
+        tSender = new PingCentre({ topic: "activity-stream" });
         assert.propertyVal(tSender, "logging", false);
 
         fakePrefs.setBoolPref(LOGGING_PREF, true);
