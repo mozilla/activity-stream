@@ -16,11 +16,6 @@ ChromeUtils.defineModuleGetter(
 );
 ChromeUtils.defineModuleGetter(
   this,
-  "ClientID",
-  "resource://gre/modules/ClientID.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
   "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm"
 );
@@ -185,7 +180,6 @@ const REGION_WHITELIST = new Set([
  * @param {Object} options
  * @param {string} options.topic - a unique ID for users of PingCentre to distinguish
  *                  their data on the server side.
- * @param {string} options.overrideEndpointPref - optional pref for URL where the POST is sent.
  */
 class PingCentre {
   constructor(options) {
@@ -207,16 +201,6 @@ class PingCentre {
     this.logging = this._prefs.getBoolPref(LOGGING_PREF);
     this._onLoggingPrefChange = this._onLoggingPrefChange.bind(this);
     this._prefs.addObserver(LOGGING_PREF, this._onLoggingPrefChange);
-  }
-
-  /**
-   * Lazily get the Telemetry id promise
-   */
-  get telemetryClientId() {
-    Object.defineProperty(this, "telemetryClientId", {
-      value: ClientID.getClientID(),
-    });
-    return this.telemetryClientId;
   }
 
   get enabled() {
@@ -265,37 +249,6 @@ class PingCentre {
       }
     }
     return region;
-  }
-
-  async _createPing(data, options) {
-    let filter = options && options.filter;
-    let experiments = TelemetryEnvironment.getActiveExperiments();
-    let experimentsString = this._createExperimentsString(experiments, filter);
-
-    let clientID = data.client_id || (await this.telemetryClientId);
-    let locale = data.locale || Services.locale.appLocaleAsLangTag;
-    let profileCreationDate =
-      TelemetryEnvironment.currentEnvironment.profile.resetDate ||
-      TelemetryEnvironment.currentEnvironment.profile.creationDate;
-    const payload = Object.assign(
-      {
-        locale,
-        topic: this._topic,
-        client_id: clientID,
-        version: AppConstants.MOZ_APP_VERSION,
-        release_channel: UpdateUtils.getUpdateChannel(false),
-      },
-      data
-    );
-    if (experimentsString) {
-      payload.shield_id = experimentsString;
-    }
-    if (profileCreationDate) {
-      payload.profile_creation_date = profileCreationDate;
-    }
-    payload.region = this._getRegion();
-
-    return payload;
   }
 
   _createStructuredIngestionPing(data, options = {}) {

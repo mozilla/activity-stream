@@ -18,7 +18,6 @@ const prefInitHook = function() {
   fakePrefs = this; // eslint-disable-line consistent-this
 };
 
-const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_UPDATE_CHANNEL = "beta";
 const FAKE_LOCALE = "en-US";
 const FAKE_ACTIVE_EXPERIMENTS = {
@@ -47,9 +46,6 @@ describe("PingCentre", () => {
       .stub(global.Services.locale, "appLocaleAsLangTag")
       .get(() => FAKE_LOCALE);
     globals.set("fetch", fetchStub);
-    globals.set("ClientID", {
-      getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID),
-    });
     globals.set("TelemetryEnvironment", {
       getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS),
       currentEnvironment: {
@@ -67,11 +63,6 @@ describe("PingCentre", () => {
   afterEach(() => {
     globals.restore();
     FakePrefs.prototype.prefs = {};
-  });
-
-  it("should add .telemetryClientId from the ClientID module", async () => {
-    tSender = new PingCentre({ topic: "activity-stream" });
-    assert.equal(await tSender.telemetryClientId, FAKE_TELEMETRY_ID);
   });
 
   it("should construct the Prefs object", () => {
@@ -281,31 +272,6 @@ describe("PingCentre", () => {
         .returns(FAKE_BROWSER_SEARCH_REGION);
       let region = tSender._getRegion();
       assert.equal(region, FAKE_BROWSER_SEARCH_REGION);
-    });
-  });
-
-  describe("#_createPing", () => {
-    it("should create a ping with expected properties", async () => {
-      tSender = new PingCentre({ topic: "activity-stream" });
-      const ping = await tSender._createPing(fakePingJSON);
-
-      const EXPECTED_SHIELD_STRING =
-        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      let EXPECTED_RESULT = Object.assign(
-        {
-          locale: FAKE_LOCALE,
-          topic: "activity-stream",
-          client_id: FAKE_TELEMETRY_ID,
-          version: "69.0a1",
-          release_channel: FAKE_UPDATE_CHANNEL,
-        },
-        fakePingJSON
-      );
-      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
-      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
-      EXPECTED_RESULT.region = "UNSET";
-
-      assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
     });
   });
 
