@@ -108,7 +108,7 @@ Not intended for user configuration, but is programmatically updated. Used for t
      "enabled": true,
      "show_spocs": true,
      "hardcoded_layout": true,
-     "personalized": false,
+     "personalized": true,
      "layout_endpoint": "https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"
   }
   ```
@@ -119,6 +119,7 @@ Not intended for user configuration, but is programmatically updated. Used for t
   - `hardcoded_layout` (boolean): When this is true, a hardcoded layout shipped with Firefox will be used instead of a remotely fetched layout definition.
   - `personalized` (boolean): When this is `true` personalized content based on browsing history will be displayed.
   - `layout_endpoint` (string): The URL for a remote layout definition that will be used if `hardcoded_layout` is `false`.
+  - `unused_key` (string): This is not set by default and is unused by this codebase. It's a standardized way to differentiate configurations to prevent experiment participants from being unenrolled.
 
 #### `browser.newtabpage.activity-stream.discoverystream.enabled`
 
