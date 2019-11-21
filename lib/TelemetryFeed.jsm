@@ -74,8 +74,6 @@ XPCOMUtils.defineLazyServiceGetters(this, {
 });
 
 const ACTIVITY_STREAM_ID = "activity-stream";
-const ACTIVITY_STREAM_ENDPOINT_PREF =
-  "browser.newtabpage.activity-stream.telemetry.ping.endpoint";
 const DOMWINDOW_OPENED_TOPIC = "domwindowopened";
 const DOMWINDOW_UNLOAD_TOPIC = "unload";
 const TAB_PINNED_EVENT = "TabPinned";
@@ -257,10 +255,7 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   get pingCentre() {
     Object.defineProperty(this, "pingCentre", {
-      value: new PingCentre({
-        topic: ACTIVITY_STREAM_ID,
-        overrideEndpointPref: ACTIVITY_STREAM_ENDPOINT_PREF,
-      }),
+      value: new PingCentre({ topic: ACTIVITY_STREAM_ID }),
     });
     return this.pingCentre;
   }
@@ -420,7 +415,6 @@ this.TelemetryFeed = class TelemetryFeed {
         source,
         tiles: impressionSets[source],
       });
-      this.sendEvent(payload);
       this.sendStructuredIngestionEvent(
         payload,
         STRUCTURED_INGESTION_NAMESPACE_AS,
@@ -453,7 +447,6 @@ this.TelemetryFeed = class TelemetryFeed {
         tiles,
         loaded: tiles.length,
       });
-      this.sendEvent(payload);
       this.sendStructuredIngestionEvent(
         payload,
         STRUCTURED_INGESTION_NAMESPACE_AS,
@@ -641,9 +634,9 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   sendEvent(event_object) {
-    if (this.telemetryEnabled) {
-      this.pingCentre.sendPing(event_object, { filter: ACTIVITY_STREAM_ID });
-    }
+    // As per Bug 1597697, all pings to Tiles are simply stopped here. Though we
+    // leave these pings around so that we could send to another destination or
+    // drop them if needed in the future.
   }
 
   sendUTEvent(event_object, eventFunction) {
@@ -686,7 +679,6 @@ this.TelemetryFeed = class TelemetryFeed {
       au.getPortIdOfSender(action),
       action.data
     );
-    this.sendEvent(payload);
     this.sendStructuredIngestionEvent(
       payload,
       STRUCTURED_INGESTION_NAMESPACE_AS,
