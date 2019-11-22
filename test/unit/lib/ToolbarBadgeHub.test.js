@@ -33,9 +33,28 @@ describe("ToolbarBadgeHub", () => {
     isBrowserPrivateStub = sandbox.stub();
     const onboardingMsgs = await OnboardingMessageProvider.getUntranslatedMessages();
     fxaMessage = onboardingMsgs.find(({ id }) => id === "FXA_ACCOUNTS_BADGE");
-    whatsnewMessage = onboardingMsgs.find(({ id }) =>
-      id.includes("WHATS_NEW_BADGE_")
-    );
+    whatsnewMessage = {
+      id: `WHATS_NEW_BADGE_71`,
+      template: "toolbar_badge",
+      content: {
+        delay: 1000,
+        target: "whats-new-menu-button",
+        action: { id: "show-whatsnew-button" },
+        badgeDescription: { string_id: "cfr-badge-reader-label-newfeature" },
+      },
+      priority: 1,
+      trigger: { id: "toolbarBadgeUpdate" },
+      frequency: {
+        // Makes it so that we track impressions for this message while at the
+        // same time it can have unlimited impressions
+        lifetime: Infinity,
+      },
+      // Never saw this message or saw it in the past 4 days or more recent
+      targeting: `isWhatsNewPanelEnabled &&
+      (!messageImpressions['WHATS_NEW_BADGE_71'] ||
+        (messageImpressions['WHATS_NEW_BADGE_71']|length >= 1 &&
+          currentDate|date - messageImpressions['WHATS_NEW_BADGE_71'][0] <= 4 * 24 * 3600 * 1000))`,
+    };
     fakeElement = {
       classList: {
         add: sandbox.stub(),
@@ -206,13 +225,20 @@ describe("ToolbarBadgeHub", () => {
   describe("addToolbarNotification", () => {
     let target;
     let fakeDocument;
-    beforeEach(() => {
+    beforeEach(async () => {
+      await instance.init(sandbox.stub().resolves(), {
+        addImpression: fakeAddImpression,
+        dispatch: fakeDispatch,
+      });
       fakeDocument = {
         getElementById: sandbox.stub().returns(fakeElement),
         createElement: sandbox.stub().returns(fakeElement),
         l10n: { setAttributes: sandbox.stub() },
       };
       target = { ...fakeWindow, browser: { ownerDocument: fakeDocument } };
+    });
+    afterEach(() => {
+      instance.uninit();
     });
     it("shouldn't do anything if target element is not found", () => {
       fakeDocument.getElementById.returns(null);
@@ -296,6 +322,23 @@ describe("ToolbarBadgeHub", () => {
         whatsnewMessage.content.badgeDescription.string_id
       );
     });
+    it("should add an impression for the message", () => {
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledOnce(instance._addImpression);
+      assert.calledWithExactly(instance._addImpression, whatsnewMessage);
+    });
+    it("should send an impression ping", async () => {
+      sandbox.stub(instance, "sendUserEventTelemetry");
+      instance.addToolbarNotification(target, whatsnewMessage);
+
+      assert.calledOnce(instance.sendUserEventTelemetry);
+      assert.calledWithExactly(
+        instance.sendUserEventTelemetry,
+        "IMPRESSION",
+        whatsnewMessage
+      );
+    });
   });
   describe("registerBadgeNotificationListener", () => {
     let msg_no_delay;
@@ -316,12 +359,6 @@ describe("ToolbarBadgeHub", () => {
     });
     afterEach(() => {
       instance.uninit();
-    });
-    it("should add an impression for the message", () => {
-      instance.registerBadgeNotificationListener(msg_no_delay);
-
-      assert.calledOnce(instance._addImpression);
-      assert.calledWithExactly(instance._addImpression, msg_no_delay);
     });
     it("should register a callback that adds/removes the notification", () => {
       instance.registerBadgeNotificationListener(msg_no_delay);
@@ -355,18 +392,6 @@ describe("ToolbarBadgeHub", () => {
 
       assert.calledOnce(instance.removeToolbarNotification);
       assert.calledWithExactly(instance.removeToolbarNotification, fakeElement);
-    });
-    it("should send an impression", async () => {
-      sandbox.stub(instance, "sendUserEventTelemetry");
-
-      instance.registerBadgeNotificationListener(msg_no_delay);
-
-      assert.calledOnce(instance.sendUserEventTelemetry);
-      assert.calledWithExactly(
-        instance.sendUserEventTelemetry,
-        "IMPRESSION",
-        msg_no_delay
-      );
     });
     it("should unregister notifications when forcing a badge via devtools", () => {
       instance.registerBadgeNotificationListener(msg_no_delay, { force: true });

@@ -85,9 +85,14 @@ export class FirstRun extends React.PureComponent {
 
   static getDerivedStateFromProps(props, state) {
     const { message, interruptCleared } = props;
+    const cardIds =
+      message &&
+      message.bundle &&
+      message.bundle.map(card => card.id).join(",");
     if (
       interruptCleared !== state.prevInterruptCleared ||
-      (message && message.id !== state.prevMessageId)
+      (message && message.id !== state.prevMessageId) ||
+      cardIds !== state.prevCardIds
     ) {
       const {
         hasTriplets,
@@ -101,6 +106,7 @@ export class FirstRun extends React.PureComponent {
       return {
         prevMessageId: message.id,
         prevInterruptCleared: interruptCleared,
+        prevCardIds: cardIds,
 
         hasInterrupt,
         hasTriplets,
@@ -205,6 +211,7 @@ export class FirstRun extends React.PureComponent {
             flowParams={flowParams}
             onDismiss={this.closeInterrupt}
             fxaEndpoint={fxaEndpoint}
+            onBlockById={props.onBlockById}
           />
         ) : null}
         {hasTriplets ? (
@@ -219,6 +226,7 @@ export class FirstRun extends React.PureComponent {
             UTMTerm={`${UTMTerm}-card`}
             flowParams={flowParams}
             onAction={executeAction}
+            onBlockById={props.onBlockById}
           />
         ) : null}
       </>
