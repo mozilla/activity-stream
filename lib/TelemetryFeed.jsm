@@ -634,9 +634,25 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   sendEvent(event_object) {
-    // As per Bug 1597697, all pings to Tiles are simply stopped here. Though we
-    // leave these pings around so that we could send to another destination or
-    // drop them if needed in the future.
+    switch (event_object.action) {
+      case "activity_stream_user_event":
+        this.sendEventPing(event_object);
+        break;
+    }
+  }
+
+  async sendEventPing(ping) {
+    delete ping.action;
+    ping.client_id = await this.telemetryClientId;
+    if (ping.value && typeof ping.value === "object") {
+      ping.value = JSON.stringify(ping.value);
+    }
+    this.sendStructuredIngestionEvent(
+      ping,
+      STRUCTURED_INGESTION_NAMESPACE_AS,
+      "events",
+      1
+    );
   }
 
   sendUTEvent(event_object, eventFunction) {
