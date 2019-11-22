@@ -186,6 +186,18 @@ describe("DiscoveryStreamFeed", () => {
         { credentials: "omit" }
       );
     });
+    it("should replace locales with $locale", async () => {
+      feed.locale = "replaced";
+      await feed.fetchFromEndpoint(
+        "https://getpocket.cdn.mozilla.net/dummy?locale_lang=$locale"
+      );
+
+      assert.calledWithMatch(
+        fetchStub,
+        "https://getpocket.cdn.mozilla.net/dummy?locale_lang=replaced",
+        { credentials: "omit" }
+      );
+    });
     it("should allow POST and with other options", async () => {
       await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy", {
         method: "POST",
@@ -314,6 +326,54 @@ describe("DiscoveryStreamFeed", () => {
       );
       const { layout } = feed.store.getState().DiscoveryStream;
       assert.equal(layout[0].components[2].properties.items, 3);
+    });
+    it("should use 1 row layout if locale lang doesn't support 7 row layout", async () => {
+      feed.config.hardcoded_layout = true;
+      feed.store = createStore(combineReducers(reducers), {
+        Prefs: {
+          values: {
+            [CONFIG_PREF_NAME]: JSON.stringify({
+              enabled: true,
+              show_spocs: false,
+              layout_endpoint: DUMMY_ENDPOINT,
+            }),
+            [ENDPOINTS_PREF_NAME]: DUMMY_ENDPOINT,
+            "discoverystream.enabled": true,
+            "discoverystream.lang-layout-config": "en",
+          },
+        },
+      });
+      feed.locale = "de-DE";
+      sandbox.stub(feed, "fetchLayout").returns(Promise.resolve(""));
+
+      await feed.loadLayout(feed.store.dispatch);
+
+      const { layout } = feed.store.getState().DiscoveryStream;
+      assert.equal(layout[0].components[2].properties.items, 3);
+    });
+    it("should use 7 row layout if locale lang supports it", async () => {
+      feed.config.hardcoded_layout = true;
+      feed.store = createStore(combineReducers(reducers), {
+        Prefs: {
+          values: {
+            [CONFIG_PREF_NAME]: JSON.stringify({
+              enabled: true,
+              show_spocs: false,
+              layout_endpoint: DUMMY_ENDPOINT,
+            }),
+            [ENDPOINTS_PREF_NAME]: DUMMY_ENDPOINT,
+            "discoverystream.enabled": true,
+            "discoverystream.lang-layout-config": "en,de",
+          },
+        },
+      });
+      feed.locale = "de-DE";
+      sandbox.stub(feed, "fetchLayout").returns(Promise.resolve(""));
+
+      await feed.loadLayout(feed.store.dispatch);
+
+      const { layout } = feed.store.getState().DiscoveryStream;
+      assert.equal(layout[2].components[0].properties.items, 21);
     });
     it("should use new spocs endpoint if in the config", async () => {
       feed.config.spocs_endpoint = "https://spocs.getpocket.com/spocs2";

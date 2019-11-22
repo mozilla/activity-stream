@@ -58,6 +58,7 @@ const PREF_IMPRESSION_ID = "browser.newtabpage.activity-stream.impressionId";
 const PREF_ENABLED = "discoverystream.enabled";
 const PREF_HARDCODED_BASIC_LAYOUT = "discoverystream.hardcoded-basic-layout";
 const PREF_SPOCS_ENDPOINT = "discoverystream.spocs-endpoint";
+const PREF_LANG_LAYOUT_CONFIG = "discoverystream.lang-layout-config";
 const PREF_TOPSTORIES = "feeds.section.topstories";
 const PREF_SPOCS_CLEAR_ENDPOINT = "discoverystream.endpointSpocsClear";
 const PREF_SHOW_SPONSORED = "showSponsored";
@@ -74,6 +75,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     // Persistent cache for remote endpoint data.
     this.cache = new PersistentCache(CACHE_KEY, true);
+    this.locale = Services.locale.appLocaleAsLangTag;
     this._impressionId = this.getOrCreateImpressionId();
     // Internal in-memory cache for parsing json prefs.
     this._prefCache = {};
@@ -207,7 +209,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     // The server somtimes returns this value already replaced, but we try this for two reasons:
     // 1. Layout endpoints are not from the server.
     // 2. Hardcoded layouts don't have this already done for us.
-    const endpoint = rawEndpoint.replace("$apiKey", apiKey);
+    const endpoint = rawEndpoint
+      .replace("$apiKey", apiKey)
+      .replace("$locale", this.locale);
 
     try {
       // Make sure the requested endpoint is allowed
@@ -362,12 +366,19 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
 
     if (!layoutResp || !layoutResp.layout) {
+      const langLayoutConfig =
+        this.store.getState().Prefs.values[PREF_LANG_LAYOUT_CONFIG] || "";
+
+      const isBasic =
+        this.config.hardcoded_basic_layout ||
+        this.store.getState().Prefs.values[PREF_HARDCODED_BASIC_LAYOUT] ||
+        !langLayoutConfig
+          .split(",")
+          .find(lang => this.locale.startsWith(lang.trim()));
+
       // Set a hardcoded layout if one is needed.
       // Changing values in this layout in memory object is unnecessary.
-      layoutResp = getHardcodedLayout(
-        this.config.hardcoded_basic_layout ||
-          this.store.getState().Prefs.values[PREF_HARDCODED_BASIC_LAYOUT]
-      );
+      layoutResp = getHardcodedLayout(isBasic);
     }
 
     sendUpdate({
@@ -1435,6 +1446,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           case PREF_ENABLED:
           case PREF_HARDCODED_BASIC_LAYOUT:
           case PREF_SPOCS_ENDPOINT:
+          case PREF_LANG_LAYOUT_CONFIG:
             // Clear the cached config and broadcast the newly computed value
             this._prefCache.config = null;
             this.store.dispatch(
@@ -1485,16 +1497,24 @@ getHardcodedLayout = basic => {
             {
               type: "TopSites",
               header: {
-                title: "Top Sites",
+                title: {
+                  id: "newtab-section-header-topsites",
+                },
               },
               properties: {},
             },
             {
               type: "Message",
               header: {
-                title: "Recommended by Pocket",
+                title: {
+                  id: "newtab-section-header-pocket",
+                  values: { provider: "pocket" },
+                },
                 subtitle: "",
-                link_text: "What’s Pocket?",
+                link_text: {
+                  id: "newtab-pocket-whats-pocket",
+                  values: { provider: "pocket" },
+                },
                 link_url: "https://getpocket.com/firefox/new_tab_learn_more",
                 icon:
                   "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
@@ -1515,7 +1535,7 @@ getHardcodedLayout = basic => {
               feed: {
                 embed_reference: null,
                 url:
-                  "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=default_spocs_on",
+                  "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=$locale",
               },
               spocs: {
                 probability: 1,
@@ -1581,7 +1601,9 @@ getHardcodedLayout = basic => {
           {
             type: "TopSites",
             header: {
-              title: "Top Sites",
+              title: {
+                id: "newtab-section-header-topsites",
+              },
             },
           },
         ],
@@ -1592,9 +1614,15 @@ getHardcodedLayout = basic => {
           {
             type: "Message",
             header: {
-              title: "Recommended by Pocket",
+              title: {
+                id: "newtab-section-header-pocket",
+                values: { provider: "pocket" },
+              },
               subtitle: "",
-              link_text: "What’s Pocket?",
+              link_text: {
+                id: "newtab-pocket-whats-pocket",
+                values: { provider: "pocket" },
+              },
               link_url: "https://getpocket.com/firefox/new_tab_learn_more",
               icon:
                 "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
@@ -1620,7 +1648,7 @@ getHardcodedLayout = basic => {
             feed: {
               embed_reference: null,
               url:
-                "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US&count=30",
+                "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=$locale&count=30",
             },
             spocs: {
               probability: 1,
@@ -1675,7 +1703,9 @@ getHardcodedLayout = basic => {
               ],
             },
             header: {
-              title: "Popular Topics",
+              title: {
+                id: "newtab-pocket-read-more",
+              },
             },
             styles: {
               ".ds-navigation": "margin-top: -10px;",
