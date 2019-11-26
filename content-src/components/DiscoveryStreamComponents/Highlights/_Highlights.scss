@@ -1,7 +1,5 @@
 .ds-highlights {
   .section {
-    margin: 0 (-$section-horizontal-padding);
-
     .section-list {
       grid-gap: var(--gridRowGap);
       grid-template-columns: repeat(4, 1fr);

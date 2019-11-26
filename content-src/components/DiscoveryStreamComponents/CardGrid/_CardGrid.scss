@@ -63,7 +63,7 @@ $col4-header-font-size: 14;
         grid-template-columns: repeat(1, 1fr);
       }
 
-      @media (min-width: 760px) {
+      @media (min-width: 640px) {
         grid-template-columns: repeat(2, 1fr);
       }
 

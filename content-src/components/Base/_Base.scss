@@ -32,15 +32,15 @@ main {
   }
 
   @media (min-width: $break-point-medium) {
-    width: $wrapper-max-width-medium;
+    width: 510px;
   }
 
   @media (min-width: $break-point-large) {
-    width: $wrapper-max-width-large;
+    width: 746px;
   }
 
   @media (min-width: $break-point-widest) {
-    width: $wrapper-max-width-widest;
+    width: 986px;
   }
 
 }
