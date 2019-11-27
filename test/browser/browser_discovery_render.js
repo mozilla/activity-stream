@@ -14,10 +14,10 @@ async function before({ pushPrefs }) {
 test_newtab({
   before,
   test: async function test_render_hardcoded() {
-    const topSites = await ContentTaskUtils.waitForCondition(() =>
-      content.document.querySelector(".ds-top-sites")
+    const learnMoreLink = await ContentTaskUtils.waitForCondition(() =>
+      content.document.querySelector(".ds-layout a[href$=new_tab_learn_more]")
     );
-    ok(topSites, "Got the discovery stream top sites section");
+    ok(learnMoreLink, "Got the discovery stream learn more link");
 
     const learnMore = content.document.querySelector(
       ".ds-layout a[href$=new_tab_learn_more]"
