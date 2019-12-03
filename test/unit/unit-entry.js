@@ -131,6 +131,13 @@ const TEST_GLOBAL = {
     nsITimer: { TYPE_ONE_SHOT: 1 },
     nsIWebProgressListener: { LOCATION_CHANGE_SAME_DOCUMENT: 1 },
     nsIDOMWindow: Object,
+    nsITrackingDBService: {
+      TRACKERS_ID: 1,
+      TRACKING_COOKIES_ID: 2,
+      CRYPTOMINERS_ID: 3,
+      FINGERPRINTERS_ID: 4,
+      SOCIAL_ID: 5,
+    },
   },
   Cu: {
     importGlobalProperties() {},
@@ -322,7 +329,12 @@ const TEST_GLOBAL = {
     defineLazyModuleGetters() {},
     defineLazyServiceGetter() {},
     defineLazyServiceGetters() {},
-    defineLazyPreferenceGetter() {},
+    defineLazyPreferenceGetter(obj, name) {
+      Object.defineProperty(obj, name, {
+        configurable: true,
+        get: () => "",
+      });
+    },
     generateQI() {
       return {};
     },

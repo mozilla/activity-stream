@@ -42,9 +42,10 @@ Please note that some targeting attributes require stricter controls on the tele
 * [userPrefs](#userprefs)
 * [attachedFxAOAuthClients](#attachedfxaoauthclients)
 * [platformName](#platformname)
-* [personalizedCfrScores](#personalizedcfrscores)
-* [personalizedCfrThreshold](#personalizedcfrthreshold)
+* [scores](#scores)
+* [scoreThreshold](#scorethreshold)
 * [messageImpressions](#messageimpressions)
+* [blockedCountByType](#blockedcountbytype)
 
 ## Detailed usage
 
@@ -598,24 +599,24 @@ declare const attachedFxAOAuthClients: Promise<OAuthClient[]>
 declare const platformName = "linux" | "win" | "macosx" | "android" | "other";
 ```
 
-### `personalizedCfrScores`
+### `scores`
 
 #### Definition
 
 See more in [CFR Machine Learning Experiment](https://bugzilla.mozilla.org/show_bug.cgi?id=1594422).
 
 ```
-declare const personalizedCfrScores = { [cfrId: string]: number (float); }
+declare const scores = { [cfrId: string]: number (integer); }
 ```
 
-### `personalizedCfrThreshold`
+### `scoreThreshold`
 
 #### Definition
 
 See more in [CFR Machine Learning Experiment](https://bugzilla.mozilla.org/show_bug.cgi?id=1594422).
 
 ```
-declare const personalizedCfrThreshold = float;
+declare const scoreThreshold = integer;
 ```
 
 ### `messageImpressions`
@@ -635,4 +636,26 @@ Badge impressions should not be used for targeting.
 
 ```
 declare const messageImpressions: { [key: string]: Array<UnixEpochNumber> };
+```
+
+### `blockedCountByType`
+
+Returns a breakdown by category of all blocked resources in the past 42 days.
+
+#### Definition
+
+```
+declare const messageImpressions: { [key: string]: number };
+```
+
+#### Examples
+
+```javascript
+Object {
+  trackerCount: 0,
+  cookieCount: 34,
+  cryptominerCount: 0,
+  fingerprinterCount: 3,
+  socialCount: 2
+}
 ```

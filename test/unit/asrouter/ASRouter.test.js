@@ -1,9 +1,4 @@
-import {
-  _ASRouter,
-  chooseBranch,
-  MessageLoaderUtils,
-  TRAILHEAD_CONFIG,
-} from "lib/ASRouter.jsm";
+import { _ASRouter, MessageLoaderUtils } from "lib/ASRouter.jsm";
 import { ASRouterTargeting, QueryCache } from "lib/ASRouterTargeting.jsm";
 import {
   CHILD_TO_PARENT_MESSAGE_NAME,
@@ -29,6 +24,7 @@ import { PanelTestProvider } from "lib/PanelTestProvider.jsm";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
 import { SnippetsTestMessageProvider } from "lib/SnippetsTestMessageProvider.jsm";
 
+const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const MESSAGE_PROVIDER_PREF_NAME =
   "browser.newtabpage.activity-stream.asrouter.providers.snippets";
 const FAKE_PROVIDERS = [
@@ -71,6 +67,7 @@ describe("ASRouter", () => {
   let FakeBookmarkPanelHub;
   let FakeToolbarBadgeHub;
   let FakeToolbarPanelHub;
+  let personalizedCfrScores;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -117,17 +114,20 @@ describe("ASRouter", () => {
     providerImpressions = {};
     previousSessionEnd = 100;
     sandbox = sinon.createSandbox();
+    personalizedCfrScores = {};
 
     sandbox.spy(ASRouterPreferences, "init");
     sandbox.spy(ASRouterPreferences, "uninit");
     sandbox.spy(ASRouterPreferences, "addListener");
     sandbox.spy(ASRouterPreferences, "removeListener");
-    sandbox.replaceGetter(ASRouterPreferences, "personalizedCfr", function() {
-      return {
-        personalizedCfrScores: {},
-        personalizedCfrThreshold: 1.5,
-      };
+    sandbox.stub(ASRouterPreferences, "trailhead").get(() => {
+      return { trailheadTriplet: "test" };
     });
+    sandbox.replaceGetter(
+      ASRouterPreferences,
+      "personalizedCfrScores",
+      () => personalizedCfrScores
+    );
 
     clock = sandbox.useFakeTimers();
     fetchStub = sandbox
@@ -450,6 +450,7 @@ describe("ASRouter", () => {
           providerPrefs: ASRouterPreferences.providers,
           userPrefs: ASRouterPreferences.getAllUserPreferences(),
           targetingParameters: {},
+          trailhead: ASRouterPreferences.trailhead,
           errors: Router.errors,
         }),
       });
@@ -662,6 +663,42 @@ describe("ASRouter", () => {
 
       await Router.loadMessagesFromAllProviders();
       assert.equal(Router.state, previousState);
+    });
+    it("should apply personalization if defined", async () => {
+      personalizedCfrScores = { FOO: 1, BAR: 2 };
+      const NEW_MESSAGES = [{ id: "FOO" }, { id: "BAR" }];
+
+      fetchStub.withArgs("http://foo.com").resolves({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ messages: NEW_MESSAGES }),
+        headers: FAKE_RESPONSE_HEADERS,
+      });
+
+      await createRouterAndInit([
+        {
+          id: "cfr",
+          personalized: true,
+          personalizedModelVersion: "42",
+          type: "remote",
+          url: "http://foo.com",
+          enabled: true,
+          updateCycleInMs: 300,
+        },
+      ]);
+
+      await Router.loadMessagesFromAllProviders();
+
+      // Make sure messages are there
+      assertRouterContainsMessages(NEW_MESSAGES);
+
+      // Make sure they have a score and personalizedModelVersion
+      for (const expectedMessage of NEW_MESSAGES) {
+        const { id } = expectedMessage;
+        const message = Router.state.messages.find(msg => msg.id === id);
+        assert.propertyVal(message, "score", personalizedCfrScores[message.id]);
+        assert.propertyVal(message, "personalizedModelVersion", "42");
+      }
     });
     it("should update messages for a provider if enough time has passed, without removing messages for other providers", async () => {
       const NEW_MESSAGES = [{ id: "new_123" }];
@@ -1043,12 +1080,6 @@ describe("ASRouter", () => {
         "messageImpressions",
         Router.state.messageImpressions
       );
-    });
-    it("should have personalizedCfrScores in the message context", () => {
-      assert.property(Router._getMessagesContext(), "scores");
-    });
-    it("should have personalizedCfrThreshold in the message context", () => {
-      assert.property(Router._getMessagesContext(), "scoreThreshold");
     });
     it("should return all unblocked messages that match the template, trigger if returnAll=true", async () => {
       const message1 = {
@@ -1468,39 +1499,14 @@ describe("ASRouter", () => {
             template: "extended_triplets",
           })
           .resolves({ id: "foo" });
-        const spy = sandbox.spy(Router, "setupExtendedTriplets");
+        sandbox.stub(Router, "sendNewTabMessage").resolves();
         const msg = fakeAsyncMessage({
           type: "NEWTAB_MESSAGE_REQUEST",
           data: {},
         });
         await Router.onMessage(msg);
 
-        assert.calledOnce(spy);
-      });
-      it("should fallback to snippets if one was assigned to the holdback experiment", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = holdback branch
-        const handleMessageRequestStub = sandbox.stub(
-          Router,
-          "handleMessageRequest"
-        );
-        handleMessageRequestStub
-          .withArgs({
-            template: "extended_triplets",
-          })
-          .resolves({ id: "foo" });
-        const msg = fakeAsyncMessage({
-          type: "NEWTAB_MESSAGE_REQUEST",
-          data: {},
-        });
-        await Router.onMessage(msg);
-
-        assert.calledTwice(handleMessageRequestStub);
-        assert.calledWithExactly(handleMessageRequestStub, {
-          template: "extended_triplets",
-        });
-        assert.calledWithExactly(handleMessageRequestStub, {
-          provider: "snippets",
-        });
+        assert.calledOnce(Router.sendNewTabMessage);
       });
       it("should fallback to snippets if onboarding message provider returned none", async () => {
         const handleMessageRequestStub = sandbox.stub(
@@ -1512,14 +1518,12 @@ describe("ASRouter", () => {
             template: "extended_triplets",
           })
           .resolves(null);
-        const spy = sandbox.spy(Router, "setupExtendedTriplets");
         const msg = fakeAsyncMessage({
           type: "NEWTAB_MESSAGE_REQUEST",
           data: {},
         });
         await Router.onMessage(msg);
 
-        assert.notCalled(spy);
         assert.calledTwice(handleMessageRequestStub);
         assert.calledWithExactly(handleMessageRequestStub, {
           template: "extended_triplets",
@@ -1545,6 +1549,19 @@ describe("ASRouter", () => {
           PARENT_TO_CHILD_MESSAGE_NAME,
           { type: "CLEAR_MESSAGE", data: { id: "foo" } }
         );
+      });
+      it("should only send CLEAR_MESSAGE to preloaded if action.data.preloadedOnly is true", async () => {
+        sandbox.stub(Router, "sendAsyncMessageToPreloaded");
+        const msg = fakeAsyncMessage({
+          type: "BLOCK_MESSAGE_BY_ID",
+          data: { id: "foo", preloadedOnly: true },
+        });
+        await Router.onMessage(msg);
+
+        assert.calledWith(Router.sendAsyncMessageToPreloaded, {
+          type: "CLEAR_MESSAGE",
+          data: { id: "foo" },
+        });
       });
       it("should add the campaign to the messageBlockList instead of id if .campaign is specified and not select messages of that campaign again", async () => {
         await Router.setState({
@@ -1735,6 +1752,7 @@ describe("ASRouter", () => {
             providerPrefs: ASRouterPreferences.providers,
             userPrefs: ASRouterPreferences.getAllUserPreferences(),
             targetingParameters: {},
+            trailhead: ASRouterPreferences.trailhead,
             errors: Router.errors,
           }),
         });
@@ -2032,7 +2050,12 @@ describe("ASRouter", () => {
       });
 
       it("should set blockOnClick property true for dynamic triplet and matching messages more than 3", async () => {
-        await Router.setState({ trailheadTriplet: "dynamic" });
+        sandbox.replaceGetter(ASRouterPreferences, "trailhead", function() {
+          return {
+            trailheadInterrupt: "join",
+            trailheadTriplet: "dynamic",
+          };
+        });
         await Router.onMessage(msg);
         const [, resp] = msg.target.sendAsyncMessage.firstCall.args;
         const expectedBundle = [
@@ -2062,7 +2085,12 @@ describe("ASRouter", () => {
       });
 
       it("should set blockOnClick property true for triplet branch name that starts with 'dynamic' and matching messages more than 3", async () => {
-        await Router.setState({ trailheadTriplet: "dynamic_test" });
+        sandbox.replaceGetter(ASRouterPreferences, "trailhead", function() {
+          return {
+            trailheadInterrupt: "join",
+            trailheadTriplet: "dynamic_test",
+          };
+        });
         await Router.onMessage(msg);
         const [, resp] = msg.target.sendAsyncMessage.firstCall.args;
         const expectedBundle = [
@@ -3079,424 +3107,6 @@ describe("ASRouter", () => {
     });
   });
 
-  describe("trailhead", () => {
-    it("should call .setFirstRunStateFromPref and initialize trailhead branches on init", async () => {
-      sandbox.spy(Router, "setFirstRunStateFromPref");
-      getStringPrefStub
-        .withArgs(TRAILHEAD_CONFIG.OVERRIDE_PREF)
-        .returns("join-supercharge");
-
-      await Router.init(channel, createFakeStorage(), dispatchStub);
-
-      assert.calledOnce(Router.setFirstRunStateFromPref);
-      assert.equal(Router.state.trailheadInterrupt, "join");
-      assert.equal(Router.state.trailheadTriplet, "supercharge");
-    });
-    it("should set default triplet when firstrun.branches pref not set", async () => {
-      sandbox.spy(Router, "setFirstRunStateFromPref");
-      getStringPrefStub.withArgs(TRAILHEAD_CONFIG.OVERRIDE_PREF).returns("");
-
-      await Router.init(channel, createFakeStorage(), dispatchStub);
-
-      assert.calledOnce(Router.setFirstRunStateFromPref);
-      assert.equal(
-        Router.state.trailheadTriplet,
-        TRAILHEAD_CONFIG.DEFAULT_TRIPLET
-      );
-    });
-    it.skip("should call .setupTrailhead on init", async () => {
-      sandbox.spy(Router, "setupTrailhead");
-      sandbox
-        .stub(Router, "_generateTrailheadBranches")
-        .resolves({ experiment: "", interrupt: "join", triplet: "privacy" });
-      sandbox
-        .stub(global.Services.prefs, "getBoolPref")
-        .withArgs(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF)
-        .returns(true);
-
-      await Router.init(channel, createFakeStorage(), dispatchStub);
-
-      assert.calledOnce(Router.setupTrailhead);
-      assert.propertyVal(Router.state, "trailheadInitialized", true);
-    });
-    it.skip("should call .setupTrailhead on init but return early if the DID_SEE_ABOUT_WELCOME_PREF is false", async () => {
-      sandbox.spy(Router, "setupTrailhead");
-      sandbox.spy(Router, "_generateTrailheadBranches");
-      sandbox
-        .stub(global.Services.prefs, "getBoolPref")
-        .withArgs(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF)
-        .returns(false);
-
-      await Router.init(channel, createFakeStorage(), dispatchStub);
-
-      assert.calledOnce(Router.setupTrailhead);
-      assert.notCalled(Router._generateTrailheadBranches);
-      assert.propertyVal(Router.state, "trailheadInitialized", false);
-    });
-    it("should call .setupTrailhead and set the DID_SEE_ABOUT_WELCOME_PREF on a firstRun message", async () => {
-      sandbox.spy(Router, "setupTrailhead");
-      const msg = fakeAsyncMessage({
-        type: "TRIGGER",
-        data: { trigger: { id: "firstRun" } },
-      });
-      await Router.onMessage(msg);
-
-      assert.calledOnce(Router.setupTrailhead);
-    });
-
-    it("should have trailheadInterrupt and trailheadTriplet in the message context", async () => {
-      sandbox
-        .stub(global.Services.prefs, "getBoolPref")
-        .withArgs(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF)
-        .returns(true);
-      sandbox
-        .stub(Router, "_generateTrailheadBranches")
-        .resolves({ experiment: "", interrupt: "join", triplet: "privacy" });
-      await Router.setupTrailhead();
-
-      assert.propertyVal(
-        Router._getMessagesContext(),
-        "trailheadInterrupt",
-        "join"
-      );
-      assert.propertyVal(
-        Router._getMessagesContext(),
-        "trailheadTriplet",
-        "privacy"
-      );
-    });
-
-    describe(".setupTrailhead", () => {
-      let getBoolPrefStub;
-      let setStringPrefStub;
-      let setBoolPrefStub;
-
-      beforeEach(() => {
-        getBoolPrefStub = sandbox.stub(global.Services.prefs, "getBoolPref");
-        getBoolPrefStub
-          .withArgs(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF)
-          .returns(true);
-        getBoolPrefStub
-          .withArgs(TRAILHEAD_CONFIG.TRIPLETS_ENROLLED_PREF)
-          .returns(false);
-        setStringPrefStub = sandbox.stub(
-          global.Services.prefs,
-          "setStringPref"
-        );
-        setBoolPrefStub = sandbox.stub(global.Services.prefs, "setBoolPref");
-      });
-
-      const configWithInterruptsExperiment = {
-        experiment: "interrupts",
-        interrupt: "join",
-        triplet: "privacy",
-      };
-      const configWithTripletsExperiment = {
-        experiment: "triplets",
-        interrupt: "join",
-        triplet: "privacy",
-      };
-      const configWithoutExperiment = {
-        experiment: "",
-        interrupt: "join",
-        triplet: "supercharge",
-      };
-
-      it("should generates an experiment/branch configuration and update Router.state", async () => {
-        const config = configWithoutExperiment;
-        sandbox.stub(Router, "_generateTrailheadBranches").resolves(config);
-
-        await Router.setupTrailhead();
-
-        assert.propertyVal(Router.state, "trailheadInitialized", true);
-        assert.propertyVal(
-          Router.state,
-          "trailheadInterrupt",
-          config.interrupt
-        );
-        assert.propertyVal(Router.state, "trailheadTriplet", config.triplet);
-      });
-      it("should only run once", async () => {
-        sandbox.spy(Router, "setState");
-
-        await Router.setupTrailhead();
-        await Router.setupTrailhead();
-        await Router.setupTrailhead();
-
-        assert.calledOnce(Router.setState);
-      });
-      it("should return early if DID_SEE_ABOUT_WELCOME_PREF is false", async () => {
-        getBoolPrefStub
-          .withArgs(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF)
-          .returns(false);
-
-        await Router.setupTrailhead();
-
-        sandbox.spy(Router, "setState");
-        assert.notCalled(Router.setState);
-      });
-      it("should set active interrupts experiment if one is defined", async () => {
-        sandbox
-          .stub(Router, "_generateTrailheadBranches")
-          .resolves(configWithInterruptsExperiment);
-        sandbox.stub(global.TelemetryEnvironment, "setExperimentActive");
-        sandbox.spy(Router, "_sendTrailheadEnrollEvent");
-
-        await Router.setupTrailhead();
-
-        assert.calledOnce(global.TelemetryEnvironment.setExperimentActive);
-        assert.calledWith(
-          setStringPrefStub,
-          TRAILHEAD_CONFIG.INTERRUPTS_EXPERIMENT_PREF,
-          "join"
-        );
-        assert.calledWith(Router._sendTrailheadEnrollEvent, {
-          experiment: "activity-stream-firstrun-trailhead-interrupts",
-          type: "as-firstrun",
-          branch: "join",
-        });
-      });
-      it("should set active triplets experiment if one is defined", async () => {
-        sandbox
-          .stub(Router, "_generateTrailheadBranches")
-          .resolves(configWithTripletsExperiment);
-        sandbox.stub(global.TelemetryEnvironment, "setExperimentActive");
-        sandbox.spy(Router, "_sendTrailheadEnrollEvent");
-
-        await Router.setupTrailhead();
-
-        assert.calledOnce(global.TelemetryEnvironment.setExperimentActive);
-        assert.calledWith(
-          setBoolPrefStub,
-          TRAILHEAD_CONFIG.TRIPLETS_ENROLLED_PREF,
-          true
-        );
-        assert.calledWith(Router._sendTrailheadEnrollEvent, {
-          experiment: "activity-stream-firstrun-trailhead-triplets",
-          type: "as-firstrun",
-          branch: "privacy",
-        });
-      });
-      it("should not set an active experiment if no experiment is defined", async () => {
-        sandbox
-          .stub(Router, "_generateTrailheadBranches")
-          .resolves(configWithoutExperiment);
-        sandbox.stub(global.TelemetryEnvironment, "setExperimentActive");
-
-        await Router.setupTrailhead();
-
-        assert.notCalled(global.TelemetryEnvironment.setExperimentActive);
-        assert.notCalled(setStringPrefStub);
-      });
-    });
-
-    describe("._generateTrailheadBranches", () => {
-      async function checkReturnValue(expected) {
-        const result = await Router._generateTrailheadBranches();
-        assert.propertyVal(result, "experiment", expected.experiment);
-        assert.propertyVal(result, "interrupt", expected.interrupt);
-        assert.propertyVal(result, "triplet", expected.triplet);
-      }
-      it("should return control experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "zh-CN");
-        checkReturnValue({ experiment: "", interrupt: "control", triplet: "" });
-      });
-      it("should return control experience with no experiment if attribution data contains an addon source", async () => {
-        sandbox
-          .stub(fakeAttributionCode, "getAttrDataAsync")
-          .resolves({ source: "addons.mozilla.org" });
-        checkReturnValue({ experiment: "", interrupt: "control", triplet: "" });
-      });
-      it("should use values in override pref if it is set with no experiment", async () => {
-        getStringPrefStub
-          .withArgs(TRAILHEAD_CONFIG.OVERRIDE_PREF)
-          .returns("join-privacy");
-        checkReturnValue({
-          experiment: "",
-          interrupt: "join",
-          triplet: "privacy",
-        });
-
-        getStringPrefStub
-          .withArgs(TRAILHEAD_CONFIG.OVERRIDE_PREF)
-          .returns("nofirstrun");
-        checkReturnValue({
-          experiment: "",
-          interrupt: "nofirstrun",
-          triplet: "",
-        });
-      });
-      it("should return default experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "zh-CN");
-        checkReturnValue({
-          experiment: "",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-      it("should return default experience with no experiment if locale is NOT in TRAILHEAD_LOCALES", async () => {
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "zh-CN");
-        checkReturnValue({
-          experiment: "",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-      it("should roll for experiment if locale is in TRAILHEAD_LOCALES", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = interrupts experiment
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "en-US");
-        checkReturnValue({
-          experiment: "interrupts",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-      it("should roll for experiment if attribution data is empty", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = interrupts experiment
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "en-US");
-        sandbox.stub(fakeAttributionCode, "getAttrDataAsync").resolves(null);
-
-        checkReturnValue({
-          experiment: "interrupts",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-      it("should roll for experiment if attribution data rejects with an error", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = interrupts experiment
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "en-US");
-        sandbox
-          .stub(fakeAttributionCode, "getAttrDataAsync")
-          .rejects(new Error("whoops"));
-        checkReturnValue({
-          experiment: "interrupts",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-      it("should roll a triplet experiment", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(2); // 2 = triplets experiment
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "en-US");
-        checkReturnValue({
-          experiment: "triplets",
-          interrupt: "join",
-          triplet: "multidevice",
-        });
-      });
-      it("should roll no experiment", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(0); // 0 = no experiment
-        sandbox
-          .stub(global.Services.locale, "appLocaleAsLangTag")
-          .get(() => "en-US");
-        checkReturnValue({
-          experiment: "",
-          interrupt: "join",
-          triplet: "supercharge",
-        });
-      });
-    });
-
-    describe(".setupExtendedTriplets", () => {
-      let setStringPrefStub;
-      let setExperimentActiveStub;
-
-      beforeEach(() => {
-        setStringPrefStub = sandbox.stub(
-          global.Services.prefs,
-          "setStringPref"
-        );
-        setExperimentActiveStub = sandbox.stub(
-          global.TelemetryEnvironment,
-          "setExperimentActive"
-        );
-      });
-
-      it("should generates a control branch configuration and update Router.state", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(0); // 0 = control branch
-
-        await Router.setupExtendedTriplets();
-
-        assert.propertyVal(Router.state, "extendedTripletsInitialized", true);
-        assert.propertyVal(Router.state, "showExtendedTriplets", true);
-        assert.calledWith(
-          setStringPrefStub,
-          TRAILHEAD_CONFIG.EXTENDED_TRIPLETS_EXPERIMENT_PREF,
-          "control"
-        );
-        assert.calledWith(
-          setExperimentActiveStub,
-          "activity-stream-extended-triplets-v2-1581912",
-          "control"
-        );
-      });
-      it("should generates a test branch configuration and update Router.state", async () => {
-        sandbox.stub(global.Sampling, "ratioSample").resolves(1); // 1 = holdback branch
-
-        await Router.setupExtendedTriplets();
-
-        assert.propertyVal(Router.state, "extendedTripletsInitialized", true);
-        assert.propertyVal(Router.state, "showExtendedTriplets", false);
-        assert.calledWith(
-          setStringPrefStub,
-          TRAILHEAD_CONFIG.EXTENDED_TRIPLETS_EXPERIMENT_PREF,
-          "holdback"
-        );
-        assert.calledWith(
-          setExperimentActiveStub,
-          "activity-stream-extended-triplets-v2-1581912",
-          "holdback"
-        );
-      });
-      it("should reuse the existing branch if it's already defined", async () => {
-        getStringPrefStub.returns("control");
-
-        await Router.setupExtendedTriplets();
-
-        assert.notCalled(setStringPrefStub);
-      });
-      it("should only run once", async () => {
-        sandbox.spy(Router, "setState");
-
-        await Router.setupExtendedTriplets();
-        await Router.setupExtendedTriplets();
-        await Router.setupExtendedTriplets();
-
-        assert.calledOnce(Router.setState);
-      });
-    });
-  });
-
-  describe("chooseBranch", () => {
-    it("should call .ratioSample with the second value in each branch and return one of the first values", async () => {
-      sandbox.stub(global.Sampling, "ratioSample").resolves(0);
-      const result = await chooseBranch("bleep", [["foo", 14], ["bar", 42]]);
-
-      assert.calledWith(global.Sampling.ratioSample, "bleep", [14, 42]);
-      assert.equal(result, "foo");
-    });
-    it("should use 1 as the default ratio", async () => {
-      sandbox.stub(global.Sampling, "ratioSample").resolves(1);
-      const result = await chooseBranch("bleep", [["foo"], ["bar"]]);
-
-      assert.calledWith(global.Sampling.ratioSample, "bleep", [1, 1]);
-      assert.equal(result, "bar");
-    });
-  });
-
   describe("#_onLocaleChanged", () => {
     it("should call _maybeUpdateL10nAttachment in the handler", async () => {
       sandbox.spy(Router, "_maybeUpdateL10nAttachment");
@@ -3574,6 +3184,51 @@ describe("ASRouter", () => {
       Router.observe("", "", "foo");
 
       assert.notCalled(CFRPageActions.reloadL10n);
+    });
+  });
+
+  describe("#sendAsyncMessageToPreloaded", () => {
+    it("should send the message to the preloaded browser if there's data and a preloaded browser exists", () => {
+      const port = {
+        browser: {
+          getAttribute() {
+            return "preloaded";
+          },
+        },
+        sendAsyncMessage: sinon.spy(),
+      };
+      Router.messageChannel.messagePorts.push(port);
+
+      const action = { type: "FOO" };
+      Router.sendAsyncMessageToPreloaded(action);
+      assert.calledWith(port.sendAsyncMessage, OUTGOING_MESSAGE_NAME, action);
+    });
+    it("should send the message to all the preloaded browsers if there's data and they exist", () => {
+      const port = {
+        browser: {
+          getAttribute() {
+            return "preloaded";
+          },
+        },
+        sendAsyncMessage: sinon.spy(),
+      };
+      Router.messageChannel.messagePorts.push(port);
+      Router.messageChannel.messagePorts.push(port);
+      Router.sendAsyncMessageToPreloaded({ type: "FOO" });
+      assert.calledTwice(port.sendAsyncMessage);
+    });
+    it("should not send the message to the preloaded browser if there's no data and a preloaded browser does not exists", () => {
+      const port = {
+        browser: {
+          getAttribute() {
+            return "consumed";
+          },
+        },
+        sendAsyncMessage: sinon.spy(),
+      };
+      Router.messageChannel.messagePorts.push(port);
+      Router.sendAsyncMessageToPreloaded({ type: "FOO" });
+      assert.notCalled(port.sendAsyncMessage);
     });
   });
 });
