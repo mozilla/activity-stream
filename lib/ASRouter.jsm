@@ -33,6 +33,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   RemoteL10n: "resource://activity-stream/lib/RemoteL10n.jsm",
   MigrationUtils: "resource:///modules/MigrationUtils.jsm",
 });
+XPCOMUtils.defineLazyServiceGetters(this, {
+  BrowserHandler: ["@mozilla.org/browser/clh;1", "nsIBrowserHandler"],
+});
 const {
   ASRouterActions: ra,
   actionTypes: at,
@@ -505,7 +508,6 @@ class _ASRouter {
     this._storage = null;
     this._resetInitialization();
     this._state = {
-      lastMessageId: null,
       providers: [],
       messageBlockList: [],
       providerBlockList: [],
@@ -978,48 +980,6 @@ class _ASRouter {
     };
   }
 
-  _findAllMessages(
-    candidateMessages,
-    trigger,
-    { ordered = false, shouldCache = false } = {}
-  ) {
-    const messages = candidateMessages.filter(m =>
-      this.isBelowFrequencyCaps(m)
-    );
-    const context = this._getMessagesContext();
-
-    return ASRouterTargeting.findAllMatchingMessages({
-      messages,
-      trigger,
-      context,
-      onError: this._handleTargetingError,
-      ordered,
-      shouldCache,
-    });
-  }
-
-  _findMessage(
-    candidateMessages,
-    trigger,
-    { ordered = false, shouldCache = false } = {}
-  ) {
-    const messages = candidateMessages.filter(m =>
-      this.isBelowFrequencyCaps(m)
-    );
-    const context = this._getMessagesContext();
-
-    // Find a message that matches the targeting context as well as the trigger context (if one is provided)
-    // If no trigger is provided, we should find a message WITHOUT a trigger property defined.
-    return ASRouterTargeting.findMatchingMessage({
-      messages,
-      trigger,
-      context,
-      onError: this._handleTargetingError,
-      ordered,
-      shouldCache,
-    });
-  }
-
   async evaluateExpression(target, { expression, context }) {
     const channel = target || this.messageChannel;
     let evaluationStatus;
@@ -1126,11 +1086,14 @@ class _ASRouter {
       }
     } else {
       // Find all messages that matches the targeting context
-      const allMessages = await this._findAllMessages(
-        bundledMessagesOfSameTemplate,
-        trigger,
-        { ordered: true }
-      );
+      const allMessages = await this.handleMessageRequest({
+        messages: bundledMessagesOfSameTemplate,
+        triggerId: trigger && trigger.id,
+        triggerContext: trigger && trigger.context,
+        triggerParam: trigger && trigger.param,
+        ordered: true,
+        returnAll: true,
+      });
 
       if (allMessages && allMessages.length) {
         // Retrieve enough messages needed to fill a bundle
@@ -1404,57 +1367,59 @@ class _ASRouter {
   }
 
   handleMessageRequest({
+    messages: candidates,
     triggerId,
     triggerParam,
     triggerContext,
     template,
     provider,
+    ordered = false,
     returnAll = false,
   }) {
-    const msgs = this._getUnblockedMessages().filter(m => {
-      if (provider && m.provider !== provider) {
-        return false;
-      }
-      if (template && m.template !== template) {
-        return false;
-      }
-      if (triggerId && !m.trigger) {
-        return false;
-      }
-      if (triggerId && m.trigger.id !== triggerId) {
-        return false;
-      }
+    const messages =
+      candidates ||
+      this._getUnblockedMessages()
+        .filter(m => {
+          if (provider && m.provider !== provider) {
+            return false;
+          }
+          if (template && m.template !== template) {
+            return false;
+          }
+          if (triggerId && !m.trigger) {
+            return false;
+          }
+          if (triggerId && m.trigger.id !== triggerId) {
+            return false;
+          }
 
-      return true;
-    });
+          return true;
+        })
+        .filter(m => this.isBelowFrequencyCaps(m));
 
-    const shouldCache = msgs.every(m => JEXL_PROVIDER_CACHE.has(m.provider));
+    const shouldCache = messages.every(m =>
+      JEXL_PROVIDER_CACHE.has(m.provider)
+    );
+    const context = this._getMessagesContext();
 
-    if (returnAll) {
-      return this._findAllMessages(
-        msgs,
-        triggerId && {
-          id: triggerId,
-          param: triggerParam,
-          context: triggerContext,
-        },
-        { shouldCache }
-      );
-    }
-
-    return this._findMessage(
-      msgs,
-      triggerId && {
+    // Find a message that matches the targeting context as well as the trigger context (if one is provided)
+    // If no trigger is provided, we should find a message WITHOUT a trigger property defined.
+    return ASRouterTargeting.findMatchingMessage({
+      messages,
+      trigger: triggerId && {
         id: triggerId,
         param: triggerParam,
         context: triggerContext,
       },
-      { shouldCache }
-    );
+      context,
+      onError: this._handleTargetingError,
+      ordered,
+      shouldCache,
+      returnAll,
+    });
   }
 
   async setMessageById(id, target, force = true, action = {}) {
-    await this.setState({ lastMessageId: id });
     const newMessage = this.getMessageById(id);
 
     await this._sendMessageToTarget(newMessage, target, action.data, force);
@@ -1575,6 +1540,10 @@ class _ASRouter {
 
   // To be passed to ASRouterTriggerListeners
   async _triggerHandler(target, trigger) {
+    // Disable ASRouterTriggerListeners in kiosk mode.
+    if (BrowserHandler.kiosk) {
+      return;
+    }
     await this.onMessage({
       target,
       data: { type: "TRIGGER", data: { trigger } },
@@ -1825,13 +1794,13 @@ class _ASRouter {
 
     if (endpoint) {
       message = await this.handleMessageRequest({ provider: "preview" });
+
       // We don't want to cache preview messages, remove them after we selected the message to show
-      await this.setState(state => ({
-        lastMessageId: message ? message.id : null,
-        messages: message
-          ? state.messages.filter(m => m.id !== message.id)
-          : state.messages,
-      }));
+      if (message) {
+        await this.setState(state => ({
+          messages: state.messages.filter(m => m.id !== message.id),
+        }));
+      }
     } else {
       // On new tab, send cards if they match; othwerise send a snippet
       message = await this.handleMessageRequest({
@@ -1842,8 +1811,6 @@ class _ASRouter {
       if (!message) {
         message = await this.handleMessageRequest({ provider: "snippets" });
       }
-
-      await this.setState({ lastMessageId: message ? message.id : null });
     }
 
     await this._sendMessageToTarget(message, target);
@@ -1863,7 +1830,6 @@ class _ASRouter {
       triggerContext: trigger.context,
     });
 
-    await this.setState({ lastMessageId: message ? message.id : null });
     await this._sendMessageToTarget(message, target, trigger);
   }
 
