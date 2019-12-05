@@ -281,6 +281,16 @@ describe("ToolbarPanelHub", () => {
       messages[0].content.link_text = { string_id: "link_text_id" };
 
       getMessagesStub.returns(messages);
+      const ev1 = sandbox.stub();
+      ev1.withArgs("type").returns(1); // tracker
+      ev1.withArgs("count").returns(4);
+      const ev2 = sandbox.stub();
+      ev2.withArgs("type").returns(4); // fingerprinter
+      ev2.withArgs("count").returns(3);
+      getEventsByDateRangeStub.returns([
+        { getResultByName: ev1 },
+        { getResultByName: ev2 },
+      ]);
 
       await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
 
@@ -288,6 +298,14 @@ describe("ToolbarPanelHub", () => {
         assert.ok(createdElements.find(el => el.tagName === "h2"));
         if (message.content.layout === "tracking-protections") {
           assert.ok(createdElements.find(el => el.tagName === "h4"));
+        }
+        if (message.id === "WHATS_NEW_FINGERPRINTER_COUNTER_72") {
+          assert.ok(createdElements.find(el => el.tagName === "h4"));
+          assert.ok(
+            createdElements.find(
+              el => el.tagName === "h2" && el.textContent === 3
+            )
+          );
         }
         assert.ok(createdElements.find(el => el.tagName === "p"));
       }
@@ -405,9 +423,15 @@ describe("ToolbarPanelHub", () => {
         m => m.template === "whatsnew_panel_message"
       );
       getMessagesStub.returns(messages);
+      const ev1 = sandbox.stub();
+      ev1.withArgs("type").returns(2); // cookie
+      ev1.withArgs("count").returns(4);
+      const ev2 = sandbox.stub();
+      ev2.withArgs("type").returns(2); // cookie
+      ev2.withArgs("count").returns(3);
       getEventsByDateRangeStub.returns([
-        { getResultByName: sandbox.stub().returns(2) },
-        { getResultByName: sandbox.stub().returns(3) },
+        { getResultByName: ev1 },
+        { getResultByName: ev2 },
       ]);
 
       await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
@@ -416,8 +440,46 @@ describe("ToolbarPanelHub", () => {
         {
           id: sinon.match.string,
           args: {
-            blockedCount: "5",
+            blockedCount: 7,
             earliestDate: getEarliestRecordedDateStub(),
+            cookieCount: 7,
+            cryptominerCount: 0,
+            socialCount: 0,
+            trackerCount: 0,
+            fingerprinterCount: 0,
+          },
+        },
+      ]);
+    });
+    it("should correctly compute event counts per type", async () => {
+      const messages = (await PanelTestProvider.getMessages()).filter(
+        m => m.template === "whatsnew_panel_message"
+      );
+      getMessagesStub.returns(messages);
+      const ev1 = sandbox.stub();
+      ev1.withArgs("type").returns(1); // tracker
+      ev1.withArgs("count").returns(4);
+      const ev2 = sandbox.stub();
+      ev2.withArgs("type").returns(4); // fingerprinter
+      ev2.withArgs("count").returns(3);
+      getEventsByDateRangeStub.returns([
+        { getResultByName: ev1 },
+        { getResultByName: ev2 },
+      ]);
+
+      await instance.renderMessages(fakeWindow, fakeDocument, "container-id");
+
+      assert.calledWithExactly(global.RemoteL10n.l10n.formatMessages, [
+        {
+          id: sinon.match.string,
+          args: {
+            blockedCount: 7,
+            earliestDate: getEarliestRecordedDateStub(),
+            trackerCount: 4,
+            fingerprinterCount: 3,
+            cookieCount: 0,
+            cryptominerCount: 0,
+            socialCount: 0,
           },
         },
       ]);
