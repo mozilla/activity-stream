@@ -3,7 +3,11 @@
   display: flex;
   flex-grow: 1;
   min-height: 100vh;
-  padding: ($section-spacing + $section-vertical-padding) $base-gutter $base-gutter;
+  padding: 30px 0 32px;
+
+  @media(min-width: $break-point-medium) {
+    padding: 30px 32px 32px;
+  }
 
   &.only-search {
     display: block;
@@ -17,10 +21,8 @@
 
 main {
   margin: auto;
-  width: $wrapper-default-width;
-  // Offset the snippets container so things at the bottom of the page are still
-  // visible when snippets are visible. Adjust for other spacing.
-  padding-bottom: $snippets-container-height - $section-spacing - $base-gutter;
+  width: 266px;
+  padding-bottom: 68px;
 
   section {
     margin-bottom: $section-spacing;
