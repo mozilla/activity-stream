@@ -64,14 +64,14 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
     height: $search-height;
     margin: 0 auto;
     position: relative;
-    width: $searchbar-width-small;
+    width: 100%;
 
     @media (min-width: $break-point-medium) {
-      width: $searchbar-width-medium;
+      width: 460px;
     }
 
     @media (min-width: $break-point-large) {
-      width: $searchbar-width-large;
+      width: 696px;
     }
   }
 

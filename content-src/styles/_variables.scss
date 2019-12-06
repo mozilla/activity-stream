@@ -108,10 +108,6 @@ $icon-size: 16px;
 $smaller-icon-size: 12px;
 $larger-icon-size: 32px;
 
-$searchbar-width-small: $grid-unit * 2 + $base-gutter * 1;
-$searchbar-width-medium: $grid-unit * 4 + $base-gutter * 3;
-$searchbar-width-large: $grid-unit * 6 + $base-gutter * 5;
-
 $wrapper-default-width: $grid-unit * 2 + $base-gutter * 1 + $section-horizontal-padding * 2; // 2 top sites
 $wrapper-max-width-medium: $grid-unit * 4 + $base-gutter * 3 + $section-horizontal-padding * 2; // 4 top sites
 $wrapper-max-width-large: $grid-unit * 6 + $base-gutter * 5 + $section-horizontal-padding * 2; // 6 top sites
@@ -122,9 +118,9 @@ $wrapper-max-width-widest: $grid-unit * 8 + $base-gutter * 7 + $section-horizont
 $scrollbar-width: 16px;
 
 // Breakpoints
-$break-point-medium: $wrapper-max-width-medium + $base-gutter * 2 + $scrollbar-width;
-$break-point-large: $wrapper-max-width-large + $base-gutter * 2 + $scrollbar-width;
-$break-point-widest: $wrapper-max-width-widest + $base-gutter * 2 + $scrollbar-width;
+$break-point-medium: $wrapper-max-width-medium + $base-gutter * 2 + $scrollbar-width; // 610px
+$break-point-large: $wrapper-max-width-large + $base-gutter * 2 + $scrollbar-width; // 866px
+$break-point-widest: $wrapper-max-width-widest + $base-gutter * 2 + $scrollbar-width; // 1122px
 
 $section-title-font-size: 13px;
 
