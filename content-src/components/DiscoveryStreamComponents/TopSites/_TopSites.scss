@@ -3,10 +3,8 @@ $top-sites-vertical-space-with-spoc: 20px;
 // ds topsites wraps the original topsites, with a few css changes.
 .ds-top-sites {
   .top-sites-list {
-    @media (min-width: $break-point-medium) {
-      .top-site-outer:nth-child(n+5) {
-        display: none;
-      }
+    .top-site-outer:nth-child(n+5) {
+      display: none;
     }
 
     @media (min-width: $break-point-large) {
