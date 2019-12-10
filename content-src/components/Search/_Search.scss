@@ -134,6 +134,7 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
 .non-collapsible-section + .below-search-snippet-wrapper {
   // If search is enabled, we need to invade its large bottom padding.
   margin-top: -48px;
+  padding: 0 25px;
 }
 
 @media (max-height: 700px) {
