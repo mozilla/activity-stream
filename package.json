@@ -115,7 +115,6 @@
     "startmc": "npm-run-all --parallel startmc:*",
     "prestartmc": "npm run buildmc",
     "startmc:copy": "cpx \"{{,.}*,!(node_modules)/**/{,.}*}\" $npm_package_config_mc_dir/browser/components/newtab/ -w",
-    "startmc:copyFluent": "npm run buildmc:fluentExport -- -w",
     "startmc:copyPingCentre": "npm run buildmc:copyPingCentre -- -w",
     "startmc:watch": "npm run watchmc",
     "watchmc": "npm-run-all --parallel watchmc:*",
