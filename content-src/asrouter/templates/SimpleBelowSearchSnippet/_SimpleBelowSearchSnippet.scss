@@ -78,7 +78,7 @@
 
   .blockButton {
     display: block;
-    inset-inline-end: 20px;
+    inset-inline-end: 10px;
     opacity: 1;
     top: 20px;
 
@@ -100,6 +100,7 @@
   .textContainer {
     margin: 10px;
     margin-inline-start: 0;
+    padding-inline-end: 20px;
   }
 
   .icon {

@@ -265,6 +265,11 @@ class _ToolbarBadgeHub {
       toolbarbutton.addEventListener("keypress", this.removeAllNotifications);
       this.state = { notification: { id: message.id } };
 
+      // Impression should be added when the badge becomes visible
+      this._addImpression(message);
+      // Send a telemetry ping when adding the notification badge
+      this.sendUserEventTelemetry("IMPRESSION", message);
+
       return toolbarbutton;
     }
 
@@ -277,11 +282,6 @@ class _ToolbarBadgeHub {
       // No badge to set only an action to execute
       return;
     }
-
-    // Impression should be added when the badge becomes visible
-    this._addImpression(message);
-    // Send a telemetry ping when adding the notification badge
-    this.sendUserEventTelemetry("IMPRESSION", message);
 
     EveryWindow.registerCallback(
       this.id,
@@ -308,6 +308,9 @@ class _ToolbarBadgeHub {
     // the one set by devtools
     if (options.force) {
       this.removeAllNotifications();
+      // When debugging immediately show the badge
+      this.registerBadgeToAllWindows(message);
+      return;
     }
 
     if (message.content.delay) {
@@ -320,10 +323,13 @@ class _ToolbarBadgeHub {
   }
 
   async messageRequest({ triggerId, template }) {
+    const telemetryObject = { triggerId };
+    TelemetryStopwatch.start("MS_MESSAGE_REQUEST_TIME_MS", telemetryObject);
     const message = await this._handleMessageRequest({
       triggerId,
       template,
     });
+    TelemetryStopwatch.finish("MS_MESSAGE_REQUEST_TIME_MS", telemetryObject);
     if (message) {
       this.registerBadgeNotificationListener(message);
     }

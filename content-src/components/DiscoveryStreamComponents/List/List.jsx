@@ -30,6 +30,7 @@ export class ListItem extends React.PureComponent {
           event: "CLICK",
           source: this.props.type.toUpperCase(),
           action_position: this.props.pos,
+          value: { card_type: this.props.flightId ? "spoc" : "organic" },
         })
       );
 
@@ -90,7 +91,7 @@ export class ListItem extends React.PureComponent {
             rawSource={this.props.raw_image_src}
           />
           <ImpressionStats
-            campaignId={this.props.campaignId}
+            flightId={this.props.flightId}
             rows={[
               {
                 id: this.props.id,
@@ -116,7 +117,7 @@ export class ListItem extends React.PureComponent {
             pocket_id={this.props.pocket_id}
             shim={this.props.shim}
             bookmarkGuid={this.props.bookmarkGuid}
-            campaignId={this.props.campaignId}
+            flightId={this.props.flightId}
           />
         )}
       </li>
@@ -146,7 +147,7 @@ export function _List(props) {
           <ListItem
             key={`ds-list-item-${rec.id}`}
             dispatch={props.dispatch}
-            campaignId={rec.campaign_id}
+            flightId={rec.flight_id}
             domain={rec.domain}
             excerpt={rec.excerpt}
             id={rec.id}

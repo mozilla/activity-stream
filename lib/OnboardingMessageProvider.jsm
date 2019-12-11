@@ -14,8 +14,7 @@ ChromeUtils.defineModuleGetter(
   "resource://gre/modules/addons/AddonRepository.jsm"
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const FIREFOX_VERSION = parseInt(Services.appinfo.version.match(/\d+/), 10);
-const ONE_MINUTE = 60 * 1000;
+const FX_MONITOR_CLIENT_ID = "802d56ef2a9af9fa";
 
 const L10N = new Localization([
   "branding/brand.ftl",
@@ -269,7 +268,7 @@ const ONBOARDING_MESSAGES = () => [
       },
     },
     targeting:
-      "trailheadTriplet == 'supercharge' || (trailheadTriplet == 'dynamic' && usesFirefoxSync == false)",
+      "trailheadTriplet in ['supercharge', 'static'] || ( 'dynamic' in trailheadTriplet && usesFirefoxSync == false)",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -289,8 +288,9 @@ const ONBOARDING_MESSAGES = () => [
         },
       },
     },
-    targeting:
-      "trailheadTriplet == 'supercharge' || (trailheadTriplet == 'dynamic' && !('Firefox Monitor' in attachedFxAOAuthClients|mapToProperty('name')))",
+    // Use service oauth client_id to identify 'Firefox Monitor' service attached to Firefox Account
+    // https://docs.telemetry.mozilla.org/datasets/fxa_metrics/attribution.html#service-attribution
+    targeting: `trailheadTriplet in ['supercharge', 'static'] || ('dynamic' in trailheadTriplet && !("${FX_MONITOR_CLIENT_ID}" in attachedFxAOAuthClients|mapToProperty('id')))`,
     trigger: { id: "showOnboarding" },
   },
   {
@@ -307,7 +307,7 @@ const ONBOARDING_MESSAGES = () => [
         action: { type: "OPEN_PRIVATE_BROWSER_WINDOW" },
       },
     },
-    targeting: "trailheadTriplet == 'dynamic'",
+    targeting: "'dynamic' in trailheadTriplet",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -351,7 +351,7 @@ const ONBOARDING_MESSAGES = () => [
       },
     },
     targeting:
-      "trailheadTriplet == 'supercharge' || (trailheadTriplet == 'dynamic' && sync.mobileDevices < 1)",
+      "trailheadTriplet in ['supercharge', 'static'] || ('dynamic' in trailheadTriplet && sync.mobileDevices < 1)",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -361,7 +361,7 @@ const ONBOARDING_MESSAGES = () => [
     order: 4,
     content: {
       title: { string_id: "onboarding-send-tabs-title" },
-      text: { string_id: "onboarding-send-tabs-text" },
+      text: { string_id: "onboarding-send-tabs-text2" },
       icon: "sendtab",
       primary_button: {
         label: { string_id: "onboarding-send-tabs-button" },
@@ -375,7 +375,7 @@ const ONBOARDING_MESSAGES = () => [
         },
       },
     },
-    targeting: "trailheadTriplet == 'dynamic'",
+    targeting: "'dynamic' in trailheadTriplet",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -407,18 +407,18 @@ const ONBOARDING_MESSAGES = () => [
     bundled: 3,
     order: 7,
     content: {
-      title: { string_id: "onboarding-lockwise-passwords-title" },
-      text: { string_id: "onboarding-lockwise-passwords-text2" },
+      title: { string_id: "onboarding-lockwise-strong-passwords-title" },
+      text: { string_id: "onboarding-lockwise-strong-passwords-text" },
       icon: "lockwise",
       primary_button: {
-        label: { string_id: "onboarding-lockwise-passwords-button2" },
+        label: { string_id: "onboarding-lockwise-strong-passwords-button" },
         action: {
-          type: "OPEN_URL",
-          data: { args: "https://lockwise.firefox.com/", where: "tabshifted" },
+          type: "OPEN_ABOUT_PAGE",
+          data: { args: "logins", where: "tabshifted" },
         },
       },
     },
-    targeting: "trailheadTriplet == 'dynamic'",
+    targeting: "'dynamic' in trailheadTriplet",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -443,6 +443,23 @@ const ONBOARDING_MESSAGES = () => [
       },
     },
     targeting: "trailheadTriplet == 'payoff'",
+    trigger: { id: "showOnboarding" },
+  },
+  {
+    id: "TRAILHEAD_CARD_11",
+    template: "onboarding",
+    bundled: 3,
+    order: 0,
+    content: {
+      title: { string_id: "onboarding-import-browser-settings-title" },
+      text: { string_id: "onboarding-import-browser-settings-text" },
+      icon: "import",
+      primary_button: {
+        label: { string_id: "onboarding-import-browser-settings-button" },
+        action: { type: "SHOW_MIGRATION_WIZARD" },
+      },
+    },
+    targeting: "trailheadTriplet == 'dynamic_chrome'",
     trigger: { id: "showOnboarding" },
   },
   {
@@ -501,28 +518,6 @@ const ONBOARDING_MESSAGES = () => [
       cta_type: "OPEN_URL",
     },
     trigger: { id: "protectionsPanelOpen" },
-  },
-  {
-    id: `WHATS_NEW_BADGE_${FIREFOX_VERSION}`,
-    template: "toolbar_badge",
-    content: {
-      delay: 5 * ONE_MINUTE,
-      target: "whats-new-menu-button",
-      action: { id: "show-whatsnew-button" },
-      badgeDescription: { string_id: "cfr-badge-reader-label-newfeature" },
-    },
-    priority: 1,
-    trigger: { id: "toolbarBadgeUpdate" },
-    frequency: {
-      // Makes it so that we track impressions for this message while at the
-      // same time it can have unlimited impressions
-      lifetime: Infinity,
-    },
-    // Never saw this message or saw it in the past 4 days or more recent
-    targeting: `isWhatsNewPanelEnabled &&
-      (!messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'] ||
-        (messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}']|length >= 1 &&
-          currentDate|date - messageImpressions['WHATS_NEW_BADGE_${FIREFOX_VERSION}'][0] <= 4 * 24 * 3600 * 1000))`,
   },
 ];
 

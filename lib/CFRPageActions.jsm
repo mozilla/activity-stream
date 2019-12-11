@@ -9,27 +9,24 @@ const { XPCOMUtils } = ChromeUtils.import(
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "L10nRegistry",
-  "resource://gre/modules/L10nRegistry.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "FileSource",
-  "resource://gre/modules/L10nRegistry.jsm"
-);
-ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+XPCOMUtils.defineLazyModuleGetters(this, {
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+  RemoteL10n: "resource://activity-stream/lib/RemoteL10n.jsm",
+});
+
 XPCOMUtils.defineLazyServiceGetter(
   this,
   "TrackingDBService",
   "@mozilla.org/tracking-db-service;1",
   "nsITrackingDBService"
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  this,
+  "milestones",
+  "browser.contentblocking.cfr-milestone.milestones",
+  "[]",
+  null,
+  JSON.parse
 );
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
@@ -47,14 +44,6 @@ const CATEGORY_ICONS = {
   cfrAddons: "webextensions-icon",
   cfrFeatures: "recommendations-icon",
 };
-
-/**
- * The downloaded Fluent file is located in this sub-directory of the local
- * profile directory.
- */
-const RS_DOWNLOADED_FILE_SUBDIR = "settings/main/ms-language-packs";
-const USE_REMOTE_L10N_PREF =
-  "browser.newtabpage.activity-stream.asrouter.useRemoteL10n";
 
 /**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
@@ -77,11 +66,10 @@ let PageActionMap = new WeakMap();
 class PageAction {
   constructor(win, dispatchToASRouter) {
     this.window = win;
-    this.urlbar = win.document.getElementById("urlbar");
-    // `this.urlbar` is the larger container that holds both the urlbar input
-    // and the page action buttons. The focus event will be triggered by the
-    // `urlbar-input`.
-    this.urlbarinput = win.document.getElementById("urlbar-input");
+
+    this.urlbar = win.gURLBar; // The global URLBar object
+    this.urlbarinput = win.gURLBar.textbox; // The URLBar DOM node
+
     this.container = win.document.getElementById(
       "contextual-feature-recommendation"
     );
@@ -96,8 +84,6 @@ class PageAction {
     this._collapse = this._collapse.bind(this);
     this._showPopupOnClick = this._showPopupOnClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
-
-    this._l10n = this._createDOML10n();
 
     // Saved timeout IDs for scheduled state changes, so they can be cancelled
     this.stateTransitionTimeoutIDs = [];
@@ -124,59 +110,19 @@ class PageAction {
         message_id: recommendation.id,
         bucket_id: recommendation.content.bucket_id,
         event: "IMPRESSION",
+        ...(recommendation.personalizedModelVersion
+          ? {
+              event_context: {
+                modelVersion: recommendation.personalizedModelVersion,
+              },
+            }
+          : {}),
       });
     }
   }
 
-  /**
-   * Creates a new DOMLocalization instance with the Fluent file from Remote Settings.
-   *
-   * Note: it will use the local Fluent file in any of following cases:
-   *   * the remote Fluent file is not available
-   *   * it was told to use the local Fluent file
-   */
-  _createDOML10n() {
-    async function* generateBundles(resourceIds) {
-      const appLocale = Services.locale.appLocaleAsBCP47;
-      const appLocales = Services.locale.appLocalesAsBCP47;
-      const l10nFluentDir = OS.Path.join(
-        OS.Constants.Path.localProfileDir,
-        RS_DOWNLOADED_FILE_SUBDIR
-      );
-      const fs = new FileSource("cfr", [appLocale], `file://${l10nFluentDir}/`);
-      // In the case that the Fluent file has not been downloaded from Remote Settings,
-      // `fetchFile` will return `false` and fall back to the packaged Fluent file.
-      const resource = await fs.fetchFile(appLocale, "asrouter.ftl");
-      for await (let bundle of L10nRegistry.generateBundles(
-        appLocales.slice(0, 1),
-        resourceIds
-      )) {
-        // Override built-in messages with the resource loaded from remote settings for
-        // the app locale, i.e. the first item of `appLocales`.
-        if (resource) {
-          bundle.addResource(resource, { allowOverrides: true });
-        }
-        yield bundle;
-      }
-      // Now generating bundles for the rest of locales of `appLocales`.
-      yield* L10nRegistry.generateBundles(appLocales.slice(1), resourceIds);
-    }
-
-    return new DOMLocalization(
-      [
-        "browser/newtab/asrouter.ftl",
-        "browser/branding/brandings.ftl",
-        "browser/branding/sync-brand.ftl",
-        "branding/brand.ftl",
-      ],
-      Services.prefs.getBoolPref(USE_REMOTE_L10N_PREF, true)
-        ? generateBundles
-        : undefined
-    );
-  }
-
   reloadL10n() {
-    this._l10n = this._createDOML10n();
+    RemoteL10n.reloadL10n();
   }
 
   async showAddressBarNotifier(recommendation, shouldExpand = false) {
@@ -208,12 +154,12 @@ class PageAction {
     let [{ width }] = await this.window.promiseDocumentFlushed(() =>
       this.label.getClientRects()
     );
-    this.urlbar.style.setProperty("--cfr-label-width", `${width}px`);
+    this.urlbarinput.style.setProperty("--cfr-label-width", `${width}px`);
 
     this.container.addEventListener("click", this._showPopupOnClick);
     // Collapse the recommendation on url bar focus in order to free up more
     // space to display and edit the url
-    this.urlbarinput.addEventListener("focus", this._collapse);
+    this.urlbar.addEventListener("focus", this._collapse);
 
     if (shouldExpand) {
       this._clearScheduledStateChanges();
@@ -235,9 +181,9 @@ class PageAction {
   hideAddressBarNotifier() {
     this.container.hidden = true;
     this._clearScheduledStateChanges();
-    this.urlbar.removeAttribute("cfr-recommendation-state");
+    this.urlbarinput.removeAttribute("cfr-recommendation-state");
     this.container.removeEventListener("click", this._showPopupOnClick);
-    this.urlbar.removeEventListener("focus", this._collapse);
+    this.urlbarinput.removeEventListener("focus", this._collapse);
     if (this.currentNotification) {
       this.window.PopupNotifications.remove(this.currentNotification);
       this.currentNotification = null;
@@ -248,13 +194,13 @@ class PageAction {
     if (delay > 0) {
       this.stateTransitionTimeoutIDs.push(
         this.window.setTimeout(() => {
-          this.urlbar.setAttribute("cfr-recommendation-state", "expanded");
+          this.urlbarinput.setAttribute("cfr-recommendation-state", "expanded");
         }, delay)
       );
     } else {
       // Non-delayed state change overrides any scheduled state changes
       this._clearScheduledStateChanges();
-      this.urlbar.setAttribute("cfr-recommendation-state", "expanded");
+      this.urlbarinput.setAttribute("cfr-recommendation-state", "expanded");
     }
   }
 
@@ -263,17 +209,23 @@ class PageAction {
       this.stateTransitionTimeoutIDs.push(
         this.window.setTimeout(() => {
           if (
-            this.urlbar.getAttribute("cfr-recommendation-state") === "expanded"
+            this.urlbarinput.getAttribute("cfr-recommendation-state") ===
+            "expanded"
           ) {
-            this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
+            this.urlbarinput.setAttribute(
+              "cfr-recommendation-state",
+              "collapsed"
+            );
           }
         }, delay)
       );
     } else {
       // Non-delayed state change overrides any scheduled state changes
       this._clearScheduledStateChanges();
-      if (this.urlbar.getAttribute("cfr-recommendation-state") === "expanded") {
-        this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
+      if (
+        this.urlbarinput.getAttribute("cfr-recommendation-state") === "expanded"
+      ) {
+        this.urlbarinput.setAttribute("cfr-recommendation-state", "collapsed");
       }
     }
 
@@ -368,7 +320,7 @@ class PageAction {
       return string;
     }
 
-    const [localeStrings] = await this._l10n.formatMessages([
+    const [localeStrings] = await RemoteL10n.l10n.formatMessages([
       {
         id: string.string_id,
         args: string.args,
@@ -538,8 +490,8 @@ class PageAction {
     }
   }
 
-  async _renderMilestonePopup(message, browser, cfrMilestonePref) {
-    let { content } = message;
+  async _renderMilestonePopup(message, browser) {
+    let { content, id } = message;
     let { primary } = content.buttons;
 
     let dateFormat = new Services.intl.DateTimeFormat(
@@ -556,16 +508,27 @@ class PageAction {
     let headerLabel = this.window.document.getElementById(
       "cfr-notification-header-label"
     );
+    let reachedMilestone = 0;
+    let totalSaved = await TrackingDBService.sumAllEvents();
+    for (let milestone of milestones) {
+      if (totalSaved >= milestone) {
+        reachedMilestone = milestone;
+      }
+    }
     if (typeof message.content.heading_text === "string") {
       // This is a test environment.
       panelTitle = message.content.heading_text;
       headerLabel.value = panelTitle;
     } else {
-      this._l10n.setAttributes(headerLabel, content.heading_text.string_id, {
-        blockedCount: cfrMilestonePref,
-        date: monthName,
-      });
-      await this._l10n.translateElements([headerLabel]);
+      RemoteL10n.l10n.setAttributes(
+        headerLabel,
+        content.heading_text.string_id,
+        {
+          blockedCount: reachedMilestone,
+          date: monthName,
+        }
+      );
+      await RemoteL10n.l10n.translateElements([headerLabel]);
     }
 
     // Use the message layout as a CSS selector to hide different parts of the
@@ -583,14 +546,20 @@ class PageAction {
     let primaryBtnString = await this.getStrings(primary.label);
     let primaryActionCallback = () => {
       this.dispatchUserAction(primary.action);
-      RecommendationMap.delete(browser);
+      this._sendTelemetry({
+        message_id: id,
+        bucket_id: content.bucket_id,
+        event: "CLICK_BUTTON",
+      });
 
+      RecommendationMap.delete(browser);
       // Invalidate the pref after the user interacts with the button.
       // We don't need to show the illustration in the privacy panel.
       Services.prefs.clearUserPref(
         "browser.contentblocking.cfr-milestone.milestone-shown-time"
       );
     };
+
     let mainAction = {
       label: primaryBtnString,
       accessKey: primaryBtnString.attributes.accesskey,
@@ -603,11 +572,15 @@ class PageAction {
         fill: #0250BB !important;
       }
     `;
+    style.classList.add("milestone-style");
 
     let arrow;
     let manageClass = event => {
       if (event === "dismissed" || event === "removed") {
-        notification.shadowRoot.removeChild(style);
+        style = notification.shadowRoot.querySelector(".milestone-style");
+        if (style) {
+          notification.shadowRoot.removeChild(style);
+        }
         arrow.classList.remove("cfr-notification-milestone");
       } else if (event === "showing") {
         notification.shadowRoot.appendChild(style);
@@ -629,7 +602,10 @@ class PageAction {
         eventCallback: manageClass,
       }
     );
-
+    Services.prefs.setIntPref(
+      "browser.contentblocking.cfr-milestone.milestone-achieved",
+      reachedMilestone
+    );
     Services.prefs.setStringPref(
       "browser.contentblocking.cfr-milestone.milestone-shown-time",
       Date.now().toString()
@@ -638,7 +614,7 @@ class PageAction {
 
   // eslint-disable-next-line max-statements
   async _renderPopup(message, browser) {
-    const { id, content } = message;
+    const { id, content, modelVersion } = message;
 
     const headerLabel = this.window.document.getElementById(
       "cfr-notification-header-label"
@@ -665,7 +641,6 @@ class PageAction {
       "href",
       SUMO_BASE_URL + content.info_icon.sumo_path
     );
-    headerLink.setAttribute(this.window.RTL_UI ? "left" : "right", 0);
     headerImage.setAttribute(
       "tooltiptext",
       await this.getStrings(content.info_icon.label, "tooltiptext")
@@ -675,6 +650,7 @@ class PageAction {
         message_id: id,
         bucket_id: content.bucket_id,
         event: "RATIONALE",
+        ...(modelVersion ? { event_context: { modelVersion } } : {}),
       });
     // Use the message layout as a CSS selector to hide different parts of the
     // notification template markup
@@ -699,6 +675,7 @@ class PageAction {
             message_id: id,
             bucket_id: content.bucket_id,
             event: "ENABLE",
+            ...(modelVersion ? { event_context: { modelVersion } } : {}),
           });
           RecommendationMap.delete(browser);
         };
@@ -735,6 +712,7 @@ class PageAction {
             message_id: id,
             bucket_id: content.bucket_id,
             event: "PIN",
+            ...(modelVersion ? { event_context: { modelVersion } } : {}),
           });
           RecommendationMap.delete(browser);
         };
@@ -753,10 +731,10 @@ class PageAction {
           for (let step of content.descriptionDetails.steps) {
             // This li is a generic xul element with custom styling
             const li = this.window.document.createXULElement("li");
-            this._l10n.setAttributes(li, step.string_id);
+            RemoteL10n.l10n.setAttributes(li, step.string_id);
             stepsContainer.appendChild(li);
           }
-          await this._l10n.translateElements([...stepsContainer.children]);
+          await RemoteL10n.l10n.translateElements([...stepsContainer.children]);
         }
 
         await this._renderPinTabAnimation();
@@ -777,6 +755,7 @@ class PageAction {
             message_id: id,
             bucket_id: content.bucket_id,
             event: "LEARN_MORE",
+            ...(modelVersion ? { event_context: { modelVersion } } : {}),
           });
 
         primaryActionCallback = async () => {
@@ -791,6 +770,7 @@ class PageAction {
             message_id: id,
             bucket_id: content.bucket_id,
             event: "INSTALL",
+            ...(modelVersion ? { event_context: { modelVersion } } : {}),
           });
           RecommendationMap.delete(browser);
         };
@@ -823,6 +803,7 @@ class PageAction {
             message_id: id,
             bucket_id: content.bucket_id,
             event,
+            ...(modelVersion ? { event_context: { modelVersion } } : {}),
           });
         },
       };
@@ -888,7 +869,7 @@ class PageAction {
   async showPopup() {
     const browser = this.window.gBrowser.selectedBrowser;
     const message = RecommendationMap.get(browser);
-    const { id, content } = message;
+    const { id, content, modelVersion } = message;
 
     // A hacky way of setting the popup anchor outside the usual url bar icon box
     // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
@@ -899,11 +880,12 @@ class PageAction {
       message_id: id,
       bucket_id: content.bucket_id,
       event: "CLICK_DOORHANGER",
+      ...(modelVersion ? { event_context: { modelVersion } } : {}),
     });
     await this._renderPopup(message, browser);
   }
 
-  async showMilestonePopup(cfrMilestonePref) {
+  async showMilestonePopup() {
     const browser = this.window.gBrowser.selectedBrowser;
     const message = RecommendationMap.get(browser);
     const { content } = message;
@@ -913,7 +895,7 @@ class PageAction {
     browser.cfrpopupnotificationanchor =
       this.window.document.getElementById(content.anchor_id) || this.container;
 
-    await this._renderMilestonePopup(message, browser, cfrMilestonePref);
+    await this._renderMilestonePopup(message, browser);
     return true;
   }
 }
@@ -1001,36 +983,35 @@ const CFRPageActions = {
    */
   async showMilestone(browser, message, dispatchToASRouter, options = {}) {
     let win = null;
-    const { id, content } = message;
-    let cfrMilestonePref = Services.prefs.getIntPref(
-      "browser.contentblocking.cfr-milestone.milestone-achieved",
-      0
-    );
+    const { id, content, personalizedModelVersion } = message;
 
     // If we are forcing via the Admin page, the browser comes in a different format
     if (options.force) {
       win = browser.browser.ownerGlobal;
-      RecommendationMap.set(browser.browser, { id, retain: true, content });
+      RecommendationMap.set(browser.browser, {
+        id,
+        content,
+        retain: true,
+        modelVersion: personalizedModelVersion,
+      });
     } else {
       win = browser.ownerGlobal;
-      RecommendationMap.set(browser, { id, retain: true, content });
-      if (!cfrMilestonePref) {
-        return false;
-      }
+      RecommendationMap.set(browser, {
+        id,
+        content,
+        retain: true,
+        modelVersion: personalizedModelVersion,
+      });
     }
 
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
 
-    let successfullyShown = await PageActionMap.get(win).showMilestonePopup(
-      cfrMilestonePref
-    );
-    if (successfullyShown) {
-      PageActionMap.get(win).addImpression(message);
-    }
+    await PageActionMap.get(win).showMilestonePopup();
+    PageActionMap.get(win).addImpression(message);
 
-    return successfullyShown;
+    return true;
   },
 
   /**
@@ -1043,8 +1024,13 @@ const CFRPageActions = {
   async forceRecommendation(browser, recommendation, dispatchToASRouter) {
     // If we are forcing via the Admin page, the browser comes in a different format
     const win = browser.browser.ownerGlobal;
-    const { id, content } = recommendation;
-    RecommendationMap.set(browser.browser, { id, retain: true, content });
+    const { id, content, personalizedModelVersion } = recommendation;
+    RecommendationMap.set(browser.browser, {
+      id,
+      content,
+      retain: true,
+      modelVersion: personalizedModelVersion,
+    });
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
@@ -1082,8 +1068,14 @@ const CFRPageActions = {
       // Don't replace an existing message
       return false;
     }
-    const { id, content } = recommendation;
-    RecommendationMap.set(browser, { id, host, retain: true, content });
+    const { id, content, personalizedModelVersion } = recommendation;
+    RecommendationMap.set(browser, {
+      id,
+      host,
+      content,
+      retain: true,
+      modelVersion: personalizedModelVersion,
+    });
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }

@@ -23,11 +23,18 @@ export const helpers = {
       interruptCleared === true ? false : Boolean(message.content);
     const hasTriplets = Boolean(message.bundle && message.bundle.length);
     // Allow 1) falsy to not render a header 2) default welcome 3) custom header
+
     const tripletsHeaderId =
       message.tripletsHeaderId === undefined
         ? "onboarding-welcome-header"
         : message.tripletsHeaderId;
-    const UTMTerm = message.utm_term || "";
+    let UTMTerm = message.utm_term || "";
+
+    UTMTerm =
+      message.utm_term && message.trailheadTriplet
+        ? `${message.utm_term}-${message.trailheadTriplet}`
+        : UTMTerm;
+
     return {
       hasTriplets,
       hasInterrupt,
@@ -85,9 +92,14 @@ export class FirstRun extends React.PureComponent {
 
   static getDerivedStateFromProps(props, state) {
     const { message, interruptCleared } = props;
+    const cardIds =
+      message &&
+      message.bundle &&
+      message.bundle.map(card => card.id).join(",");
     if (
       interruptCleared !== state.prevInterruptCleared ||
-      (message && message.id !== state.prevMessageId)
+      (message && message.id !== state.prevMessageId) ||
+      cardIds !== state.prevCardIds
     ) {
       const {
         hasTriplets,
@@ -101,6 +113,7 @@ export class FirstRun extends React.PureComponent {
       return {
         prevMessageId: message.id,
         prevInterruptCleared: interruptCleared,
+        prevCardIds: cardIds,
 
         hasInterrupt,
         hasTriplets,
@@ -205,6 +218,7 @@ export class FirstRun extends React.PureComponent {
             flowParams={flowParams}
             onDismiss={this.closeInterrupt}
             fxaEndpoint={fxaEndpoint}
+            onBlockById={props.onBlockById}
           />
         ) : null}
         {hasTriplets ? (
@@ -219,6 +233,7 @@ export class FirstRun extends React.PureComponent {
             UTMTerm={`${UTMTerm}-card`}
             flowParams={flowParams}
             onAction={executeAction}
+            onBlockById={props.onBlockById}
           />
         ) : null}
       </>

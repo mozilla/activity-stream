@@ -840,22 +840,6 @@ add_task(async function check_hasAccessedFxAPanel() {
   );
 });
 
-add_task(async function check_isFxABadgeEnabled() {
-  is(
-    await ASRouterTargeting.Environment.isFxABadgeEnabled,
-    true,
-    "Default pref value is true"
-  );
-
-  await pushPrefs(["browser.messaging-system.fxatoolbarbadge.enabled", false]);
-
-  is(
-    await ASRouterTargeting.Environment.isFxABadgeEnabled,
-    false,
-    "Value should be false according to pref"
-  );
-});
-
 add_task(async function check_isWhatsNewPanelEnabled() {
   is(
     await ASRouterTargeting.Environment.isWhatsNewPanelEnabled,
@@ -905,6 +889,20 @@ add_task(async function checkCFRAddonsUserPref() {
     await ASRouterTargeting.findMatchingMessage({ messages: [message] }),
     message,
     "should select correct item by cfrAddons"
+  );
+});
+
+add_task(async function check_blockedCountByType() {
+  const message = {
+    id: "foo",
+    targeting:
+      "blockedCountByType.cryptominerCount == 0 && blockedCountByType.socialCount == 0",
+  };
+
+  is(
+    await ASRouterTargeting.findMatchingMessage({ messages: [message] }),
+    message,
+    "should select correct item"
   );
 });
 

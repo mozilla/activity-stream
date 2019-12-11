@@ -314,13 +314,6 @@ const PREFS_CONFIG = new Map([
     },
   ],
   [
-    "telemetry.ping.endpoint",
-    {
-      title: "Telemetry server endpoint",
-      value: "https://tiles.services.mozilla.com/v4/links/activity-stream",
-    },
-  ],
-  [
     "section.highlights.includeVisited",
     {
       title:
@@ -463,9 +456,9 @@ const PREFS_CONFIG = new Map([
   ],
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   [
-    "discoverystream.campaign.blocks",
+    "discoverystream.flight.blocks",
     {
-      title: "Track campaign blocks",
+      title: "Track flight blocks",
       skipBroadcast: true,
       value: "{}",
     },
@@ -476,10 +469,11 @@ const PREFS_CONFIG = new Map([
       title: "Configuration for the new pocket new tab",
       getValue: ({ geo, locale }) => {
         // PLEASE NOTE:
-        // hardcoded_layout in `lib/DiscoveryStreamFeed.jsm` only works for en-* and requires refactoring for non english locales
+        // hardcoded_layout in `lib/DiscoveryStreamFeed.jsm` only works for en-* and DE and requires refactoring for other locales
         const dsEnablementMatrix = {
           US: ["en-CA", "en-GB", "en-US"],
           CA: ["en-CA", "en-GB", "en-US"],
+          DE: ["de", "de-DE", "de-AT", "de-CH"],
         };
 
         // Verify that the current geo & locale combination is enabled
@@ -656,6 +650,25 @@ this.ActivityStream = class ActivityStream {
     try {
       this._updateDynamicPrefs();
       this._defaultPrefs.init();
+
+      // Look for outdated user pref values that might have been accidentally
+      // persisted when restoring the original pref value at the end of an
+      // experiment across versions with a different default value.
+      const DS_CONFIG =
+        "browser.newtabpage.activity-stream.discoverystream.config";
+      if (
+        Services.prefs.prefHasUserValue(DS_CONFIG) &&
+        [
+          // Firefox 66
+          `{"api_key_pref":"extensions.pocket.oAuthConsumerKey","enabled":false,"show_spocs":true,"layout_endpoint":"https://getpocket.com/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"}`,
+          // Firefox 67
+          `{"api_key_pref":"extensions.pocket.oAuthConsumerKey","enabled":false,"show_spocs":true,"layout_endpoint":"https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"}`,
+          // Firefox 68
+          `{"api_key_pref":"extensions.pocket.oAuthConsumerKey","collapsible":true,"enabled":false,"show_spocs":true,"hardcoded_layout":true,"personalized":false,"layout_endpoint":"https://getpocket.cdn.mozilla.net/v3/newtab/layout?version=1&consumer_key=$apiKey&layout_variant=basic"}`,
+        ].includes(Services.prefs.getStringPref(DS_CONFIG))
+      ) {
+        Services.prefs.clearUserPref(DS_CONFIG);
+      }
 
       // Hook up the store and let all feeds and pages initialize
       this.store.init(

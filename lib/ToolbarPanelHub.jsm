@@ -10,6 +10,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
   EveryWindow: "resource:///modules/EveryWindow.jsm",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
+  RemoteL10n: "resource://activity-stream/lib/RemoteL10n.jsm",
 });
 XPCOMUtils.defineLazyServiceGetter(
   this,
@@ -17,6 +18,14 @@ XPCOMUtils.defineLazyServiceGetter(
   "@mozilla.org/tracking-db-service;1",
   "nsITrackingDBService"
 );
+
+const idToTextMap = new Map([
+  [Ci.nsITrackingDBService.TRACKERS_ID, "trackerCount"],
+  [Ci.nsITrackingDBService.TRACKING_COOKIES_ID, "cookieCount"],
+  [Ci.nsITrackingDBService.CRYPTOMINERS_ID, "cryptominerCount"],
+  [Ci.nsITrackingDBService.FINGERPRINTERS_ID, "fingerprinterCount"],
+  [Ci.nsITrackingDBService.SOCIAL_ID, "socialCount"],
+]);
 
 const WHATSNEW_ENABLED_PREF = "browser.messaging-system.whatsNewPanel.enabled";
 const PROTECTIONS_PANEL_INFOMSG_PREF =
@@ -39,7 +48,7 @@ class _ToolbarPanelHub {
       this
     );
 
-    this.state = null;
+    this.state = {};
   }
 
   async init(waitForInitialized, { getMessages, dispatch, handleUserAction }) {
@@ -173,7 +182,7 @@ class _ToolbarPanelHub {
       this.state.contentArguments = await this._contentArguments();
       for (let message of messages) {
         container.appendChild(
-          this._createMessageElements(win, doc, message, previousDate)
+          await this._createMessageElements(win, doc, message, previousDate)
         );
         previousDate = message.content.published_date;
       }
@@ -213,12 +222,20 @@ class _ToolbarPanelHub {
    * Dispatch the action defined in the message and user telemetry event.
    */
   _dispatchUserAction(win, message) {
+    let url;
+    try {
+      // Set platform specific path variables for SUMO articles
+      url = Services.urlFormatter.formatURL(message.content.cta_url);
+    } catch (e) {
+      Cu.reportError(e);
+      url = message.content.cta_url;
+    }
     this._handleUserAction({
       target: win,
       data: {
         type: message.content.cta_type,
         data: {
-          args: message.content.cta_url,
+          args: url,
           where: "tabshifted",
         },
       },
@@ -239,15 +256,15 @@ class _ToolbarPanelHub {
     });
   }
 
-  _createMessageElements(win, doc, message, previousDate) {
+  async _createMessageElements(win, doc, message, previousDate) {
     const { content } = message;
-    const messageEl = this._createElement(doc, "div");
+    const messageEl = await this._createElement(doc, "div");
     messageEl.classList.add("whatsNew-message");
 
     // Only render date if it is different from the one rendered before.
     if (content.published_date !== previousDate) {
       messageEl.appendChild(
-        this._createElement(doc, "p", {
+        await this._createElement(doc, "p", {
           classList: "whatsNew-message-date",
           content: new Date(content.published_date).toLocaleDateString(
             "default",
@@ -261,24 +278,24 @@ class _ToolbarPanelHub {
       );
     }
 
-    const wrapperEl = this._createElement(doc, "button");
+    const wrapperEl = await this._createElement(doc, "button");
     wrapperEl.doCommand = () => this._dispatchUserAction(win, message);
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
 
     if (content.icon_url) {
       wrapperEl.classList.add("has-icon");
-      const iconEl = this._createElement(doc, "img");
+      const iconEl = await this._createElement(doc, "img");
       iconEl.src = content.icon_url;
       iconEl.classList.add("whatsNew-message-icon");
-      this._setTextAttribute(doc, iconEl, "alt", content.icon_alt);
+      await this._setTextAttribute(iconEl, "alt", content.icon_alt);
       wrapperEl.appendChild(iconEl);
     }
 
-    wrapperEl.appendChild(this._createMessageContent(win, doc, content));
+    wrapperEl.appendChild(await this._createMessageContent(win, doc, content));
 
     if (content.link_text) {
-      const anchorEl = this._createElement(doc, "a", {
+      const anchorEl = await this._createElement(doc, "a", {
         classList: "text-link",
         content: content.link_text,
       });
@@ -295,11 +312,11 @@ class _ToolbarPanelHub {
   /**
    * Return message title (optional subtitle) and body
    */
-  _createMessageContent(win, doc, content) {
+  async _createMessageContent(win, doc, content) {
     const wrapperEl = new win.DocumentFragment();
 
     wrapperEl.appendChild(
-      this._createElement(doc, "h2", {
+      await this._createElement(doc, "h2", {
         classList: "whatsNew-message-title",
         content: content.title,
       })
@@ -307,48 +324,50 @@ class _ToolbarPanelHub {
 
     switch (content.layout) {
       case "tracking-protections":
-        wrapperEl.appendChild(
-          this._createElement(doc, "h4", {
+        await wrapperEl.appendChild(
+          await this._createElement(doc, "h4", {
             classList: "whatsNew-message-subtitle",
             content: content.subtitle,
           })
         );
         wrapperEl.appendChild(
-          this._createElement(doc, "h2", {
+          await this._createElement(doc, "h2", {
             classList: "whatsNew-message-title-large",
-            content: this.state.contentArguments.blockedCount,
+            content: this.state.contentArguments[
+              content.layout_title_content_variable
+            ],
           })
         );
         break;
     }
 
     wrapperEl.appendChild(
-      this._createElement(doc, "p", { content: content.body })
+      await this._createElement(doc, "p", { content: content.body })
     );
 
     return wrapperEl;
   }
 
-  _createHeroElement(win, doc, message) {
-    const messageEl = this._createElement(doc, "div");
+  async _createHeroElement(win, doc, message) {
+    const messageEl = await this._createElement(doc, "div");
     messageEl.setAttribute("id", "protections-popup-message");
     messageEl.classList.add("whatsNew-hero-message");
-    const wrapperEl = this._createElement(doc, "div");
+    const wrapperEl = await this._createElement(doc, "div");
     wrapperEl.classList.add("whatsNew-message-body");
     messageEl.appendChild(wrapperEl);
 
     wrapperEl.appendChild(
-      this._createElement(doc, "h2", {
+      await this._createElement(doc, "h2", {
         classList: "whatsNew-message-title",
         content: message.content.title,
       })
     );
     wrapperEl.appendChild(
-      this._createElement(doc, "p", { content: message.content.body })
+      await this._createElement(doc, "p", { content: message.content.body })
     );
 
     if (message.content.link_text) {
-      let linkEl = this._createElement(doc, "a", {
+      let linkEl = await this._createElement(doc, "a", {
         classList: "text-link",
         content: message.content.link_text,
       });
@@ -361,13 +380,13 @@ class _ToolbarPanelHub {
     return messageEl;
   }
 
-  _createElement(doc, elem, options = {}) {
+  async _createElement(doc, elem, options = {}) {
     const node = doc.createElementNS("http://www.w3.org/1999/xhtml", elem);
     if (options.classList) {
       node.classList.add(options.classList);
     }
     if (options.content) {
-      this._setString(doc, node, options.content);
+      await this._setString(node, options.content);
     }
 
     return node;
@@ -381,35 +400,46 @@ class _ToolbarPanelHub {
       dateFrom,
       dateTo
     );
-    // Count all events in the past 6 weeks
-    const totalEvents = eventsByDate.reduce(
-      (acc, day) => acc + day.getResultByName("count"),
-      0
-    );
+    // Make sure we set all types of possible values to 0 because they might
+    // be referenced by fluent strings
+    let totalEvents = { blockedCount: 0 };
+    for (let blockedType of idToTextMap.values()) {
+      totalEvents[blockedType] = 0;
+    }
+    // Count all events in the past 6 weeks. Returns an object with:
+    // `blockedCount` total number of blocked resources
+    // {tracker|cookie|social...} breakdown by event type as defined by `idToTextMap`
+    totalEvents = eventsByDate.reduce((acc, day) => {
+      const type = day.getResultByName("type");
+      const count = day.getResultByName("count");
+      acc[idToTextMap.get(type)] = (acc[idToTextMap.get(type)] || 0) + count;
+      acc.blockedCount += count;
+      return acc;
+    }, totalEvents);
     return {
       // Keys need to match variable names used in asrouter.ftl
       // `earliestDate` will be either 6 weeks ago or when tracking recording
       // started. Whichever is more recent.
-      earliestDate: new Date(
-        Math.max(
-          new Date(await TrackingDBService.getEarliestRecordedDate()),
-          dateFrom
-        )
-      ).getTime(),
-      blockedCount: totalEvents.toLocaleString(),
+      earliestDate: Math.max(
+        new Date(await TrackingDBService.getEarliestRecordedDate()),
+        dateFrom
+      ),
+      ...totalEvents,
     };
   }
 
   // If `string_id` is present it means we are relying on fluent for translations.
   // Otherwise, we have a vanilla string.
-  _setString(doc, el, stringObj) {
+  async _setString(el, stringObj) {
     if (stringObj && stringObj.string_id) {
-      doc.l10n.setAttributes(
-        el,
-        stringObj.string_id,
-        // Pass all available arguments to Fluent
-        this.state.contentArguments
-      );
+      const [{ value }] = await RemoteL10n.l10n.formatMessages([
+        {
+          id: stringObj.string_id,
+          // Pass all available arguments to Fluent
+          args: this.state.contentArguments,
+        },
+      ]);
+      el.textContent = value;
     } else {
       el.textContent = stringObj;
     }
@@ -417,17 +447,27 @@ class _ToolbarPanelHub {
 
   // If `string_id` is present it means we are relying on fluent for translations.
   // Otherwise, we have a vanilla string.
-  _setTextAttribute(doc, el, attr, stringObj) {
+  async _setTextAttribute(el, attr, stringObj) {
     if (stringObj && stringObj.string_id) {
-      doc.l10n.setAttributes(el, stringObj.string_id);
+      const [{ attributes }] = await RemoteL10n.l10n.formatMessages([
+        {
+          id: stringObj.string_id,
+          // Pass all available arguments to Fluent
+          args: this.state.contentArguments,
+        },
+      ]);
+      if (attributes) {
+        const { value } = attributes.find(({ name }) => name === attr);
+        el.setAttribute(attr, value);
+      }
     } else {
       el.setAttribute(attr, stringObj);
     }
   }
 
-  _showAppmenuButton(win) {
+  async _showAppmenuButton(win) {
     this.maybeInsertFTL(win);
-    this._showElement(
+    await this._showElement(
       win.browser.ownerDocument,
       APPMENU_BUTTON_ID,
       BUTTON_STRING_ID
@@ -441,16 +481,17 @@ class _ToolbarPanelHub {
   _showToolbarButton(win) {
     const document = win.browser.ownerDocument;
     this.maybeInsertFTL(win);
-    this._showElement(document, TOOLBAR_BUTTON_ID, BUTTON_STRING_ID);
+    return this._showElement(document, TOOLBAR_BUTTON_ID, BUTTON_STRING_ID);
   }
 
   _hideToolbarButton(win) {
     this._hideElement(win.browser.ownerDocument, TOOLBAR_BUTTON_ID);
   }
 
-  _showElement(document, id, string_id) {
+  async _showElement(document, id, string_id) {
     const el = document.getElementById(id);
-    document.l10n.setAttributes(el, string_id);
+    await this._setTextAttribute(el, "label", { string_id });
+    await this._setTextAttribute(el, "tooltiptext", { string_id });
     el.removeAttribute("hidden");
   }
 
@@ -506,7 +547,7 @@ class _ToolbarPanelHub {
         triggerId: "protectionsPanelOpen",
       });
       if (message) {
-        const messageEl = this._createHeroElement(win, doc, message);
+        const messageEl = await this._createHeroElement(win, doc, message);
         container.appendChild(messageEl);
         infoButton.addEventListener("click", toggleMessage);
         this.sendUserEventTelemetry(win, "IMPRESSION", message);

@@ -1,8 +1,11 @@
 import {
   ASRouterTargeting,
   CachedTargetingGetter,
+  getSortedMessages,
 } from "lib/ASRouterTargeting.jsm";
 import { OnboardingMessageProvider } from "lib/OnboardingMessageProvider.jsm";
+import { ASRouterPreferences } from "lib/ASRouterPreferences.jsm";
+import { GlobalOverrider } from "test/unit/utils";
 
 // Note that tests for the ASRouterTargeting environment can be found in
 // test/functional/mochitest/browser_asrouter_targeting.js
@@ -216,5 +219,250 @@ describe("#CachedTargetingGetter", () => {
       );
       assert.calledOnce(global.Cu.reportError);
     });
+  });
+});
+describe("ASRouterTargeting", () => {
+  let evalStub;
+  let sandbox;
+  let clock;
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    evalStub = sandbox.stub(global.FilterExpressions, "eval");
+    sandbox.replace(ASRouterTargeting, "Environment", {});
+    clock = sinon.useFakeTimers();
+  });
+  afterEach(() => {
+    clock.restore();
+    sandbox.restore();
+  });
+  it("should cache evaluation result", async () => {
+    evalStub.resolves(true);
+
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl1" },
+      {},
+      sandbox.stub(),
+      true
+    );
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl2" },
+      {},
+      sandbox.stub(),
+      true
+    );
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl1" },
+      {},
+      sandbox.stub(),
+      true
+    );
+
+    assert.calledTwice(evalStub);
+  });
+  it("should not cache evaluation result", async () => {
+    evalStub.resolves(true);
+
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      false
+    );
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      false
+    );
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      false
+    );
+
+    assert.calledThrice(evalStub);
+  });
+  it("should expire cache entries", async () => {
+    evalStub.resolves(true);
+
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      true
+    );
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      true
+    );
+    clock.tick(60 * 1000 + 1);
+    await ASRouterTargeting.checkMessageTargeting(
+      { targeting: "jexl" },
+      {},
+      sandbox.stub(),
+      true
+    );
+
+    assert.calledTwice(evalStub);
+  });
+
+  describe("#findMatchingMessage", () => {
+    let matchStub;
+    let messages = [
+      { id: "FOO", targeting: "match" },
+      { id: "BAR", targeting: "match" },
+      { id: "BAZ" },
+    ];
+    beforeEach(() => {
+      matchStub = sandbox
+        .stub(ASRouterTargeting, "_isMessageMatch")
+        .callsFake(message => message.targeting === "match");
+    });
+    it("should return an array of matches if returnAll is true", async () => {
+      assert.deepEqual(
+        await ASRouterTargeting.findMatchingMessage({
+          messages,
+          returnAll: true,
+        }),
+        [{ id: "FOO", targeting: "match" }, { id: "BAR", targeting: "match" }]
+      );
+    });
+    it("should return an empty array if no matches were found and returnAll is true", async () => {
+      matchStub.returns(false);
+      assert.deepEqual(
+        await ASRouterTargeting.findMatchingMessage({
+          messages,
+          returnAll: true,
+        }),
+        []
+      );
+    });
+    it("should return the first match if returnAll is false", async () => {
+      assert.deepEqual(
+        await ASRouterTargeting.findMatchingMessage({
+          messages,
+        }),
+        messages[0]
+      );
+    });
+    it("should return null if if no matches were found and returnAll is false", async () => {
+      matchStub.returns(false);
+      assert.deepEqual(
+        await ASRouterTargeting.findMatchingMessage({
+          messages,
+        }),
+        null
+      );
+    });
+  });
+});
+
+/**
+ * Messages should be sorted in the following order:
+ * 1. Rank
+ * 2. Priority
+ * 3. If the message has targeting
+ * 4. Order or randomization, depending on input
+ */
+describe("getSortedMessages", () => {
+  let globals = new GlobalOverrider();
+  let sandbox;
+  let thresholdStub;
+  beforeEach(() => {
+    globals.set({ ASRouterPreferences });
+    sandbox = sinon.createSandbox();
+    thresholdStub = sandbox.stub();
+    sandbox.replaceGetter(
+      ASRouterPreferences,
+      "personalizedCfrThreshold",
+      thresholdStub
+    );
+  });
+  afterEach(() => {
+    sandbox.restore();
+    globals.restore();
+  });
+
+  /**
+   * assertSortsCorrectly - Tests to see if an array, when sorted with getSortedMessages,
+   *                        returns the items in the expected order.
+   *
+   * @param {Message[]} expectedOrderArray - The array of messages in its expected order
+   * @param {{}} options - The options param for getSortedMessages
+   * @returns
+   */
+  function assertSortsCorrectly(expectedOrderArray, options) {
+    const input = [...expectedOrderArray].reverse();
+    const result = getSortedMessages(input, options);
+    const indexes = result.map(message => expectedOrderArray.indexOf(message));
+    return assert.equal(
+      indexes.join(","),
+      [...expectedOrderArray.keys()].join(","),
+      "Messsages are out of order"
+    );
+  }
+
+  it("should sort messages by priority, then by targeting", () => {
+    assertSortsCorrectly([
+      { priority: 100, targeting: "isFoo" },
+      { priority: 100 },
+      { priority: 99 },
+      { priority: 1, targeting: "isFoo" },
+      { priority: 1 },
+      {},
+    ]);
+  });
+  it("should sort messages by score first if defined", () => {
+    assertSortsCorrectly([
+      { score: 7001 },
+      { score: 7000, priority: 1 },
+      { score: 7000, targeting: "isFoo" },
+      { score: 7000 },
+      { score: 6000, priority: 1000 },
+      { priority: 99999 },
+      {},
+    ]);
+  });
+  it("should sort messages by priority, then targeting, then order if ordered param is true", () => {
+    assertSortsCorrectly(
+      [
+        { priority: 100, order: 4 },
+        { priority: 100, order: 5 },
+        { priority: 1, order: 3, targeting: "isFoo" },
+        { priority: 1, order: 0 },
+        { priority: 1, order: 1 },
+        { priority: 1, order: 2 },
+        { order: 0 },
+      ],
+      { ordered: true }
+    );
+  });
+  it("should filter messages below the personalizedCfrThreshold", () => {
+    thresholdStub.returns(5000);
+    const result = getSortedMessages([{ score: 5000 }, { score: 4999 }, {}]);
+    assert.deepEqual(result, [{ score: 5000 }, {}]);
+  });
+  it("should not filter out messages without a score", () => {
+    thresholdStub.returns(5000);
+    const result = getSortedMessages([{ score: 4999 }, { id: "FOO" }]);
+    assert.deepEqual(result, [{ id: "FOO" }]);
+  });
+  it("should not apply filter if the threshold is an invalid value", () => {
+    let result;
+
+    thresholdStub.returns(undefined);
+    result = getSortedMessages([{ score: 5000 }, { score: 4999 }]);
+    assert.deepEqual(result, [{ score: 5000 }, { score: 4999 }]);
+
+    thresholdStub.returns("foo");
+    result = getSortedMessages([{ score: 5000 }, { score: 4999 }]);
+    assert.deepEqual(result, [{ score: 5000 }, { score: 4999 }]);
+
+    thresholdStub.returns(5000);
+    result = getSortedMessages([{ score: 5000 }, { score: 4999 }]);
+    assert.deepEqual(result, [{ score: 5000 }]);
   });
 });
