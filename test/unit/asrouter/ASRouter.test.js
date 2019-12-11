@@ -166,6 +166,7 @@ describe("ASRouter", () => {
       ASRouterTargeting,
       ASRouterTriggerListeners,
       QueryCache,
+      gURLBar: {},
       AttributionCode: fakeAttributionCode,
       // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
       // importing these modules into the global scope ourselves.
@@ -187,7 +188,7 @@ describe("ASRouter", () => {
       },
       Downloader: class {
         download() {
-          return Promise.resolve("/path/to/downlowned");
+          return Promise.resolve("/path/to/download");
         }
       },
     });
@@ -1508,6 +1509,35 @@ describe("ASRouter", () => {
           provider: "snippets",
         });
       });
+      it("should record telemetry for message request duration", async () => {
+        const startTelemetryStopwatch = sandbox.stub(
+          global.TelemetryStopwatch,
+          "start"
+        );
+        const finishTelemetryStopwatch = sandbox.stub(
+          global.TelemetryStopwatch,
+          "finish"
+        );
+        sandbox.stub(Router, "handleMessageRequest");
+        const msg = fakeAsyncMessage({
+          type: "NEWTAB_MESSAGE_REQUEST",
+          data: {},
+        });
+        await Router.onMessage(msg);
+
+        assert.calledOnce(startTelemetryStopwatch);
+        assert.calledWithExactly(
+          startTelemetryStopwatch,
+          "MS_MESSAGE_REQUEST_TIME_MS",
+          { port: msg.target.portID }
+        );
+        assert.calledOnce(finishTelemetryStopwatch);
+        assert.calledWithExactly(
+          finishTelemetryStopwatch,
+          "MS_MESSAGE_REQUEST_TIME_MS",
+          { port: msg.target.portID }
+        );
+      });
     });
 
     describe("#onMessage: BLOCK_MESSAGE_BY_ID", () => {
@@ -1857,6 +1887,35 @@ describe("ASRouter", () => {
             param: undefined,
             context: undefined,
           }
+        );
+      });
+      it("should record telemetry information", async () => {
+        const startTelemetryStopwatch = sandbox.stub(
+          global.TelemetryStopwatch,
+          "start"
+        );
+        const finishTelemetryStopwatch = sandbox.stub(
+          global.TelemetryStopwatch,
+          "finish"
+        );
+        const msg = fakeAsyncMessage({
+          type: "TRIGGER",
+          data: { trigger: { id: "foo" } },
+        });
+
+        await Router.onMessage(msg);
+
+        assert.calledOnce(startTelemetryStopwatch);
+        assert.calledWithExactly(
+          startTelemetryStopwatch,
+          "MS_MESSAGE_REQUEST_TIME_MS",
+          { port: msg.target.portID }
+        );
+        assert.calledOnce(finishTelemetryStopwatch);
+        assert.calledWithExactly(
+          finishTelemetryStopwatch,
+          "MS_MESSAGE_REQUEST_TIME_MS",
+          { port: msg.target.portID }
         );
       });
       it("should pick a message with the right targeting and trigger", async () => {
@@ -2715,7 +2774,10 @@ describe("ASRouter", () => {
           sendAsyncMessage: sandbox.stub(),
           documentURI: { scheme: "https", host: "mozilla.com" },
         };
+        const gURLBar = document.createElement("div");
+        gURLBar.textbox = document.createElement("div");
         target.ownerGlobal = {
+          gURLBar,
           gBrowser: { selectedBrowser: target },
           document: { getElementById },
           promiseDocumentFlushed: sandbox.stub().resolves([{ width: 0 }]),

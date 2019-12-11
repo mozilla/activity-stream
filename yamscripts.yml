@@ -43,6 +43,7 @@ scripts:
     pre: =>buildmc
     # This copies only the system addon sub-folder; changing anything outside of it will need a full rebuild.
     copy: cpx "{{,.}*,!(node_modules)/**/{,.}*}" $npm_package_config_mc_dir/browser/components/newtab/ -w
+    copyFluent: =>buildmc:fluentExport -- -w
     copyPingCentre: =>buildmc:copyPingCentre -- -w
     watch: =>watchmc
 
