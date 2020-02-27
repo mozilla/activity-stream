@@ -1,8 +1,12 @@
 # Firefox Home (New Tab) [Deprecated Version]
 
-This repository is no longer updated or used. We're keeping it around for 
-those few occasions when it's useful for doing code & bugfix archaelogy by
-looking at issues and PRs.
+This repository is no longer updated or used. We're keeping it around for
+those few occasions when it's useful for doing code & bugfix archaeology by
+looking at issues and PRs.  
+
+Please do not file new issues or PRs; they will not be triaged.  Issues are now
+tracked on Bugzilla, in `Firefox: New Tab Page` and `Firefox: Messaging
+System`.
 
 More current links:
 
