@@ -1,6 +1,16 @@
-# Firefox Home (New Tab)
+# Firefox Home (New Tab) [Deprecated Version]
 
-[![Task Status](https://github.taskcluster.net/v1/repository/mozilla/activity-stream/master/badge.svg)](https://github.taskcluster.net/v1/repository/mozilla/activity-stream/master/latest)
+This repository is no longer updated or used. We're keeping it around for 
+those few occasions when it's useful for doing code & bugfix archaelogy by
+looking at issues and PRs.
+
+More current links:
+
+* Docs for [Firefox Home (New Tab)](https://firefox-source-docs.mozilla.org/browser/components/newtab/docs/index.html)
+* Docs for [Messaging System](https://firefox-source-docs.mozilla.org/browser/components/newtab/content-src/asrouter/docs/index.html)
+* [Code](https://searchfox.org/mozilla-central/source/browser/components/newtab)
+
+--------------
 
 The files in this directory, including vendor dependencies, are exported to the
 browser/components/newtab/ directory in mozilla central.
