@@ -32,4 +32,4 @@ and [this guide](docs/v2-system-addon/1.GETTING_STARTED.md) for getting your dev
 
 ## For Localizers
 
-Firefox Home localization is managed via [Pontoon](https://pontoon.mozilla.org/projects/activity-stream-new-tab/), not direct pull requests to the repository. If you want to fix a typo, add a new language, or simply know more about localization, please get in touch with the [existing localization team](https://pontoon.mozilla.org/teams/) for your language, or Mozilla’s [l10n-drivers](https://wiki.mozilla.org/L10n:Mozilla_Team#Mozilla_Corporation) for guidance.
+Firefox Home localization is managed via [Pontoon](https://pontoon.mozilla.org/), not direct pull requests to the repository. If you want to fix a typo, add a new language, or simply know more about localization, please get in touch with the [existing localization team](https://pontoon.mozilla.org/teams/) for your language, or Mozilla’s [l10n-drivers](https://wiki.mozilla.org/L10n:Mozilla_Team#Mozilla_Corporation) for guidance.
