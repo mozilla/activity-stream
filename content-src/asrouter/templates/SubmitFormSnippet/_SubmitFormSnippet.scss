@@ -90,11 +90,7 @@
       margin: 0 auto;
       max-width: 768px;
       width: 100%;
-      text-align: right;
-
-      [dir='rtl'] & {
-        text-align: left;
-      }
+      text-align: end;
     }
   }
 
